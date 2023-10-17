@@ -6,6 +6,7 @@ const createRelations = require('./models/relations');
 const cors = require('cors');
 const router = require('./routes/index');
 const initSeeds = require('./core/seeds/indexSeeds');
+const errorHandler = require('./middleware/ErrorHandlingMiddleware');
 
 const PORT = process.env.PORT || 8080;
 
@@ -14,6 +15,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/api', router);
+
+// Обработка ошибок, всегда последний мидлвар!!!
+app.use(errorHandler)
 
 const start = async () => {
     try {
