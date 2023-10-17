@@ -1,4 +1,4 @@
-const FriendshipStatus = require('../../models/FriendshipStatus');
+const FriendshipStatus = require('../models/FriendshipStatus');
 const { FRIENDSHIP_STATUSES } = require('../constants');
 
 const makeFriendshipStatusSeeds = async () => {

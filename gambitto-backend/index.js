@@ -5,7 +5,7 @@ const models = require('./models/index');
 const createRelations = require('./models/relations');
 const cors = require('cors');
 const router = require('./routes/index');
-const initSeeds = require('./core/seeds/indexSeeds');
+const initSeeds = require('./seeds/indexSeeds');
 const errorHandler = require('./middleware/ErrorHandlingMiddleware');
 
 const PORT = process.env.PORT || 8080;
@@ -23,7 +23,7 @@ const start = async () => {
     try {
         createRelations();
         await sequelize.authenticate();
-        await sequelize.sync();
+        await sequelize.sync({force: process.env.RESET_TABLE || false});
         await initSeeds();
         app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
     } catch (error) {

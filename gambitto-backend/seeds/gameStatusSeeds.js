@@ -1,4 +1,4 @@
-const GameStatus = require('../../models/GameStatus');
+const GameStatus = require('../models/GameStatus');
 const { GAME_STATUSES } = require('../constants');
 
 const makeGameStatusSeeds = async () => {
