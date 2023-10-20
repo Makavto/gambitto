@@ -9,6 +9,7 @@ module.exports = () => {
     models.User.belongsToMany(models.User, {through: models.ChessGame, as: 'whitePlayer', foreignKey: 'whitePlayerId' });
     models.User.hasMany(models.Message);
     models.User.hasMany(models.ChessMove);
+    models.User.hasOne(models.Token);
 
     models.Chat.hasMany(models.Message);
     models.Chat.belongsTo(models.User, {as: 'userOne', onDelete: 'CASCADE'});
@@ -32,6 +33,8 @@ module.exports = () => {
     models.Friendship.belongsTo(models.User, {as: 'friendTwo', onDelete: 'CASCADE'});
 
     models.FriendshipStatus.hasMany(models.Friendship);
+
+    models.Token.belongsTo(models.User);
 }
 
 

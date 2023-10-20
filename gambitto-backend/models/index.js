@@ -6,6 +6,7 @@ const Friendship = require('./Friendship');
 const GameStatus = require('./GameStatus');
 const Message = require('./Message');
 const FriendshipStatus = require('./FriendshipStatus');
+const Token = require('./Token');
 
 module.exports = {
     User,
@@ -16,4 +17,5 @@ module.exports = {
     GameStatus,
     Message,
     FriendshipStatus,
+    Token
 }
