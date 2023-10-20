@@ -65,6 +65,13 @@ class UserService {
     return {...tokens, user: userDto}
   }
 
+  // Поиск по юзерам
+  async getUsers() {
+    const users = await User.findAll();
+    const userDtos = users.map(user => new UserDto(user));
+    return userDtos;
+  }
+
 }
 
 module.exports = new UserService();
