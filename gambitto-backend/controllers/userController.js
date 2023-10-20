@@ -17,7 +17,7 @@ class UserController {
       }
       const userData = await userService.register(username, email, password);
       if (!!userData) {
-        res.cookie('refreshToken', userData.refreshToken, {maxAge: 2*60*1000, httpOnly: true, secure: true});
+        res.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true, secure: true});
         return res.json(userData);
       }
     } catch (error) {
@@ -30,7 +30,7 @@ class UserController {
       const {email, password} = req.body;
       const userData = await userService.login(email, password);
       if (!!userData) {
-        res.cookie('refreshToken', userData.refreshToken, {maxAge: 2*60*1000, httpOnly: true, secure: true});
+        res.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true, secure: true});
         return res.json(userData);
       }
 
@@ -57,7 +57,7 @@ class UserController {
     try {
       const {refreshToken} = req.cookies;
       const userData = await userService.refresh(refreshToken);
-      res.cookie('refreshToken', userData.refreshToken, {maxAge: 2*60*1000, httpOnly: true, secure: true});
+      res.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true, secure: true});
       return res.json(userData);
     } catch (error) {
       return next(error);
@@ -66,7 +66,8 @@ class UserController {
 
   async getUsers(req, res, next) {
     try {
-      const users = await userService.getUsers();
+      const {searchQuery} = req.query;
+      const users = await userService.getUsers(searchQuery);
       return res.json(users);
     } catch (error) {
       

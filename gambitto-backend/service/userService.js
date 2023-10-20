@@ -3,6 +3,7 @@ const ApiError = require("../error/ApiError");
 const bcrypt = require("bcrypt");
 const tokenService = require("./tokenService");
 const UserDto = require("../dtos/userDto");
+const {Op} = require("sequelize");
 
 class UserService {
   // next - функция мидлвары хэндлера ошибок
@@ -66,8 +67,14 @@ class UserService {
   }
 
   // Поиск по юзерам
-  async getUsers() {
-    const users = await User.findAll();
+  async getUsers(searchQuery) {
+    const users = await User.findAll({
+      where: {
+        username: {
+          [Op.iLike]: `%${searchQuery}%`
+        }
+      }
+    });
     const userDtos = users.map(user => new UserDto(user));
     return userDtos;
   }
