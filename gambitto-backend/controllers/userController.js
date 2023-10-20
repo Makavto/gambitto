@@ -70,6 +70,16 @@ class UserController {
       const users = await userService.getUsers(searchQuery);
       return res.json(users);
     } catch (error) {
+      return next(error)
+    }
+  }
+
+  async getUserById(req, res, next) {
+    try {
+      const {userId} = req.params;
+      const user = await userService.getUserById(userId);
+      return res.json(user);
+    } catch (error) {
       
     }
   }

@@ -19,4 +19,6 @@ router.get('/refresh', userController.refresh);
 
 router.get('/users', AuthMiddleware, userController.getUsers);
 
+router.get('/:userId', AuthMiddleware, userController.getUserById);
+
 module.exports = router

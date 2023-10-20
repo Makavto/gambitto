@@ -79,6 +79,12 @@ class UserService {
     return userDtos;
   }
 
+  // Данные пользователя по айди
+  async getUserById(id) {
+    const user = await User.findOne({ where: { id } });
+    return new UserDto(user);
+  }
+
 }
 
 module.exports = new UserService();
