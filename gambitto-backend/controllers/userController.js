@@ -1,7 +1,7 @@
 const ApiError = require("../error/ApiError");
 const userService = require("../service/userService");
 require('dotenv').config();
-const {validationResult, cookie} = require('express-validator');
+const {validationResult} = require('express-validator');
 
 class UserController {
 
@@ -27,6 +27,10 @@ class UserController {
 
   async login(req, res, next) {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(ApiError.badRequest(`Ошибка валидации: ${errors.array().map(err => err.path)}`));
+      }
       const {email, password} = req.body;
       const userData = await userService.login(email, password);
       if (!!userData) {
@@ -70,7 +74,7 @@ class UserController {
       const users = await userService.getUsers(searchQuery);
       return res.json(users);
     } catch (error) {
-      return next(error)
+      return next(error);
     }
   }
 
@@ -80,7 +84,7 @@ class UserController {
       const user = await userService.getUserById(userId);
       return res.json(user);
     } catch (error) {
-      
+      return next(error);
     }
   }
 

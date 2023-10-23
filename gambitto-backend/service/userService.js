@@ -6,8 +6,6 @@ const UserDto = require("../dtos/userDto");
 const {Op} = require("sequelize");
 
 class UserService {
-  // next - функция мидлвары хэндлера ошибок
-
   // Сервис регистрации пользователя
   async register(username, email, password) {
     if (await User.findOne({where: {email}})) {

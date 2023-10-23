@@ -11,7 +11,11 @@ router.post('/register',
   userController.register
 );
 
-router.post('/login', userController.login);
+router.post('/login',
+  body('password').isLength({min: 3, max: 32}),
+  body('username').isLength({min: 3, max: 20}),
+  userController.login
+);
 
 router.post('/logout', userController.logout);
 
