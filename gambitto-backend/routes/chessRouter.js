@@ -21,6 +21,14 @@ router.ws('/', WsAuthMiddleware, (ws, req, next) => {
         chessController.declineInvitation(ws, msg, req);
         break;
 
+      case "getGame":
+        chessController.getGameById(ws, msg, req);
+        break;
+
+      case "makeMove":
+        chessController.makeMove(ws, msg, req);
+        break;
+
       default:
         ws.send('Not existing endpoint')
         break;

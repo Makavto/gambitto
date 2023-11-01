@@ -1,4 +1,5 @@
 const UserDto = require("../dtos/userDto");
+const ApiError = require("../error/ApiError");
 const chessService = require("../service/chessService");
 const chessClients = require("./chessClients");
 
@@ -35,6 +36,9 @@ class ChessController {
 
   async sendInvitation(ws, msg, req) {
     try {
+      if (!msg.inviteeId) {
+        throw ApiError.badRequest('not valid message schema');
+      }
       const newGame = await chessService.sendInvitation(req.user.id, msg.inviteeId);
       ws.send(JSON.stringify({
         method: 'invite',
@@ -67,6 +71,9 @@ class ChessController {
 
   async acceptInvitation(ws, msg, req) {
     try {
+      if (!msg.gameId) {
+        throw ApiError.badRequest('not valid message schema');
+      }
       const game = await chessService.acceptInvitation(msg.gameId, req.user.id);
       ws.send(JSON.stringify({
         method: 'accept',
@@ -98,6 +105,9 @@ class ChessController {
 
   async declineInvitation(ws, msg, req) {
     try {
+      if (!msg.gameId) {
+        throw ApiError.badRequest('not valid message schema');
+      }
       const game = await chessService.declineInvitation(msg.gameId, req.user.id);
       ws.send(JSON.stringify({
         method: 'accept',
@@ -117,6 +127,61 @@ class ChessController {
         }
       }
       return game
+    } catch (error) {
+      ws.send(JSON.stringify({
+        method: 'error',
+        data: {
+          error
+        }
+      }))
+    }
+  }
+
+  async getGameById(ws, msg, req) {
+    try {
+      if (!msg.gameId) {
+        throw ApiError.badRequest('not valid message schema');
+      }
+      const gameFullInfo = await chessService.getGameById(msg.gameId, req.user.id);
+      ws.send(JSON.stringify({
+        method: 'gameInfo',
+        data: {
+          gameFullInfo
+        }
+      }));
+    } catch (error) {
+      ws.send(JSON.stringify({
+        method: 'error',
+        data: {
+          error
+        }
+      }))
+    }
+  }
+
+  async makeMove(ws, msg, req) {
+    try {
+      if (!msg.gameId || !msg.moveCode || !msg.positionBefore) {
+        throw ApiError.badRequest('not valid message schema');
+      }
+      const gameUpdateInfo = await chessService.makeMove(msg.moveCode, msg.positionBefore, req.user.id, msg.gameId);
+      ws.send(JSON.stringify({
+        method: 'makeMove',
+        data: {
+          gameUpdateInfo
+        }
+      }));
+      const opponentId = req.user.id !== gameUpdateInfo.game.blackPlayerId ? gameUpdateInfo.game.blackPlayerId : gameUpdateInfo.game.whitePlayerId;
+      for (const client of chessClients) {
+        if (client.user.id === opponentId) {
+          client.send(JSON.stringify({
+            method: 'madeMove',
+            data: {
+              gameInfo: gameUpdateInfo
+            }
+          }))
+        }
+      }
     } catch (error) {
       ws.send(JSON.stringify({
         method: 'error',

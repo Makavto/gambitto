@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const ApiError = require("../error/ApiError");
-const { User, ChessGame, GameStatus } = require("../models");
+const { User, ChessGame, GameStatus, ChessMove } = require("../models");
 
 class ChessService {
   async sendInvitation(senderId, inviteeId) {
@@ -33,7 +33,8 @@ class ChessService {
     if (!game) {
       throw ApiError.badRequest('no such game');
     }
-    if (game.gameStatusId !== await GameStatus.findOne({where: {status: 'invitation'}})) {
+    const invitationStatus = await GameStatus.findOne({where: {status: 'invitation'}});
+    if (game.gameStatusId !== invitationStatus.id) {
       throw ApiError.badRequest('not able to accept this game');
     }
     const inProgressStatus = await GameStatus.findOne({where: {status: 'inProgress'}});
@@ -47,7 +48,8 @@ class ChessService {
     if (!game) {
       throw ApiError.badRequest('no such game');
     }
-    if (game.gameStatusId !== await GameStatus.findOne({where: {status: 'invitation'}})) {
+    const invitationStatus = await GameStatus.findOne({where: {status: 'invitation'}});
+    if (game.gameStatusId !== invitationStatus.id) {
       throw ApiError.badRequest('not able to decline this game');
     }
     const declinedStatus = await GameStatus.findOne({where: {status: 'declined'}});
@@ -56,6 +58,25 @@ class ChessService {
     return game;
   }
 
+  async getGameById(gameId, userId) {
+    const game = await ChessGame.findOne({where: {id: gameId, [Op.or]: [{senderId: userId}, {inviteeId: userId}]}});
+    if (!game) {
+      throw ApiError.badRequest('no such game');
+    }
+    const gameMoves = await ChessMove.findAll({where: {chessGameId: gameId}});
+    return {game, gameMoves}
+  }
+
+  async makeMove(moveCode, positionBefore, userId, gameId) {
+    const inProgressStatus = await GameStatus.findOne({where: {status: 'inProgress'}});
+    const game = await ChessGame.findOne({where: {id: gameId, gameStatusId: inProgressStatus.id, [Op.or]: [{senderId: userId}, {inviteeId: userId}]}});
+    if (!game) {
+      throw ApiError.badRequest('no such game');
+    }
+    const lastMove = await ChessMove.findOne({where: {chessGameId: gameId}, order: [['createdAt', 'DESC']]});
+    const newMove = await ChessMove.create({moveNumber: !!lastMove ? lastMove.moveNumber + 1 : 1, moveCode, positionBefore, userId, chessGameId: gameId});
+    return {game, newMove}
+  }
   
 }
 
