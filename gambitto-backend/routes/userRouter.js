@@ -13,7 +13,7 @@ router.post('/register',
 
 router.post('/login',
   body('password').isLength({min: 3, max: 32}),
-  body('username').isLength({min: 3, max: 20}),
+  body('email').isEmail(),
   userController.login
 );
 

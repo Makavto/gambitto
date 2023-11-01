@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` })
 const express = require('express');
 const sequelize = require('./db');
 const models = require('./models/index');
@@ -12,6 +12,7 @@ const cookieParser = require('cookie-parser');
 const PORT = process.env.PORT || 8080;
 
 const app = express();
+const WSServer = require('express-ws')(app);
 
 app.use(cookieParser());
 app.use(cors());
