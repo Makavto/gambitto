@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const ApiError = require("../error/ApiError");
 const { User, ChessGame, GameStatus } = require("../models");
 
@@ -22,10 +23,18 @@ class ChessService {
     return newGame;
   }
 
+  async getUserGames(userId) {
+    const games = await ChessGame.findAll({where: {[Op.or]: [{senderId: userId}, {inviteeId: userId}]}});
+    return games;
+  }
+
   async acceptInvitation(gameId, userId) {
     const game = await ChessGame.findOne({where: {id: gameId, inviteeId: userId}});
     if (!game) {
       throw ApiError.badRequest('no such game');
+    }
+    if (game.gameStatusId !== await GameStatus.findOne({where: {status: 'invitation'}})) {
+      throw ApiError.badRequest('not able to accept this game');
     }
     const inProgressStatus = await GameStatus.findOne({where: {status: 'inProgress'}});
     game.gameStatusId = inProgressStatus.id;
@@ -38,11 +47,16 @@ class ChessService {
     if (!game) {
       throw ApiError.badRequest('no such game');
     }
+    if (game.gameStatusId !== await GameStatus.findOne({where: {status: 'invitation'}})) {
+      throw ApiError.badRequest('not able to decline this game');
+    }
     const declinedStatus = await GameStatus.findOne({where: {status: 'declined'}});
     game.gameStatusId = declinedStatus.id;
     game.save();
     return game;
   }
+
+  
 }
 
 module.exports = new ChessService();
