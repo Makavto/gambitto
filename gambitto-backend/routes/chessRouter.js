@@ -1,8 +1,6 @@
 const express = require("express");
 const chessController = require("../controllers/chessController");
 const WsAuthMiddleware = require("../middleware/WsAuthMiddleware");
-const WsErrorHandlingMiddleware = require("../middleware/WsErrorHandlingMiddleware");
-const ApiError = require("../error/ApiError");
 const router = express.Router();
 const ChessWSServer = require('express-ws')(router);
 
@@ -31,6 +29,6 @@ router.ws('/', WsAuthMiddleware, (ws, req, next) => {
   ws.on('close', () => {
     chessController.close(ws);
   })
-}, WsErrorHandlingMiddleware)
+})
 
 module.exports = router

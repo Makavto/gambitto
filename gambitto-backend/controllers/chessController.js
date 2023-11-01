@@ -45,7 +45,7 @@ class ChessController {
 
   async acceptInvitation(ws, msg, req) {
     try {
-      const game = await chessService.acceptInvitation(msg.gameId);
+      const game = await chessService.acceptInvitation(msg.gameId, req.user.id);
       ws.send(JSON.stringify(game));
       for (const client of chessClients) {
         if (client.user.id === game.senderId) {
@@ -58,13 +58,13 @@ class ChessController {
       }
       return game
     } catch (error) {
-      ws.send('error')
+      ws.send(error.message)
     }
   }
 
   async declineInvitation(ws, msg, req) {
     try {
-      const game = await chessService.declineInvitation(msg.gameId);
+      const game = await chessService.declineInvitation(msg.gameId, req.user.id);
       ws.send(JSON.stringify(game));
       for (const client of chessClients) {
         if (client.user.id === game.senderId) {
@@ -77,7 +77,7 @@ class ChessController {
       }
       return game
     } catch (error) {
-      ws.send('error')
+      ws.send(error.message)
     }
   }
 

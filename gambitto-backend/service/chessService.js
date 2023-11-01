@@ -18,12 +18,12 @@ class ChessService {
       whitePlayerId = senderId;
     }
     const invitationStatus = await GameStatus.findOne({where: {status: 'invitation'}});
-    const newGame = await ChessGame.create({blackPlayerId, whitePlayerId, gameStatusId: invitationStatus.id, senderId});
+    const newGame = await ChessGame.create({blackPlayerId, whitePlayerId, gameStatusId: invitationStatus.id, senderId, inviteeId});
     return newGame;
   }
 
-  async acceptInvitation(gameId) {
-    const game = await ChessGame.findOne({where: {id: gameId}});
+  async acceptInvitation(gameId, userId) {
+    const game = await ChessGame.findOne({where: {id: gameId, inviteeId: userId}});
     if (!game) {
       throw ApiError.badRequest('no such game');
     }
@@ -33,8 +33,8 @@ class ChessService {
     return game;
   }
 
-  async declineInvitation(gameId) {
-    const game = await ChessGame.findOne({where: {id: gameId}});
+  async declineInvitation(gameId, userId) {
+    const game = await ChessGame.findOne({where: {id: gameId, inviteeId: userId}});
     if (!game) {
       throw ApiError.badRequest('no such game');
     }
