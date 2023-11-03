@@ -161,10 +161,10 @@ class ChessController {
 
   async makeMove(ws, msg, req) {
     try {
-      if (!msg.gameId || !msg.moveCode || !msg.positionBefore) {
+      if (!msg.gameId || !msg.moveCode) {
         throw ApiError.badRequest('not valid message schema');
       }
-      const gameUpdateInfo = await chessService.makeMove(msg.moveCode, msg.positionBefore, req.user.id, msg.gameId);
+      const gameUpdateInfo = await chessService.makeMove(msg.moveCode, req.user.id, msg.gameId);
       ws.send(JSON.stringify({
         method: 'makeMove',
         data: {

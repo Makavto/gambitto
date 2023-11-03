@@ -1,6 +1,8 @@
 const { Op } = require("sequelize");
 const ApiError = require("../error/ApiError");
 const { User, ChessGame, GameStatus, ChessMove } = require("../models");
+const { Chess } = require("chess.js");
+const { STARTING_POSITION } = require("../constants");
 
 class ChessService {
   async sendInvitation(senderId, inviteeId) {
@@ -67,14 +69,46 @@ class ChessService {
     return {game, gameMoves}
   }
 
-  async makeMove(moveCode, positionBefore, userId, gameId) {
+  async makeMove(moveCode, userId, gameId) {
     const inProgressStatus = await GameStatus.findOne({where: {status: 'inProgress'}});
     const game = await ChessGame.findOne({where: {id: gameId, gameStatusId: inProgressStatus.id, [Op.or]: [{senderId: userId}, {inviteeId: userId}]}});
     if (!game) {
       throw ApiError.badRequest('no such game');
     }
     const lastMove = await ChessMove.findOne({where: {chessGameId: gameId}, order: [['createdAt', 'DESC']]});
+    let positionBefore = !!lastMove ? lastMove.positionBefore : STARTING_POSITION;
+    const chess = new Chess(positionBefore);
+    if (!!lastMove) {
+      chess.move(lastMove.moveCode);
+      positionBefore = chess.fen();
+    }
+    // move validation
+    const curTurn = chess.turn();
+    if (curTurn === 'w' && userId !== game.whitePlayerId || curTurn === 'b' && userId !== game.blackPlayerId) {
+      throw ApiError.badRequest('not valid user');
+    }
+    try {
+      chess.move(moveCode);
+    } catch (error) {
+      throw ApiError.badRequest(error.message)
+    }
     const newMove = await ChessMove.create({moveNumber: !!lastMove ? lastMove.moveNumber + 1 : 1, moveCode, positionBefore, userId, chessGameId: gameId});
+    // check for game end
+    if (chess.isCheckmate()) {
+      const gameStatus = curTurn === 'w' ? await GameStatus.findOne({where: {status: 'whiteWin'}}) : await GameStatus.findOne({where: {status: 'blackWin'}});
+      game.gameStatusId = gameStatus.id;
+      game.save();
+    }
+    if (chess.isDraw()) {
+      const gameStatus = await GameStatus.findOne({where: {status: 'draw'}});
+      game.gameStatusId = gameStatus.id;
+      game.save();
+    }
+    if (chess.isStalemate()) {
+      const gameStatus = await GameStatus.findOne({where: {status: 'stalemate'}});
+      game.gameStatusId = gameStatus.id;
+      game.save();
+    }
     return {game, newMove}
   }
   
