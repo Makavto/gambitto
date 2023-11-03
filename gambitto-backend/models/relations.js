@@ -1,8 +1,8 @@
 const models = require('./index');
 
 module.exports = () => {
-    models.User.belongsToMany(models.User, { through: models.Friendship, as: 'friendOne', foreignKey: 'friendOneId' });
-    models.User.belongsToMany(models.User, { through: models.Friendship, as: 'friendTwo', foreignKey: 'friendTwoId' });
+    models.User.belongsToMany(models.User, { through: {model: models.Friendship, unique: false}, as: 'sender', foreignKey: 'senderId' });
+    models.User.belongsToMany(models.User, { through: {model: models.Friendship, unique: false}, as: 'invitee', foreignKey: 'inviteeId' });
     models.User.belongsToMany(models.User, {through: models.Chat, as: 'userOne', foreignKey: 'userOneId' });
     models.User.belongsToMany(models.User, {through: models.Chat, as: 'userTwo', foreignKey: 'userTwoId' });
     models.User.belongsToMany(models.User, {through: {model: models.ChessGame, unique: false}, as: 'blackPlayer', foreignKey: 'blackPlayerId' });
@@ -29,8 +29,8 @@ module.exports = () => {
     models.GameStatus.hasMany(models.ChessGame);
 
     models.Friendship.belongsTo(models.FriendshipStatus);
-    models.Friendship.belongsTo(models.User, {as: 'friendOne', onDelete: 'CASCADE'});
-    models.Friendship.belongsTo(models.User, {as: 'friendTwo', onDelete: 'CASCADE'});
+    models.Friendship.belongsTo(models.User, {as: 'sender', onDelete: 'CASCADE'});
+    models.Friendship.belongsTo(models.User, {as: 'invitee', onDelete: 'CASCADE'});
 
     models.FriendshipStatus.hasMany(models.Friendship);
 
