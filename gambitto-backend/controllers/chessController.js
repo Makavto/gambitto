@@ -192,6 +192,39 @@ class ChessController {
     }
   }
 
+  async resign(ws, msg, req) {
+    try {
+      if (!msg.gameId) {
+        throw ApiError.badRequest('not valid message schema');
+      }
+      const game = await chessService.resign(msg.gameId, req.user.id);
+      ws.send(JSON.stringify({
+        method: 'resign',
+        data: {
+          game
+        }
+      }));
+      const opponentId = req.user.id !== game.blackPlayerId ? game.blackPlayerId : game.whitePlayerId;
+      for (const client of chessClients) {
+        if (client.user.id === opponentId) {
+          client.send(JSON.stringify({
+            method: 'resigned',
+            data: {
+              game
+            }
+          }))
+        }
+      }
+    } catch (error) {
+      ws.send(JSON.stringify({
+        method: 'error',
+        data: {
+          error
+        }
+      }))
+    }
+  }
+
 }
 
 module.exports = new ChessController();

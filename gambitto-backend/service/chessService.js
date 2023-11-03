@@ -111,6 +111,20 @@ class ChessService {
     }
     return {game, newMove}
   }
+
+  async resign(gameId, userId) {
+    const inProgressStatus = await GameStatus.findOne({where: {status: 'inProgress'}});
+    const game = await ChessGame.findOne({where: {id: gameId, gameStatusId: inProgressStatus.id, [Op.or]: [{senderId: userId}, {inviteeId: userId}]}});
+    if (!game) {
+      throw ApiError.badRequest('no such game');
+    }
+    const whiteWin = await GameStatus.findOne({where: {status: 'whiteWin'}});
+    const blackWin = await GameStatus.findOne({where: {status: 'blackWin'}});
+    if (userId === game.whitePlayerId) game.gameStatusId = blackWin.id;
+    if (userId === game.blackPlayerId) game.gameStatusId = whiteWin.id;
+    game.save();
+    return game;
+  }
   
 }
 

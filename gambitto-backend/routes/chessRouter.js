@@ -29,6 +29,10 @@ router.ws('/', WsAuthMiddleware, (ws, req, next) => {
         chessController.makeMove(ws, msg, req);
         break;
 
+      case "resign":
+        chessController.resign(ws, msg, req);
+        break;
+        
       default:
         ws.send('Not existing endpoint')
         break;
