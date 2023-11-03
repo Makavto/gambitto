@@ -1,5 +1,5 @@
 const {Sequelize} = require('sequelize');
-require('dotenv').config();
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 
 module.exports = new Sequelize(
     process.env.DB_NAME,

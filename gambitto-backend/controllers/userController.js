@@ -1,6 +1,6 @@
 const ApiError = require("../error/ApiError");
 const userService = require("../service/userService");
-require('dotenv').config();
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 const {validationResult} = require('express-validator');
 
 class UserController {
@@ -12,14 +12,9 @@ class UserController {
         return next(ApiError.badRequest(`Ошибка валидации: ${errors.array().map(err => err.path)}`));
       }
       const {email, password, username} = req.body;
-      if (!email || !password || !username) {
-        return next(ApiError.badRequest('Not valid request schema'))
-      }
       const userData = await userService.register(username, email, password);
-      if (!!userData) {
-        res.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true, secure: true});
-        return res.json(userData);
-      }
+      res.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true, secure: true});
+      return res.json(userData);
     } catch (error) {
       return next(error)
     }
@@ -33,11 +28,8 @@ class UserController {
       }
       const {email, password} = req.body;
       const userData = await userService.login(email, password);
-      if (!!userData) {
-        res.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true, secure: true});
-        return res.json(userData);
-      }
-
+      res.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true, secure: true});
+      return res.json(userData);
     } catch (error) {
       return next(error)
     }

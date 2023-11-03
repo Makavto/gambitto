@@ -39,12 +39,19 @@ const GAME_STATUSES = [
     statusFormatted: 'Белые победили'
   },
   {
-    status: 'pat',
+    status: 'draw',
     statusFormatted: 'Ничья'
+  },
+  {
+    status: 'stalemate',
+    statusFormatted: 'Пат'
   }
 ]
 
+const STARTING_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
 module.exports = {
   FRIENDSHIP_STATUSES,
-  GAME_STATUSES
+  GAME_STATUSES,
+  STARTING_POSITION
 }

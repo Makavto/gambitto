@@ -5,8 +5,8 @@ module.exports = () => {
     models.User.belongsToMany(models.User, { through: models.Friendship, as: 'friendTwo', foreignKey: 'friendTwoId' });
     models.User.belongsToMany(models.User, {through: models.Chat, as: 'userOne', foreignKey: 'userOneId' });
     models.User.belongsToMany(models.User, {through: models.Chat, as: 'userTwo', foreignKey: 'userTwoId' });
-    models.User.belongsToMany(models.User, {through: models.ChessGame, as: 'blackPlayer', foreignKey: 'blackPlayerId' });
-    models.User.belongsToMany(models.User, {through: models.ChessGame, as: 'whitePlayer', foreignKey: 'whitePlayerId' });
+    models.User.belongsToMany(models.User, {through: {model: models.ChessGame, unique: false}, as: 'blackPlayer', foreignKey: 'blackPlayerId' });
+    models.User.belongsToMany(models.User, {through: {model: models.ChessGame, unique: false}, as: 'whitePlayer', foreignKey: 'whitePlayerId' });
     models.User.hasMany(models.Message);
     models.User.hasMany(models.ChessMove);
     models.User.hasOne(models.Token);
