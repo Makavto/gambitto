@@ -1,7 +1,7 @@
 const UserDto = require("../dtos/userDto");
 const ApiError = require("../error/ApiError");
 const chessService = require("../service/chessService");
-const chessClients = require("./chessClients");
+const chessClients = require("../wss clients/chessClients");
 
 class ChessController {
 
