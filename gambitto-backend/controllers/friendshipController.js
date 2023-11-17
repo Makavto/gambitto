@@ -8,13 +8,13 @@ class FrienshipController {
     try {
       ws.user = req.user;
       friendshipClients.add(ws);
-      // const games = await chessService.getUserGames(req.user.id);
-      // ws.send(JSON.stringify({
-      //   method: 'init',
-      //   data: {
-      //     games
-      //   }
-      // }));
+      const friendships = await friendshipService.getUserFriends(req.user.id);
+      ws.send(JSON.stringify({
+        method: 'init',
+        data: {
+          friendships
+        }
+      }));
     } catch (error) {
       ws.send(JSON.stringify({
         method: 'error',
@@ -46,7 +46,103 @@ class FrienshipController {
       for (const client of friendshipClients) {
         if (client.user.id === msg.inviteeId) {
           client.send(JSON.stringify({
-            method: 'invitation',
+            method: 'invitated',
+            data: {
+              newFriendship: friendship,
+              sender: new UserDto(req.user)
+            }
+          }));
+          break;
+        }
+      }
+    } catch (error) {
+      ws.send(JSON.stringify({
+        method: 'error',
+        data: {
+          error
+        }
+      }))
+    }
+  }
+
+  async acceptInvitation(ws, msg, req) {
+    try {
+      if (!msg.invitationId) {
+        throw ApiError.badRequest('not valid message schema');
+      }
+      const friendship = await friendshipService.acceptFriend(msg.invitationId, req.user.id);
+      ws.send(JSON.stringify({
+        method: 'accept',
+        data: friendship
+      }));
+      for (const client of friendshipClients) {
+        if (client.user.id === friendship.friendship.senderId) {
+          client.send(JSON.stringify({
+            method: 'accepted',
+            data: {
+              newFriendship: friendship,
+              sender: new UserDto(req.user)
+            }
+          }));
+          break;
+        }
+      }
+    } catch (error) {
+      ws.send(JSON.stringify({
+        method: 'error',
+        data: {
+          error
+        }
+      }))
+    }
+  }
+
+  async declineInvitation(ws, msg, req) {
+    try {
+      if (!msg.invitationId) {
+        throw ApiError.badRequest('not valid message schema');
+      }
+      const friendship = await friendshipService.declineFriend(msg.invitationId, req.user.id);
+      ws.send(JSON.stringify({
+        method: 'decline',
+        data: friendship
+      }));
+      for (const client of friendshipClients) {
+        if (client.user.id === friendship.friendship.senderId) {
+          client.send(JSON.stringify({
+            method: 'declined',
+            data: {
+              newFriendship: friendship,
+              sender: new UserDto(req.user)
+            }
+          }));
+          break;
+        }
+      }
+    } catch (error) {
+      ws.send(JSON.stringify({
+        method: 'error',
+        data: {
+          error
+        }
+      }))
+    }
+  }
+
+  async deleteFriend(ws, msg, req) {
+    try {
+      if (!msg.invitationId) {
+        throw ApiError.badRequest('not valid message schema');
+      }
+      const friendship = await friendshipService.deleteFriend(msg.invitationId, req.user.id);
+      ws.send(JSON.stringify({
+        method: 'delete',
+        data: friendship
+      }));
+      for (const client of friendshipClients) {
+        if (client.user.id === friendship.friendship.senderId) {
+          client.send(JSON.stringify({
+            method: 'deleted',
             data: {
               newFriendship: friendship,
               sender: new UserDto(req.user)

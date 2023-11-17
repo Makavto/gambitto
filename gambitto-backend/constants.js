@@ -1,15 +1,7 @@
 const FRIENDSHIP_STATUSES = [
   {
-    status: 'none',
-    statusFormatted: 'Не в друзьях'
-  },
-  {
     status: 'invitation',
     statusFormatted: 'Заявка отправлена'
-  },
-  {
-    status: 'declined',
-    statusFormatted: 'Заявка отклонена'
   },
   {
     status: 'friends',

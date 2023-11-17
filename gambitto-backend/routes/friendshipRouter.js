@@ -14,6 +14,18 @@ router.ws('/', WsAuthMiddleware, (ws, req, next) => {
         friendshipController.addFriend(ws, msg, req);
         break;
         
+      case 'accept':
+        friendshipController.acceptInvitation(ws, msg, req);
+        break;
+
+      case 'decline':
+        friendshipController.declineInvitation(ws, msg, req);
+        break;
+
+      case 'delete':
+        friendshipController.deleteFriend(ws, msg, req);
+        break;
+        
       default:
         ws.send('Not existing endpoint')
         break;
