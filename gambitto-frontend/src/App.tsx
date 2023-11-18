@@ -1,11 +1,18 @@
 import React from 'react';
 import './App.css';
+import { Route, RouteProps, Routes } from 'react-router';
+import RoutesArray from './router/Routes';
 
 function App() {
   return (
-    <div>
+    <Routes>
+      {
+        RoutesArray.map((routeProps: RouteProps, index: number) => (
+          <Route {...routeProps} key={index} />
+        ))
+      }
       adsdasdasd
-    </div>
+    </Routes>
   );
 }
 
