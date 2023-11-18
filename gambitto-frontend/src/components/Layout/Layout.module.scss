@@ -1,0 +1,20 @@
+
+
+.layoutWrapper {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+
+  .menuWrapper {
+    flex: .15 1 15%;
+    min-width: 250px;
+    position: relative;
+    height: 100%;
+  }
+
+  .pageWrapper {
+    padding: 15px 50px;
+    flex: .85 1 85%;
+  }
+}
