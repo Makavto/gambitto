@@ -15,3 +15,14 @@ html {
 * {
   box-sizing: border-box;
 }
+
+button {
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  color: $color-primary;
+  font-weight: $font-weight;
+  font-size: $font-size;
+  cursor: pointer;
+}

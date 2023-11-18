@@ -10,7 +10,15 @@ class UserController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return next(ApiError.badRequest(`Ошибка валидации: ${errors.array().map(err => err.path)}`));
+        const errorsArr = errors.array();
+        let errorMessage = errorsArr.length === 1 ? 'Поле заполнено некорректно: ' : 'Поля заполнены некорректно: ';
+        errorsArr.forEach((err, i) => {
+          err.path === 'email' && (errorMessage += 'e-mail');
+          err.path === 'password' && (errorMessage += 'пароль');
+          err.path === 'username' && (errorMessage += 'логин');
+          if (i !== errorsArr.length - 1) errorMessage += ', ';
+        })
+        return next(ApiError.badRequest(errorMessage));
       }
       const {email, password, username} = req.body;
       const userData = await userService.register(username, email, password);
@@ -25,7 +33,14 @@ class UserController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return next(ApiError.badRequest(`Ошибка валидации: ${errors.array().map(err => err.path)}`));
+        const errorsArr = errors.array();
+        let errorMessage = errorsArr.length === 1 ? 'Поле заполнено некорректно: ' : 'Поля заполнены некорректно: ';
+        errorsArr.forEach((err, i) => {
+          err.path === 'email' && (errorMessage += 'e-mail');
+          err.path === 'password' && (errorMessage += 'пароль');
+          if (i !== errorsArr.length - 1) errorMessage += ', ';
+        })
+        return next(ApiError.badRequest(errorMessage));
       }
       const {email, password} = req.body;
       const userData = await userService.login(email, password);

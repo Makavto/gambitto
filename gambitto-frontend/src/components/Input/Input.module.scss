@@ -1,6 +1,22 @@
 @import 'src/styles/variables';
 
 .input {
+  width: 100%;
+  padding: 10px;
   color: $color-primary;
-  background-color: $color-background-2;
+  font-weight: 600;
+  font-size: $font-size;
+  background-color: lighten($color: $color-background-2, $amount: 15%);
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  transition: background-color .2s ease-in-out;
+
+  &::placeholder {
+    color: darken($color: $color-primary, $amount: 25%);
+  }
+
+  &:focus {
+    background-color: lighten($color: $color-background-2, $amount: 25%);
+  }
 }
