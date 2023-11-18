@@ -1,0 +1,13 @@
+@import './variables.scss';
+
+html {
+  margin: 0;
+  font-family: 'VictorMono', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  font-weight: $font-weight;
+  font-size: $font-size;
+  color: $color-primary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

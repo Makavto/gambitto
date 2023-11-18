@@ -1,0 +1,27 @@
+@font-face {
+  font-family: 'VictorMono';
+  src: local('VictorMono'), url(../assets/fonts/VictorMono-Medium.otf) format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'VictorMono';
+  src: local('VictorMono'), url(../assets/fonts/VictorMono-Bold.otf) format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'VictorMono';
+  src: local('VictorMono'), url(../assets/fonts/VictorMono-Regular.otf) format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'VictorMono';
+  src: local('VictorMono'), url(../assets/fonts/VictorMono-SemiBold.otf) format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
