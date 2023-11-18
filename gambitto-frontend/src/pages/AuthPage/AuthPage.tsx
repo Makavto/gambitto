@@ -66,10 +66,13 @@ function AuthPage() {
     if (!!userError && isFetchBaseQueryErrorType(userError)) {
       setErrorMessage(userError.data.message)
     }
+  }, [userError])
+
+  useEffect(() => {
     if (!!registerError && isFetchBaseQueryErrorType(registerError)) {
       setErrorMessage(registerError.data.message)
     }
-  }, [userError, registerError])
+  }, [registerError])
 
   return (
     <div className={styles.pageWrapper}>
