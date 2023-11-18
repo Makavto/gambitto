@@ -1,3 +1,4 @@
+const UserDto = require("../dtos/userDto");
 const ApiError = require("../error/ApiError");
 const userService = require("../service/userService");
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
@@ -9,11 +10,19 @@ class UserController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return next(ApiError.badRequest(`Ошибка валидации: ${errors.array().map(err => err.path)}`));
+        const errorsArr = errors.array();
+        let errorMessage = errorsArr.length === 1 ? 'Поле заполнено некорректно: ' : 'Поля заполнены некорректно: ';
+        errorsArr.forEach((err, i) => {
+          err.path === 'email' && (errorMessage += 'e-mail');
+          err.path === 'password' && (errorMessage += 'пароль');
+          err.path === 'username' && (errorMessage += 'логин');
+          if (i !== errorsArr.length - 1) errorMessage += ', ';
+        })
+        return next(ApiError.badRequest(errorMessage));
       }
       const {email, password, username} = req.body;
       const userData = await userService.register(username, email, password);
-      res.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true, secure: true});
+      res.cookie('refreshToken', userData.refreshToken, {maxAge: Number(process.env.JWT_REFRESH_EXPIRES_IN_MILLISECONDS), httpOnly: true, secure: true});
       return res.json(userData);
     } catch (error) {
       return next(error)
@@ -24,11 +33,18 @@ class UserController {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return next(ApiError.badRequest(`Ошибка валидации: ${errors.array().map(err => err.path)}`));
+        const errorsArr = errors.array();
+        let errorMessage = errorsArr.length === 1 ? 'Поле заполнено некорректно: ' : 'Поля заполнены некорректно: ';
+        errorsArr.forEach((err, i) => {
+          err.path === 'email' && (errorMessage += 'e-mail');
+          err.path === 'password' && (errorMessage += 'пароль');
+          if (i !== errorsArr.length - 1) errorMessage += ', ';
+        })
+        return next(ApiError.badRequest(errorMessage));
       }
       const {email, password} = req.body;
       const userData = await userService.login(email, password);
-      res.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true, secure: true});
+      res.cookie('refreshToken', userData.refreshToken, {maxAge: Number(process.env.JWT_REFRESH_EXPIRES_IN_MILLISECONDS), httpOnly: true, secure: true, sameSite: 'none'});
       return res.json(userData);
     } catch (error) {
       return next(error)
@@ -53,7 +69,7 @@ class UserController {
     try {
       const {refreshToken} = req.cookies;
       const userData = await userService.refresh(refreshToken);
-      res.cookie('refreshToken', userData.refreshToken, {maxAge: 30*24*60*60*1000, httpOnly: true, secure: true});
+      res.cookie('refreshToken', userData.refreshToken, {maxAge: Number(process.env.JWT_REFRESH_EXPIRES_IN_MILLISECONDS), httpOnly: true, secure: true});
       return res.json(userData);
     } catch (error) {
       return next(error);
@@ -77,6 +93,15 @@ class UserController {
       return res.json(user);
     } catch (error) {
       return next(error);
+    }
+  }
+
+  async getMe(req, res, next) {
+    try {
+      const user = req.user;
+      return res.json(new UserDto(user))
+    } catch (error) {
+      return next(error)
     }
   }
 

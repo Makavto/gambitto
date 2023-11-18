@@ -1,0 +1,32 @@
+@import 'src/styles/variables';
+
+.linkBtn {
+  color: $color-secondary;
+  transition: color .2s ease-in-out;
+
+  &:hover {
+    color: lighten($color: $color-secondary, $amount: 20%);
+  }
+
+  &:active {
+    color: darken($color: $color-secondary, $amount: 20%);
+  }
+}
+
+.primaryBtn {
+  padding: 10px 15px;
+  border-radius: 10px;
+  background: darken($color: $color-secondary, $amount: 15%);
+  font-weight: 700;
+  transition: background .2s ease-in-out, color .2s ease-in-out;
+
+  &:hover {
+    background: $color-primary;
+    color: $color-secondary;
+  }
+
+  &:active {
+    background: lighten($color: $color-secondary, $amount: 25%);
+    color: darken($color: $color-secondary, $amount: 20%);
+  }
+}
