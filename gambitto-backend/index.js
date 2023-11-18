@@ -15,7 +15,13 @@ const app = express();
 const WSServer = require('express-ws')(app);
 
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+  credentials: true,
+  origin: "*",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  preflightContinue: true,
+  optionsSuccessStatus: 204,
+}));
 app.use(express.json());
 app.use('/api', router);
 
