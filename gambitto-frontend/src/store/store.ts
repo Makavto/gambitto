@@ -1,5 +1,4 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { unauthorizedMiddleware } from "../middlewares/unauthorizedMiddleware";
 import { AuthAPI } from "../services/AuthService";
 import userSlice from './reducers/userSlice';
 import { UserAPI } from "../services/UserService";
@@ -14,7 +13,7 @@ export const setupStore = () => {
   return configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(AuthAPI.middleware, UserAPI.middleware, unauthorizedMiddleware)
+      getDefaultMiddleware().concat(AuthAPI.middleware, UserAPI.middleware)
   })
 }
 
