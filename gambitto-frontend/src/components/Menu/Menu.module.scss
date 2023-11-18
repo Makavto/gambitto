@@ -1,0 +1,10 @@
+@import 'src/styles/variables.scss';
+
+.menuContainer {
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: $color-background-1;
+  box-shadow: 10px 0px 15px 15px $color-background-1;
+  height: 100%;
+}
