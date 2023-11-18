@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/normalize.css';
-import './styles/fonts.css';
-import './styles/index.css';
+import './styles/variables.scss';
+import './styles/fonts.scss';
+import './styles/index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
