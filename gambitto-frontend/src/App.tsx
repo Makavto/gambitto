@@ -3,7 +3,7 @@ import styles from './App.module.scss';
 import { Route, RouteProps, Routes } from 'react-router';
 import RoutesArray from './router/Routes';
 import Layout from './components/Layout/Layout';
-import LoginPage from './pages/LoginPage/LoginPage';
+import AuthPage from './pages/AuthPage/AuthPage';
 import { useAppDispatch, useAppSelector } from './hooks/redux';
 import { UserAPI } from './services/UserService';
 import { userSlice } from './store/reducers/userSlice';
@@ -40,7 +40,7 @@ function App() {
 
   if (!userLogged) return (
     <div className={styles.appContainer}>
-      <LoginPage />
+      <AuthPage />
     </div>
   )
   return (
