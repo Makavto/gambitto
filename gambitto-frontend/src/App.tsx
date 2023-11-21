@@ -45,15 +45,15 @@ function App() {
   )
   return (
     <div className={styles.appContainer}>
-    <Layout>
-      <Routes>
-        {
-          RoutesArray.map((routeProps: RouteProps, index: number) => (
-            <Route {...routeProps} key={index} />
-          ))
-        }
-      </Routes>
-    </Layout>
+      <Layout>
+        <Routes>
+          {
+            RoutesArray.map((routeProps: RouteProps, index: number) => (
+              <Route {...routeProps} key={index} />
+            ))
+          }
+        </Routes>
+      </Layout>
     </div>
   );
 }

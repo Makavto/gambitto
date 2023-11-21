@@ -26,3 +26,16 @@ button {
   font-size: $font-size;
   cursor: pointer;
 }
+
+a {
+  text-decoration: none;
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  color: $color-primary;
+  font-weight: $font-weight;
+  font-size: $font-size;
+  cursor: pointer;
+}
