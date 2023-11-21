@@ -8,6 +8,7 @@ import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import { isFetchBaseQueryErrorType } from '../../utils/fetchBaseQueryErrorCheck';
 import { ButtonTypesEnum } from '../../utils/ButtonTypesEnum';
+import Card from '../../components/Card/Card';
 
 interface IAuthForm {
   email: string;
@@ -76,59 +77,61 @@ function AuthPage() {
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={styles.authForm}>
-        <div className={styles.title}>Добро пожаловать на Gambitto!</div>
-        {
-          registrationPage ?
-            <div className={styles.subTitle}>
-              Регистрация
-            </div> :
-            <div className={styles.subTitle}>
-              Войдите в аккаунт
-            </div>
-        }
-        <div className={styles.authInput}>
-          <Input placeholder='E-mail' name='email' registerField={register} emptyMessage='Введите e-mail'/>
-        </div>
-        {registrationPage &&
-          <div className={styles.authInput}>
-            <Input placeholder='Логин' name='username' registerField={register} emptyMessage='Введите имя пользователя'/>
-          </div>
-        }
-        <div className={styles.authInput}>
-          <Input isPassword={true} placeholder='Пароль' name='password' registerField={register} emptyMessage='Введите пароль'/>
-        </div>
-        {
-          errorMessage &&
-            <div className={styles.error}>{errorMessage}</div>
-        }
-        <div className={styles.account}>
+      <Card>
+        <div className={styles.authForm}>
+          <div className={styles.title}>Добро пожаловать на Gambitto!</div>
           {
             registrationPage ?
-            <>
-              <span>Уже есть аккаунт? </span>
-              <Button type={ButtonTypesEnum.Link} onClick={onSwitchRegister}>
-                Войдите в него!
-              </Button>
-            </> :
-            <>
-              <span>Нет аккаунта? </span>
-              <Button type={ButtonTypesEnum.Link} onClick={onSwitchRegister}>
-                Создайте его!
-              </Button>
-            </>
+              <div className={styles.subTitle}>
+                Регистрация
+              </div> :
+              <div className={styles.subTitle}>
+                Войдите в аккаунт
+              </div>
           }
-        </div>
-        <div>
-          <Button type={ButtonTypesEnum.Primary} onClick={handleSubmit(onSubmit)}>
+          <div className={styles.authInput}>
+            <Input placeholder='E-mail' name='email' registerField={register} emptyMessage='Введите e-mail'/>
+          </div>
+          {registrationPage &&
+            <div className={styles.authInput}>
+              <Input placeholder='Логин' name='username' registerField={register} emptyMessage='Введите имя пользователя'/>
+            </div>
+          }
+          <div className={styles.authInput}>
+            <Input isPassword={true} placeholder='Пароль' name='password' registerField={register} emptyMessage='Введите пароль'/>
+          </div>
+          {
+            errorMessage &&
+              <div className={styles.error}>{errorMessage}</div>
+          }
+          <div className={styles.account}>
             {
               registrationPage ?
-                <>Создать</> :
-                <>Войти</>
+              <>
+                <span>Уже есть аккаунт? </span>
+                <Button type={ButtonTypesEnum.Link} onClick={onSwitchRegister}>
+                  Войдите в него!
+                </Button>
+              </> :
+              <>
+                <span>Нет аккаунта? </span>
+                <Button type={ButtonTypesEnum.Link} onClick={onSwitchRegister}>
+                  Создайте его!
+                </Button>
+              </>
             }
-          </Button>
+          </div>
+          <div>
+            <Button type={ButtonTypesEnum.Primary} onClick={handleSubmit(onSubmit)}>
+              {
+                registrationPage ?
+                  <>Создать</> :
+                  <>Войти</>
+              }
+            </Button>
+          </div>
         </div>
-      </div>
+      </Card>
     </div>
   )
 }
