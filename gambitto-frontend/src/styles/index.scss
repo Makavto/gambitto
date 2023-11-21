@@ -39,3 +39,15 @@ a {
   font-size: $font-size;
   cursor: pointer;
 }
+
+.textBig {
+  font-size: 1.4rem;
+}
+
+.textSmall {
+  font-size: .8rem;
+}
+
+.textSecondary {
+  color: darken($color: $color-primary, $amount: 15%);
+}

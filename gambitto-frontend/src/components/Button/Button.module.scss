@@ -30,3 +30,21 @@
     color: darken($color: $color-secondary, $amount: 20%);
   }
 }
+
+.dangerBtn {
+  padding: 10px 15px;
+  border-radius: 10px;
+  background: darken($color: $color-accent, $amount: 15%);
+  font-weight: 700;
+  transition: background .2s ease-in-out, color .2s ease-in-out;
+
+  &:hover {
+    background: $color-primary;
+    color: $color-accent;
+  }
+
+  &:active {
+    background: lighten($color: $color-accent, $amount: 25%);
+    color: darken($color: $color-accent, $amount: 20%);
+  }
+}
