@@ -1,13 +1,8 @@
 import React from 'react'
 import styles from './Menu.module.scss';
-import Button from '../Button/Button';
-import { ButtonTypesEnum } from '../../utils/ButtonTypesEnum';
-import { useNavigate } from 'react-router';
 import { NavLink } from 'react-router-dom';
 
 function Menu() {
-  const navigate = useNavigate();
-
   return (
     <div className={styles.menuContainer}>
       <div className={styles.logoShadow}>
