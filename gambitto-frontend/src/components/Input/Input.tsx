@@ -7,11 +7,17 @@ interface IInputProps {
   name: string;
   placeholder?: string;
   emptyMessage?: string;
+  isPassword?: boolean;
 }
 
-function Input({placeholder,name,registerField,emptyMessage: required}: IInputProps) {
+function Input({placeholder,name,registerField,emptyMessage: required,isPassword}: IInputProps) {
   return (
-    <input className={styles.input} {...registerField(name, {required})} placeholder={placeholder} type="text" />
+    <input
+      className={styles.input}
+      {...registerField(name, {required})}
+      placeholder={placeholder}
+      type={`${isPassword ? 'password' : 'text'}`}
+    />
   )
 }
 

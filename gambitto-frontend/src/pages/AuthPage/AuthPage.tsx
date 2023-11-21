@@ -88,7 +88,7 @@ function AuthPage() {
             </div>
         }
         <div className={styles.authInput}>
-          <Input placeholder='e-mail' name='email' registerField={register} emptyMessage='Введите e-mail'/>
+          <Input placeholder='E-mail' name='email' registerField={register} emptyMessage='Введите e-mail'/>
         </div>
         {registrationPage &&
           <div className={styles.authInput}>
@@ -96,7 +96,7 @@ function AuthPage() {
           </div>
         }
         <div className={styles.authInput}>
-          <Input placeholder='Пароль' name='password' registerField={register} emptyMessage='Введите пароль'/>
+          <Input isPassword={true} placeholder='Пароль' name='password' registerField={register} emptyMessage='Введите пароль'/>
         </div>
         {
           errorMessage &&
