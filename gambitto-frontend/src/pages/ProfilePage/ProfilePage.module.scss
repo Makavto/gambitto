@@ -1,15 +1,25 @@
 .pageWrapper {
-  display: inline;
+  display: flex;
+  flex-direction: column;
 
-  .cardContainer {
-    display: flex;
-    flex-direction: column;
-  
-    .cardItem {
+  .cardWrapper {
+    margin-bottom: 1.8rem;
+    
+    .cardContainer {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
+      flex-direction: column;
+    
+      .cardItem {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+      }
     }
   }
+
+  .historyWrapper {
+    margin-top: 1.5rem;
+  }
+
 }

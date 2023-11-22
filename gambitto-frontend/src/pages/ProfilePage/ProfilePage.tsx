@@ -25,7 +25,8 @@ function ProfilePage() {
   return (
     <>
       <div className={styles.pageWrapper}>
-          <Card>
+        <div className={styles.cardWrapper}>
+          <Card light={true}>
             {
               user &&
               <div className={styles.cardContainer}>
@@ -44,6 +45,15 @@ function ProfilePage() {
               </div>
             }
           </Card>
+        </div>
+        <div className='textBig title'>
+          История партий
+        </div>
+        <div className={styles.historyWrapper}>
+          <Card>
+
+          </Card>
+        </div>
       </div>
     </>
   )
