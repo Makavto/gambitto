@@ -1,5 +1,5 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
-
+const express = require('express');
 module.exports = function (app) {
   function relayRequestHeaders(proxyReq, req) {
     Object.keys(req.headers).forEach(function (key) {
@@ -27,6 +27,7 @@ module.exports = function (app) {
       changeOrigin: true,
       onProxyReq: relayRequestHeaders,
       onProxyRes: relayResponseHeaders,
+      logLevel: process.env.NODE_ENV === 'development' ? 'debug' : 'silent',
     })
   );
 };

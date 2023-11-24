@@ -5,7 +5,7 @@ const router = express.Router();
 const ChessWSServer = require('express-ws')(router);
 
 router.ws('/', WsAuthMiddleware, (ws, req, next) => {
-  chessController.connection(ws, req)
+  ws.send(JSON.stringify({method: 'ok', data: {}}))
   ws.on('message', (msg) => {
     msg = JSON.parse(msg);
     switch (msg.method) {
@@ -32,9 +32,13 @@ router.ws('/', WsAuthMiddleware, (ws, req, next) => {
       case "resign":
         chessController.resign(ws, msg, req);
         break;
+
+      case "getAllGames":
+        chessController.getAllGames(ws, req);
+        break
         
       default:
-        ws.send('Not existing endpoint')
+        ws.send(JSON.stringify({method: 'error', data: {status: 404, message: 'Not existing endpoint'}}))
         break;
     }
   })
