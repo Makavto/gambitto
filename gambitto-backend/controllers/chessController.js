@@ -5,13 +5,13 @@ const chessClients = require("../wss clients/chessClients");
 
 class ChessController {
 
-  async connection(ws, req) {
+  async getAllGames(ws, req) {
     try {
       ws.user = req.user;
       chessClients.add(ws);
       const games = await chessService.getUserGames(req.user.id);
       ws.send(JSON.stringify({
-        method: 'init',
+        method: 'getAllGames',
         data: {
           games
         }
@@ -110,7 +110,7 @@ class ChessController {
       }
       const game = await chessService.declineInvitation(msg.gameId, req.user.id);
       ws.send(JSON.stringify({
-        method: 'accept',
+        method: 'decline',
         data: {
           game
         }

@@ -3,21 +3,21 @@ const tokenService = require("../service/tokenService");
 
 module.exports = function (ws, req, next) {
   try {
-    const authorizationHeader = req.headers.authorization;
+    const authorizationHeader = req.headers['sec-websocket-protocol'];
     if (!authorizationHeader) {
-      ws.send('unauthorized');
+      ws.send(JSON.stringify({method: 'error', data: {status: 401, message: 'unauthorized'}}));
       return next(ApiError.unauthorized());
     }
-
-    const accessToken = authorizationHeader.split(' ')[1];
+    
+    const accessToken = authorizationHeader;
     if (!accessToken) {
-      ws.send('unauthorized');
+      ws.send(JSON.stringify({method: 'error', data: {status: 401, message: 'unauthorized'}}));
       return next(ApiError.unauthorized());
     }
 
     const userData = tokenService.validateAccessToken(accessToken);
     if (!userData) {
-      ws.send('unauthorized');
+      ws.send(JSON.stringify({method: 'error', data: {status: 401, message: 'unauthorized'}}));
       return next(ApiError.unauthorized());
     }
 
