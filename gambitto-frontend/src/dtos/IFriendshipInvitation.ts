@@ -8,7 +8,7 @@ export interface IFriendshipInvitation {
   data: {
     newFriendship: {
       friendship: IFriendshipDto,
-      invitationStatus: IInvitationStatusDto
+      invitationStatus?: IInvitationStatusDto
     },
     sender: IUser
   }
