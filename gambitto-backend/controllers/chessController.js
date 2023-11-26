@@ -8,12 +8,31 @@ class ChessController {
   async getAllGames(ws, req) {
     try {
       ws.user = req.user;
-      chessClients.add(ws);
       const games = await chessService.getUserGames(req.user.id);
       ws.send(JSON.stringify({
         method: 'getAllGames',
         data: {
           games
+        }
+      }));
+    } catch (error) {
+      ws.send(JSON.stringify({
+        method: 'error',
+        data: {
+          error
+        }
+      }))
+    }
+  }
+
+  async connect(ws, req) {
+    try {
+      ws.user = req.user;
+      chessClients.add(ws);
+      ws.send(JSON.stringify({
+        method: 'init',
+        data: {
+          status: 'ok'
         }
       }));
     } catch (error) {

@@ -5,7 +5,7 @@ const router = express.Router();
 const ChessWSServer = require('express-ws')(router);
 
 router.ws('/', WsAuthMiddleware, (ws, req, next) => {
-  ws.send(JSON.stringify({method: 'ok', data: {}}))
+  chessController.connect(ws, req)
   ws.on('message', (msg) => {
     msg = JSON.parse(msg);
     switch (msg.method) {
