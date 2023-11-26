@@ -12,7 +12,7 @@ class FrienshipService {
     }
     const invitationStatus = await FriendshipStatus.findOne({where: {status: 'invitation'}});
     const friendship = await Friendship.create({senderId: userId, inviteeId, friendshipStatusId: invitationStatus.id});
-    return {friendship, invitationStatus};
+    return {friendship, status: invitationStatus};
   }
 
   async acceptFriend(invitationId, inviteeId) {
@@ -22,7 +22,7 @@ class FrienshipService {
     if (!friendship) throw ApiError.badRequest('no such friendship');
     friendship.friendshipStatusId = acceptedStatus.id;
     friendship.save();
-    return {friendship, acceptedStatus};
+    return {friendship, status: acceptedStatus};
   }
 
   async declineFriend(invitationId, inviteeId) {

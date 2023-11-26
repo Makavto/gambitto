@@ -22,7 +22,7 @@ class ChessService {
     }
     const invitationStatus = await GameStatus.findOne({where: {status: 'invitation'}});
     const newGame = await ChessGame.create({blackPlayerId, whitePlayerId, gameStatusId: invitationStatus.id, senderId, inviteeId});
-    return newGame;
+    return {newGame, status: invitationStatus};
   }
 
   async getUserGames(userId) {
@@ -42,7 +42,7 @@ class ChessService {
     const inProgressStatus = await GameStatus.findOne({where: {status: 'inProgress'}});
     game.gameStatusId = inProgressStatus.id;
     game.save();
-    return game;
+    return {game, status: inProgressStatus};
   }
 
   async declineInvitation(gameId, userId) {
@@ -57,7 +57,7 @@ class ChessService {
     const declinedStatus = await GameStatus.findOne({where: {status: 'declined'}});
     game.gameStatusId = declinedStatus.id;
     game.save();
-    return game;
+    return {game, status: declinedStatus};
   }
 
   async getGameById(gameId, userId) {
@@ -65,8 +65,9 @@ class ChessService {
     if (!game) {
       throw ApiError.badRequest('no such game');
     }
+    const gameStatus = await GameStatus.findOne({where: {id: game.gameStatusId}});
     const gameMoves = await ChessMove.findAll({where: {chessGameId: gameId}});
-    return {game, gameMoves}
+    return {game, gameMoves, sttaus: gameStatus}
   }
 
   async makeMove(moveCode, userId, gameId) {
@@ -94,22 +95,23 @@ class ChessService {
     }
     const newMove = await ChessMove.create({moveNumber: !!lastMove ? lastMove.moveNumber + 1 : 1, moveCode, positionBefore, userId, chessGameId: gameId});
     // check for game end
+    let gameStatus;
     if (chess.isCheckmate()) {
-      const gameStatus = curTurn === 'w' ? await GameStatus.findOne({where: {status: 'whiteWin'}}) : await GameStatus.findOne({where: {status: 'blackWin'}});
+      gameStatus = curTurn === 'w' ? await GameStatus.findOne({where: {status: 'whiteWin'}}) : await GameStatus.findOne({where: {status: 'blackWin'}});
       game.gameStatusId = gameStatus.id;
       game.save();
     }
     if (chess.isDraw()) {
-      const gameStatus = await GameStatus.findOne({where: {status: 'draw'}});
+      gameStatus = await GameStatus.findOne({where: {status: 'draw'}});
       game.gameStatusId = gameStatus.id;
       game.save();
     }
     if (chess.isStalemate()) {
-      const gameStatus = await GameStatus.findOne({where: {status: 'stalemate'}});
+      gameStatus = await GameStatus.findOne({where: {status: 'stalemate'}});
       game.gameStatusId = gameStatus.id;
       game.save();
     }
-    return {game, newMove}
+    return {game, newMove, status: gameStatus}
   }
 
   async resign(gameId, userId) {
@@ -118,12 +120,16 @@ class ChessService {
     if (!game) {
       throw ApiError.badRequest('no such game');
     }
-    const whiteWin = await GameStatus.findOne({where: {status: 'whiteWin'}});
-    const blackWin = await GameStatus.findOne({where: {status: 'blackWin'}});
-    if (userId === game.whitePlayerId) game.gameStatusId = blackWin.id;
-    if (userId === game.blackPlayerId) game.gameStatusId = whiteWin.id;
+    let gameStatus;
+    if (userId === game.whitePlayerId) {
+      gameStatus = await GameStatus.findOne({where: {status: 'whiteWin'}});
+    }
+    if (userId === game.blackPlayerId) {
+      gameStatus = await GameStatus.findOne({where: {status: 'blackWin'}});
+    };
+    game.gameStatusId = gameStatus.id;
     game.save();
-    return game;
+    return {game, status: gameStatus};
   }
   
 }

@@ -25,6 +25,10 @@ router.ws('/', WsAuthMiddleware, (ws, req, next) => {
       case 'delete':
         friendshipController.deleteFriend(ws, msg, req);
         break;
+
+      case 'getAllFriends':
+        friendshipController.getFriends(ws, req);
+        break;
         
       default:
         ws.send('Not existing endpoint')

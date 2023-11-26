@@ -8,6 +8,25 @@ class FrienshipController {
     try {
       ws.user = req.user;
       friendshipClients.add(ws);
+      ws.send(JSON.stringify({
+        method: 'init',
+        data: {
+          status: 'ok'
+        }
+      }));
+    } catch (error) {
+      ws.send(JSON.stringify({
+        method: 'error',
+        data: {
+          error
+        }
+      }))
+    }
+  }
+
+  async getFriends(ws, req) {
+    try {
+      ws.user = req.user;
       const friendships = await friendshipService.getUserFriends(req.user.id);
       ws.send(JSON.stringify({
         method: 'init',
