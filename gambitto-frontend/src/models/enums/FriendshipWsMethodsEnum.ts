@@ -2,7 +2,8 @@ export enum FriendshipWsMethodsEnum {
   Invite = 'invite',
   DeclineInvitation = 'decline',
   AcceptInvitation = 'accept',
-  Delete = 'delete'
+  Delete = 'delete',
+  GetAllFriends = 'getAllFriends'
 }
 
 export enum FriendshipWsServerMethodsEnum {
