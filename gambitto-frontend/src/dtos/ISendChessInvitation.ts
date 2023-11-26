@@ -1,6 +1,9 @@
-import { ChessWsMethodsEnum } from "../models/enums/ChessWsMethodsEnum";
+import { ChessWsServerMethodsEnum } from "../models/enums/ChessWsMethodsEnum";
+import { IGameDto } from "./IGameDto";
 
 export interface ISendChessInvitationDto {
-  method: ChessWsMethodsEnum.Invite,
-  inviteeId: number
+  method: ChessWsServerMethodsEnum.Resigned,
+  data: {
+    game: IGameDto
+  }
 }
