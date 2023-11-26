@@ -8,6 +8,8 @@ import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
 import { isFetchBaseQueryErrorType } from '../../utils/fetchBaseQueryErrorCheck';
 import { ButtonTypesEnum } from '../../utils/ButtonTypesEnum';
+import { ChessAPI } from '../../services/ChessService';
+import { FriendshipAPI } from '../../services/FriendshipService';
 
 interface IAuthForm {
   email: string;
@@ -23,6 +25,9 @@ function AuthPage() {
   const [loginUser, {data: userData, error: userError}] = AuthAPI.useLoginUserMutation();
 
   const [registerUser, {data: registerData, error: registerError}] = AuthAPI.useRegisterUserMutation();
+
+  const [createChessWs] = ChessAPI.useLazyCreateWsQuery();
+  const [createFriendshipWs] = FriendshipAPI.useLazyCreateWsQuery();
 
   const {setUser} = userSlice.actions;
 
@@ -55,10 +60,14 @@ function AuthPage() {
     if (!!userData) {
       dispatch(setUser(userData.user));
       localStorage.setItem('accessToken', userData.accessToken);
+      createChessWs();
+      createFriendshipWs();
     }
     if (!!registerData) {
       dispatch(setUser(registerData.user));
       localStorage.setItem('accessToken', registerData.accessToken);
+      createChessWs();
+      createFriendshipWs();
     }
   }, [userData, registerData]);
 

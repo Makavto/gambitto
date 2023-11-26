@@ -4,12 +4,29 @@ import { createWsConnection } from "../utils/createWsConnection";
 import { ChessWsMethodsEnum } from "../models/enums/ChessWsMethodsEnum";
 import { IGameDto } from "../dtos/IGameDto";
 
-const chessWs = createWsConnection('ws://localhost:5000/api/chess');
+let chessWs = createWsConnection('ws://localhost:5000/api/chess');
 
 export const ChessAPI = createApi({
   reducerPath: 'ChessAPI',
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
+
+    createWs: builder.query<any, void>({
+      queryFn: async () => {
+        return {data: null}
+      },
+      async onCacheEntryAdded(
+        arg,
+        api,
+      ) {
+        try {
+          await api.cacheDataLoaded
+          chessWs = createWsConnection('ws://localhost:5000/api/chess');
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    }),
 
     chessNotifications: builder.query<any, void>({
       queryFn: async () => {
