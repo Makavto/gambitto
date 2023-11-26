@@ -3,6 +3,12 @@ import { baseQueryWithReauth } from "../utils/baseQuery";
 import { createWsConnection } from "../utils/createWsConnection";
 import { ChessWsMethodsEnum } from "../models/enums/ChessWsMethodsEnum";
 import { IGameDto } from "../dtos/IGameDto";
+import { IMoveDto } from "../dtos/IMoveDto";
+import { IAcceptedChessInvitationDto } from "../dtos/IAcceptChessInvitation";
+import { IDeclineChessInvitationDto } from "../dtos/IDeclineChessInvitation";
+import { IMakeChessMoveDto } from "../dtos/IMakeChessMove";
+import { IResignChessGameDto } from "../dtos/IResignChessGame";
+import { ISendChessInvitationDto } from "../dtos/ISendChessInvitation";
 
 let chessWs = createWsConnection('ws://localhost:5000/api/chess');
 
@@ -11,7 +17,7 @@ export const ChessAPI = createApi({
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
 
-    createWs: builder.query<any, void>({
+    createWs: builder.query<null, void>({
       queryFn: async () => {
         return {data: null}
       },
@@ -28,7 +34,7 @@ export const ChessAPI = createApi({
       }
     }),
 
-    chessNotifications: builder.query<any, void>({
+    chessNotifications: builder.query<IAcceptedChessInvitationDto | IDeclineChessInvitationDto | IMakeChessMoveDto | IResignChessGameDto | ISendChessInvitationDto | null, void>({
       queryFn: async () => {
         return {data: null}
       },
@@ -53,7 +59,7 @@ export const ChessAPI = createApi({
       }
     }),
 
-    getAllGames: builder.query<any, void>({
+    getAllGames: builder.query<{games: IGameDto[]} | null, void>({
       queryFn: async (arg) => {
         chessWs.send(JSON.stringify({method: ChessWsMethodsEnum.GetAllGames}))
         return {data: null}
@@ -157,7 +163,7 @@ export const ChessAPI = createApi({
       }
     }),
 
-    makeMove: builder.query<any, {gameId: number, moveCode: string}>({
+    makeMove: builder.query<{gameUpdateInfo: {game: IGameDto, newMove: IMoveDto}} | null, {gameId: number, moveCode: string}>({
       queryFn: async ({gameId, moveCode}) => {
         chessWs.send(JSON.stringify({method: ChessWsMethodsEnum.MakeMove, gameId, moveCode}))
         return {data: null}
@@ -183,7 +189,7 @@ export const ChessAPI = createApi({
       }
     }),
 
-    getGameInfo: builder.query<any, {gameId: number}>({
+    getGameInfo: builder.query<{gameFullInfo: {game: IGameDto, gameMoves: IMoveDto[]}} | null, {gameId: number}>({
       queryFn: async ({gameId}) => {
         chessWs.send(JSON.stringify({method: ChessWsMethodsEnum.GetGameInfo, gameId}))
         return {data: null}
@@ -209,7 +215,7 @@ export const ChessAPI = createApi({
       }
     }),
 
-    resign: builder.query<any, {gameId: number}>({
+    resign: builder.query<{game: IGameDto} | null, {gameId: number}>({
       queryFn: async ({gameId}) => {
         chessWs.send(JSON.stringify({method: ChessWsMethodsEnum.Resign, gameId}))
         return {data: null}
