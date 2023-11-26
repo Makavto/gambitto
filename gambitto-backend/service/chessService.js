@@ -22,7 +22,7 @@ class ChessService {
     }
     const invitationStatus = await GameStatus.findOne({where: {status: 'invitation'}});
     const newGame = await ChessGame.create({blackPlayerId, whitePlayerId, gameStatusId: invitationStatus.id, senderId, inviteeId});
-    return {newGame, sttus: invitationStatus};
+    return {newGame, status: invitationStatus};
   }
 
   async getUserGames(userId) {
