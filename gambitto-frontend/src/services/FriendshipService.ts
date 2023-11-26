@@ -157,5 +157,31 @@ export const FriendshipAPI = createApi({
       }
     }),
 
+    getAllFriends: builder.query<{friendships: IFriendshipDto[]} | null, void>({
+      queryFn: async () => {
+        friendshipWs.send(JSON.stringify({method: FriendshipWsMethodsEnum.GetAllFriends}))
+        return {data: null}
+      },
+      async onCacheEntryAdded(
+        arg,
+        api,
+      ) {
+        try {
+          await api.cacheDataLoaded
+          const listener = (event: MessageEvent) => {
+            const data = JSON.parse(event.data);
+            if (data.method === FriendshipWsMethodsEnum.GetAllFriends) {
+              api.updateCachedData((draft) => {
+                return data.data
+              });
+            }
+          }
+          friendshipWs.addEventListener('message', listener)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    }),
+
   })
 })
