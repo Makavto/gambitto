@@ -6,6 +6,7 @@ import Button from '../../components/Button/Button';
 import { AuthAPI } from '../../services/AuthService';
 import { userSlice } from '../../store/reducers/userSlice';
 import { ButtonTypesEnum } from '../../utils/ButtonTypesEnum';
+import { ChessAPI } from '../../services/ChessService';
 
 function ProfilePage() {
   const {user} = useAppSelector(state => state.userSlice);
@@ -14,6 +15,8 @@ function ProfilePage() {
   const dispatch = useAppDispatch();
 
   const [logoutUser] = AuthAPI.useLogoutUserMutation();
+
+  const {data: allGames, isFetching: isAllGamesFetching, isError: isAllGamesError} = ChessAPI.useGetAllGamesQuery();
 
   const onLogout = () => {
     logoutUser().then(() => {
@@ -31,7 +34,7 @@ function ProfilePage() {
               user &&
               <div className={styles.cardContainer}>
                 <div className={styles.cardItem}>
-                  <span className='textBig'>Имя пользователя: {user.username}</span>
+                  <span className='textBig'>Имя пользователя: <span className='textBold'>{user.username}</span></span>
                   <div>
                     <Button type={ButtonTypesEnum.Danger} onClick={onLogout}>Выйти</Button>
                   </div>
@@ -50,9 +53,39 @@ function ProfilePage() {
           История партий
         </div>
         <div className={styles.historyWrapper}>
-          <Card>
-
-          </Card>
+          {
+            isAllGamesFetching && <div>Загрузка...</div>
+          }
+          {
+            allGames &&
+            (allGames.games.length === 0 ?
+            <div>Не сыграно ни одной партии</div> :
+            allGames.games.map((game, i) => (
+              <div className={styles.historyCardWrapper} key={i}>
+                <Card>
+                  <div className={styles.historyCardRow}>
+                    <div>
+                      Партия с <span className='textBold'>{game.blackPlayerId === user?.id ? game.whitePlayerName : game.blackPlayerName}</span>
+                    </div>
+                    <div className='textBold'>
+                      {game.gameStatusFormatted}
+                    </div>
+                  </div>
+                  <div className={styles.historyCardRow}>
+                    <div>
+                      Вы: за {game.blackPlayerId === user?.id ? 'чёрных' : 'белых'}
+                    </div>
+                    <div>
+                      {game.blackPlayerId === user?.id ? game.whitePlayerName : game.blackPlayerName}: за {game.blackPlayerId !== user?.id ? 'чёрных' : 'белых'}
+                    </div>
+                    <div className='textSecondary'>
+                      Партия началась {new Date(game.createdAt).toLocaleDateString()} в {new Date(game.createdAt).getHours()}:{new Date(game.createdAt).getMinutes()}
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            )))
+          }
         </div>
       </div>
     </>
