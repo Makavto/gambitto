@@ -1,12 +1,14 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { AuthAPI } from "../services/AuthService";
 import userSlice from './reducers/userSlice';
+import wsSlice from './reducers/wsSlice';
 import { UserAPI } from "../services/UserService";
 import { ChessAPI } from "../services/ChessService";
 import { FriendshipAPI } from "../services/FriendshipService";
 
 const rootReducer = combineReducers({
   userSlice,
+  wsSlice,
   [AuthAPI.reducerPath]: AuthAPI.reducer,
   [UserAPI.reducerPath]: UserAPI.reducer,
   [ChessAPI.reducerPath]: ChessAPI.reducer,

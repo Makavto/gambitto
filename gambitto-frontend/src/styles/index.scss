@@ -39,3 +39,27 @@ a {
   font-size: $font-size;
   cursor: pointer;
 }
+
+.simplebar-scrollbar::before {
+  background-color: $color-primary;
+}
+
+.textBig {
+  font-size: 1.4rem;
+}
+
+.textSmall {
+  font-size: .8rem;
+}
+
+.textBold {
+  font-weight: bold;
+}
+
+.textSecondary {
+  color: darken($color: $color-primary, $amount: 15%);
+}
+
+.title {
+  margin-left: 1rem;
+}

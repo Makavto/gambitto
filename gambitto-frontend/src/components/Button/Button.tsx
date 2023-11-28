@@ -16,6 +16,8 @@ function Button({children,onClick,type}: IButtonProps) {
         type === ButtonTypesEnum.Link && styles.linkBtn
       } ${
         type === ButtonTypesEnum.Primary && styles.primaryBtn
+      } ${
+        type === ButtonTypesEnum.Danger && styles.dangerBtn
       }`}
     >
       {children}

@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import 'simplebar-react/dist/simplebar.min.css';
 import './styles/normalize.css';
 import './styles/variables.scss';
 import './styles/fonts.scss';
@@ -9,12 +10,16 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { setupStore } from './store/store';
 import { Provider } from 'react-redux';
+import { injectStore } from './services/ws/Ws';
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
 const store = setupStore();
+
+injectStore(store);
 
 root.render(
   <Provider store={store}>
