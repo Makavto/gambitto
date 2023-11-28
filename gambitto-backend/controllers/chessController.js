@@ -77,7 +77,6 @@ class ChessController {
           break;
         }
       }
-      return newGame
     } catch (error) {
       ws.send(JSON.stringify({
         method: 'error',
@@ -111,7 +110,6 @@ class ChessController {
           break;
         }
       }
-      return game
     } catch (error) {
       ws.send(JSON.stringify({
         method: 'error',
@@ -145,7 +143,6 @@ class ChessController {
           break;
         }
       }
-      return game
     } catch (error) {
       ws.send(JSON.stringify({
         method: 'error',
@@ -183,11 +180,11 @@ class ChessController {
       if (!msg.gameId || !msg.moveCode) {
         throw ApiError.badRequest('not valid message schema');
       }
-      const gameUpdateInfo = await chessService.makeMove(msg.moveCode, req.user.id, msg.gameId);
+      const gameFullInfo = await chessService.makeMove(msg.moveCode, req.user.id, msg.gameId);
       ws.send(JSON.stringify({
         method: 'makeMove',
         data: {
-          gameUpdateInfo
+          gameFullInfo
         }
       }));
       const opponentId = req.user.id !== gameUpdateInfo.game.blackPlayerId ? gameUpdateInfo.game.blackPlayerId : gameUpdateInfo.game.whitePlayerId;
@@ -196,7 +193,7 @@ class ChessController {
           client.send(JSON.stringify({
             method: 'madeMove',
             data: {
-              gameInfo: gameUpdateInfo
+              gameFullInfo
             }
           }))
         }

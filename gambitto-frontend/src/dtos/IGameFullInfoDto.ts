@@ -1,4 +1,6 @@
-export interface IGameDto {
+import { IMoveDto } from "./IMoveDto";
+
+export interface IGameFullInfoDto {
   id: number,
   createdAt: string,
   blackPlayerId: number,
@@ -6,5 +8,6 @@ export interface IGameDto {
   blackPlayerName: string,
   whitePlayerName: string,
   gameStatusFormatted: string,
-  gameStatus: string
+  gameStatus: string,
+  gameMoves: IMoveDto[]
 }

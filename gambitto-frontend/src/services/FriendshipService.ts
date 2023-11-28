@@ -53,7 +53,7 @@ export const FriendshipAPI = createApi({
       }
     }),
 
-    sendInvitation: builder.query<{friendship: IFriendshipDto, status: IFriendshipInvitation} | null, {inviteeId: number}>({
+    sendInvitation: builder.query<{friendship: IFriendshipDto} | null, {inviteeId: number}>({
       queryFn: async ({inviteeId}) => {
         friendshipWs.send(JSON.stringify({method: FriendshipWsMethodsEnum.Invite, inviteeId}))
         return {data: null}
@@ -105,7 +105,7 @@ export const FriendshipAPI = createApi({
       }
     }),
 
-    acceptInvitation: builder.query<{friendship: IFriendshipDto, status: IFriendshipInvitation} | null, {invitationId: number}>({
+    acceptInvitation: builder.query<{friendship: IFriendshipDto} | null, {invitationId: number}>({
       queryFn: async ({invitationId}) => {
         friendshipWs.send(JSON.stringify({method: FriendshipWsMethodsEnum.AcceptInvitation, invitationId}))
         return {data: null}
