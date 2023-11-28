@@ -1,5 +1,9 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
 import { baseQueryWithReauth } from "../utils/baseQuery"
+import { Ws } from "./ws/Ws";
+import { IFriendshipDto } from "../dtos/IFriendshipDto";
+import { IFriendshipInvitation } from "../dtos/IFriendshipInvitation";
+import { FriendshipWsMethodsEnum } from "../models/enums/FriendshipWsMethodsEnum";
 
 const friendshipWs = new Ws('ws://localhost:5000/api/friendship');
 

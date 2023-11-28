@@ -214,7 +214,7 @@ export const ChessAPI = createApi({
 
     resign: builder.query<{game: IGameDto} | null, {gameId: number}>({
       queryFn: async ({gameId}) => {
-        chessWs.ws.send(JSON.stringify({method: ChessWsMethodsEnum.Resign, gameId}))]
+        chessWs.ws.send(JSON.stringify({method: ChessWsMethodsEnum.Resign, gameId}))
         return {data: null}
       },
       async onCacheEntryAdded(
