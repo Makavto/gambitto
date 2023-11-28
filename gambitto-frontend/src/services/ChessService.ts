@@ -3,13 +3,9 @@ import { baseQueryWithReauth } from "../utils/baseQuery";
 import { createWsConnection } from "../utils/createWsConnection";
 import { ChessWsMethodsEnum } from "../models/enums/ChessWsMethodsEnum";
 import { IGameDto } from "../dtos/IGameDto";
-import { IMoveDto } from "../dtos/IMoveDto";
-import { IAcceptedChessInvitationDto } from "../dtos/IAcceptChessInvitation";
-import { IDeclineChessInvitationDto } from "../dtos/IDeclineChessInvitation";
-import { IMakeChessMoveDto } from "../dtos/IMakeChessMove";
-import { IResignChessGameDto } from "../dtos/IResignChessGame";
-import { ISendChessInvitationDto } from "../dtos/ISendChessInvitation";
 import { IGameFullInfoDto } from "../dtos/IGameFullInfoDto";
+import { IChessWsDto } from "../dtos/IChessWsDto";
+import { IChessWsFullInfoDto } from "../dtos/IChessWsFullInfoDto";
 
 let chessWs = createWsConnection('ws://localhost:5000/api/chess');
 
@@ -35,7 +31,7 @@ export const ChessAPI = createApi({
       }
     }),
 
-    chessNotifications: builder.query<IAcceptedChessInvitationDto | IDeclineChessInvitationDto | IMakeChessMoveDto | IResignChessGameDto | ISendChessInvitationDto | null, void>({
+    chessNotifications: builder.query<IChessWsDto | IChessWsFullInfoDto | null, void>({
       queryFn: async () => {
         return {data: null}
       },
