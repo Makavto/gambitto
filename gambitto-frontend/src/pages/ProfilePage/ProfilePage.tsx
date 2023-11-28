@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from './ProfilePage.module.scss';
 import Card from '../../components/Card/Card'
 import { useAppDispatch, useAppSelector } from '../../hooks/redux'
@@ -12,11 +12,14 @@ function ProfilePage() {
   const {user} = useAppSelector(state => state.userSlice);
   const {setUser} = userSlice.actions;
 
+  const {wsReady} = useAppSelector(state => state.wsSlice);
+
+
   const dispatch = useAppDispatch();
 
   const [logoutUser] = AuthAPI.useLogoutUserMutation();
 
-  const {data: allGames, isFetching: isAllGamesFetching, isError: isAllGamesError} = ChessAPI.useGetAllGamesQuery();
+  const [getAllGames, {data: allGames}] = ChessAPI.useLazyGetAllGamesQuery();
 
   const onLogout = () => {
     logoutUser().then(() => {
@@ -24,6 +27,12 @@ function ProfilePage() {
       dispatch(setUser(null));
     });
   }
+
+  useEffect(() => {
+    if (wsReady) {
+      getAllGames();
+    }
+  }, [wsReady])
 
   return (
     <>
@@ -54,7 +63,7 @@ function ProfilePage() {
         </div>
         <div className={styles.historyWrapper}>
           {
-            isAllGamesFetching && <div>Загрузка...</div>
+            !allGames && <div>Загрузка...</div>
           }
           {
             allGames &&
