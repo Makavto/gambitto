@@ -1,8 +1,10 @@
 export interface IFriendshipDto {
   id: number,
+  createdAt: string,
   senderId: number,
   inviteeId: number,
-  friendshipStatusId: number,
-  updatedAt: string,
-  createdAt: string
+  senderName: string,
+  inviteeName: string,
+  friendshipStatus: string,
+  friendshipStatusFormatted: string
 }

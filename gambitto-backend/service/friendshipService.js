@@ -1,6 +1,7 @@
 const ApiError = require("../error/ApiError");
 const { Op } = require("sequelize");
 const { Friendship, FriendshipStatus } = require("../models");
+const FriendshipDto = require("../dtos/friendshipDto");
 
 class FrienshipService {
   async addFriend(userId, inviteeId) {
@@ -12,7 +13,7 @@ class FrienshipService {
     }
     const invitationStatus = await FriendshipStatus.findOne({where: {status: 'invitation'}});
     const friendship = await Friendship.create({senderId: userId, inviteeId, friendshipStatusId: invitationStatus.id});
-    return {friendship, status: invitationStatus};
+    return await new FriendshipDto(friendship);
   }
 
   async acceptFriend(invitationId, inviteeId) {
@@ -22,7 +23,7 @@ class FrienshipService {
     if (!friendship) throw ApiError.badRequest('no such friendship');
     friendship.friendshipStatusId = acceptedStatus.id;
     friendship.save();
-    return {friendship, status: acceptedStatus};
+    return await new FriendshipDto(friendship);
   }
 
   async declineFriend(invitationId, inviteeId) {
@@ -30,12 +31,14 @@ class FrienshipService {
     const friendship = await Friendship.findOne({where: {id: invitationId, inviteeId, friendshipStatusId: invitationStatus.id}});
     if (!friendship) throw ApiError.badRequest('no such friendship');
     friendship.destroy();
-    return {friendship};
+    return await new FriendshipDto(friendship);
   }
 
   async getUserFriends(userId) {
     const friendships = await Friendship.findAll({where: {[Op.or]: [{senderId: userId}, {inviteeId: userId}]}});
-    return friendships
+    return await Promise.all(friendships.map(async (friendship) => {
+      return await new FriendshipDto(friendship);
+    }))
   }
 
   async deleteFriend(invitationId, userId) {
@@ -45,7 +48,7 @@ class FrienshipService {
       throw ApiError.badRequest('no such friendship')
     }
     friendship.destroy();
-    return {friendship}
+    return await new FriendshipDto(friendship);
   }
 }
 
