@@ -1,13 +1,9 @@
 import { ChessWsServerMethodsEnum } from "../models/enums/ChessWsMethodsEnum"
-import { IGameDto } from "./IGameDto"
-import { IMoveDto } from "./IMoveDto"
+import { IGameFullInfoDto } from "./IGameFullInfoDto"
 
 export interface IMakeChessMoveDto {
   method: ChessWsServerMethodsEnum.MadeMove,
   data: {
-    gameInfo: {
-      game: IGameDto,
-      newMove: IMoveDto
-    }
+    gameFullInfo: IGameFullInfoDto
   }
 }

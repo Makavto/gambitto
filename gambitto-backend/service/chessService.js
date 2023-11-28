@@ -3,6 +3,8 @@ const ApiError = require("../error/ApiError");
 const { User, ChessGame, GameStatus, ChessMove } = require("../models");
 const { Chess } = require("chess.js");
 const { STARTING_POSITION } = require("../constants");
+const ChessGameDto = require("../dtos/chessGameDto");
+const ChessGameFullInfoDto = require("../dtos/chessGameFullInfoDto");
 
 class ChessService {
   async sendInvitation(senderId, inviteeId) {
@@ -22,12 +24,15 @@ class ChessService {
     }
     const invitationStatus = await GameStatus.findOne({where: {status: 'invitation'}});
     const newGame = await ChessGame.create({blackPlayerId, whitePlayerId, gameStatusId: invitationStatus.id, senderId, inviteeId});
-    return {newGame, status: invitationStatus};
+    return await new ChessGameDto(newGame);
   }
 
   async getUserGames(userId) {
     const games = await ChessGame.findAll({where: {[Op.or]: [{senderId: userId}, {inviteeId: userId}]}});
-    return games;
+    if (games.length === 0) return games;
+    return await Promise.all(games.map(async (game) => {
+      return await new ChessGameDto(game);
+    }));
   }
 
   async acceptInvitation(gameId, userId) {
@@ -42,7 +47,7 @@ class ChessService {
     const inProgressStatus = await GameStatus.findOne({where: {status: 'inProgress'}});
     game.gameStatusId = inProgressStatus.id;
     game.save();
-    return {game, status: inProgressStatus};
+    return await new ChessGameDto(game);
   }
 
   async declineInvitation(gameId, userId) {
@@ -57,7 +62,7 @@ class ChessService {
     const declinedStatus = await GameStatus.findOne({where: {status: 'declined'}});
     game.gameStatusId = declinedStatus.id;
     game.save();
-    return {game, status: declinedStatus};
+    return await new ChessGameDto(game);
   }
 
   async getGameById(gameId, userId) {
@@ -65,9 +70,7 @@ class ChessService {
     if (!game) {
       throw ApiError.badRequest('no such game');
     }
-    const gameStatus = await GameStatus.findOne({where: {id: game.gameStatusId}});
-    const gameMoves = await ChessMove.findAll({where: {chessGameId: gameId}});
-    return {game, gameMoves, sttaus: gameStatus}
+    return await new ChessGameFullInfoDto(game);
   }
 
   async makeMove(moveCode, userId, gameId) {
@@ -111,7 +114,7 @@ class ChessService {
       game.gameStatusId = gameStatus.id;
       game.save();
     }
-    return {game, newMove, status: gameStatus}
+    return await new ChessGameFullInfoDto(game);
   }
 
   async resign(gameId, userId) {
@@ -129,7 +132,7 @@ class ChessService {
     };
     game.gameStatusId = gameStatus.id;
     game.save();
-    return {game, status: gameStatus};
+    return await new ChessGameDto(game);
   }
   
 }
