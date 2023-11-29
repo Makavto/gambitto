@@ -29,7 +29,7 @@ class ChessService {
 
   async getUserGames(userId) {
     const games = await ChessGame.findAll({where: {[Op.or]: [{senderId: userId}, {inviteeId: userId}]}});
-    if (games.length === 0) return games;
+    if (games.length === 0 || !games) return [];
     return await Promise.all(games.map(async (game) => {
       return await new ChessGameDto(game);
     }));

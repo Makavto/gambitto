@@ -1,5 +1,6 @@
-const { GameStatus } = require("../models");
+const { GameStatus, User } = require("../models");
 const userService = require("../service/userService");
+const UserDto = require("./userDto");
 
 module.exports = class ChessGameDto {
   id;
@@ -13,8 +14,8 @@ module.exports = class ChessGameDto {
 
   constructor(chessGameModel) {
     return (async () => {
-      const blackPlayer = await userService.getUserById(chessGameModel.blackPlayerId);
-      const whitePlayer = await userService.getUserById(chessGameModel.whitePlayerId);
+      const blackPlayer = new UserDto(await User.findOne({ where: { id: chessGameModel.blackPlayerId } }));
+      const whitePlayer = new UserDto(await User.findOne({ where: { id: chessGameModel.blackPlayerId } }));
       const gameStatus = await GameStatus.findOne({where: {id: chessGameModel.gameStatusId}})
       this.id = chessGameModel.id;
       this.createdAt = chessGameModel.createdAt;

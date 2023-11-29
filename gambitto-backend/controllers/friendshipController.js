@@ -9,7 +9,7 @@ class FrienshipController {
       ws.user = req.user;
       friendshipClients.add(ws);
       ws.send(JSON.stringify({
-        method: 'init',
+        method: 'initFriendship',
         data: {
           status: 'ok'
         }
@@ -29,7 +29,7 @@ class FrienshipController {
       ws.user = req.user;
       const friendships = await friendshipService.getUserFriends(req.user.id);
       ws.send(JSON.stringify({
-        method: 'init',
+        method: 'getAllFriends',
         data: {
           friendships
         }

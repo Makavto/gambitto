@@ -105,6 +105,15 @@ class UserController {
     }
   }
 
+  async getTop(req,res,next) {
+    try {
+      const usersTop = await userService.getTopUsers();
+      return res.json(usersTop);
+    } catch (error) {
+      return next(error)
+    }
+  }
+
 }
 
 module.exports = new UserController();

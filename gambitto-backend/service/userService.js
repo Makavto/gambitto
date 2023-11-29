@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const tokenService = require("./tokenService");
 const UserDto = require("../dtos/userDto");
 const {Op} = require("sequelize");
+const UserTopDto = require("../dtos/userTopDto");
 
 class UserService {
   // Сервис регистрации пользователя
@@ -81,6 +82,16 @@ class UserService {
   async getUserById(id) {
     const user = await User.findOne({ where: { id } });
     return new UserDto(user);
+  }
+
+  async getTopUsers() {
+    const users = await User.findAll();
+
+    let response =  await Promise.all(users.map(async (user) => {
+      return await new UserTopDto(user);
+    }));
+    response = response.sort((a, b) => b.wins - a.wins).slice(0, 5);
+    return response
   }
 
 }
