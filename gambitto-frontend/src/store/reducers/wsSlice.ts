@@ -1,19 +1,24 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface WsState {
-  wsReady: boolean,
+  chessWsReady: boolean,
+  friendshipWsReady: boolean,
 }
 
 const initialState: WsState = {
-  wsReady: false,
+  chessWsReady: false,
+  friendshipWsReady: false
 }
 
 export const wsSlice = createSlice({
   name: 'wsSlice',
   initialState,
   reducers: {
-    setWsReady(state, action: PayloadAction<boolean>) {
-      state.wsReady = action.payload
+    setChessWsReady(state, action: PayloadAction<boolean>) {
+      state.chessWsReady = action.payload
+    },
+    setFriendshipWsReady(state, action: PayloadAction<boolean>) {
+      state.friendshipWsReady = action.payload
     },
   }
 })

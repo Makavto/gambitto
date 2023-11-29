@@ -12,7 +12,7 @@ function ProfilePage() {
   const {user} = useAppSelector(state => state.userSlice);
   const {setUser} = userSlice.actions;
 
-  const {wsReady} = useAppSelector(state => state.wsSlice);
+  const {chessWsReady: wsReady} = useAppSelector(state => state.wsSlice);
 
 
   const dispatch = useAppDispatch();

@@ -28,18 +28,21 @@ export class Ws {
 
   private createWs = (url: string) => {
     let accessToken = localStorage.getItem('accessToken');
-    const chessWs = new WebSocket(url, accessToken ? accessToken : undefined);
+    const ws = new WebSocket(url, accessToken ? accessToken : undefined);
 
     const listener = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
-      if (data.method === 'init') {
-        store.dispatch(wsSlice.actions.setWsReady(true))
+      if (data.method === 'initChess') {
+        store.dispatch(wsSlice.actions.setChessWsReady(true))
+      }
+      if (data.method === 'initFriendship') {
+        store.dispatch(wsSlice.actions.setFriendshipWsReady(true))
       }
     }
-    chessWs.addEventListener('message', listener);
+    ws.addEventListener('message', listener);
 
   
-    return chessWs;
+    return ws;
   }
 
   revalidateWs = () => {

@@ -30,7 +30,7 @@ class ChessController {
       ws.user = req.user;
       chessClients.add(ws);
       ws.send(JSON.stringify({
-        method: 'init',
+        method: 'initChess',
         data: {
           status: 'ok'
         }
