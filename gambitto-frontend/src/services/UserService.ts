@@ -17,6 +17,15 @@ export const UserAPI = createApi({
       query: () => ({
         url: '/user/top',
       })
+    }),
+
+    getUsers: builder.query<IUser[], {searchQuery: string}>({
+      query: ({searchQuery}) => ({
+        url: '/user/users',
+        params: {
+          searchQuery
+        }
+      })
     })
   })
 })

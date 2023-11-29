@@ -6,6 +6,7 @@ import Card from '../../components/Card/Card';
 import styles from './CommunityPage.module.scss';
 import { ButtonTypesEnum } from '../../utils/ButtonTypesEnum';
 import { UserAPI } from '../../services/UserService';
+import { useNavigate } from 'react-router';
 
 function CommunityPage() {
   const {user} = useAppSelector(state => state.userSlice);
@@ -20,6 +21,12 @@ function CommunityPage() {
       getTop();
     }
   }, [friendshipWsReady]);
+
+  const navigate = useNavigate();
+
+  const onAddFriend = () => {
+    navigate('/community/add');
+  }
 
   return (
     <div className={styles.pageWrapper}>
@@ -60,7 +67,7 @@ function CommunityPage() {
       }
       <div className={styles.row}>
         <div className={`textBig`}>Друзья</div>
-        <Button type={ButtonTypesEnum.Primary} onClick={() => {}}>Добавить друга</Button>
+        <Button type={ButtonTypesEnum.Primary} onClick={onAddFriend}>Добавить друга</Button>
       </div>
       <div>
         {
