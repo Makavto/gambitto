@@ -1,23 +1,32 @@
 import React, { useEffect } from 'react';
 import styles from './UserSearchPage.module.scss';
 import { UserAPI } from '../../services/UserService'
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Input from '../../components/Input/Input';
 import { useForm } from 'react-hook-form';
 import Card from '../../components/Card/Card';
 import Button from '../../components/Button/Button';
 import { ButtonTypesEnum } from '../../utils/ButtonTypesEnum';
 import { FriendshipAPI } from '../../services/FriendshipService';
+import { ChessAPI } from '../../services/ChessService';
 
-function UserSearchPage() {
+interface IUserSearchPageProps {
+  isForChessGame?: boolean
+}
+
+function UserSearchPage({isForChessGame}: IUserSearchPageProps) {
 
   const [getUsers, {data: usersData, isFetching: isUsersDataFetching}] = UserAPI.useLazyGetUsersQuery();
 
   const [sendFriendInvitation, {data: friendInvitationData}] = FriendshipAPI.useLazySendInvitationQuery();
 
+  const [sendChessGameInvitation, {data: chessGameInvitationData}] = ChessAPI.useLazySendInvitationQuery();
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const {register} = useForm<{searchQuery: string}>();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     getUsers({searchQuery: searchParams.get('searchQuery') ?? ''})
@@ -36,11 +45,21 @@ function UserSearchPage() {
     sendFriendInvitation({inviteeId: id});
   }
 
+  const onStartChessGame = (id: number) => {
+    sendChessGameInvitation({inviteeId: id});
+  }
+
   useEffect(() => {
     if (!!friendInvitationData) {
       getUsers({searchQuery: searchParams.get('searchQuery') ?? ''});
     }
-  }, [friendInvitationData])
+  }, [friendInvitationData]);
+
+  useEffect(() => {
+    if (!!chessGameInvitationData) {
+      navigate(`/chess/${chessGameInvitationData.game.id}`);
+    }
+  }, [chessGameInvitationData])
 
   return (
     <div className={styles.pageWrapper}>
@@ -62,9 +81,13 @@ function UserSearchPage() {
               <div className={styles.cardRow}>
                 <div className={`textBold`}>{user.username}</div>
                 {
-                  !user.friendshipStatus &&
+                  (!user.friendshipStatus || isForChessGame) &&
                   <div>
-                    <Button onClick={() => onAddFriend(user.id)} type={ButtonTypesEnum.Primary}>Добавить в друзья</Button>
+                    <Button onClick={() => isForChessGame ? onStartChessGame(user.id) : onAddFriend(user.id)} type={ButtonTypesEnum.Primary}>
+                      {
+                        isForChessGame ? 'Сыграть партию' : 'Добавить в друзья'
+                      }
+                    </Button>
                   </div>
                 }
               </div>
