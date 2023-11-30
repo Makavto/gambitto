@@ -15,6 +15,8 @@ function CommunityPage() {
   const [getAllFriends, {data: allFriendsData}] = FriendshipAPI.useLazyGetAllFriendsQuery();
   const [getTop, {data: topData, isLoading: isTopLoading}] = UserAPI.useLazyGetTopQuery();
 
+  const [deleteFriend, {data: deleteFriendData}] = FriendshipAPI.useLazyDeleteFriendshipQuery();
+
   useEffect(() => {
     if (friendshipWsReady) {
       getAllFriends();
@@ -26,6 +28,10 @@ function CommunityPage() {
 
   const onAddFriend = () => {
     navigate('/community/add');
+  }
+
+  const onDeleteFriend = (id: number) => {
+    deleteFriend({invitationId: id}).then((res) => getAllFriends());
   }
 
   return (
@@ -85,11 +91,18 @@ function CommunityPage() {
                       {user?.id === friendship.inviteeId ? friendship.senderName : friendship.inviteeName}
                     </div>
                     <div>
-                      {new Date(friendship.createdAt).toLocaleDateString()}
+                      <Button onClick={() => onDeleteFriend(friendship.id)} type={ButtonTypesEnum.Danger}>
+                        Удалить друга
+                      </Button>
                     </div>
                   </div>
-                  <div>
-                    {friendship.friendshipStatusFormatted}
+                  <div className={styles.friendshipCardRow}>
+                    <div>
+                      {friendship.friendshipStatusFormatted}
+                    </div>
+                    <div>
+                      {new Date(friendship.createdAt).toLocaleDateString()}
+                    </div>
                   </div>
                 </Card>
               </div>

@@ -38,10 +38,6 @@ function UserSearchPage() {
     })
   }
 
-  useEffect(() => {
-    console.log(friendInvitationData)
-  }, [friendInvitationData])
-
   return (
     <div className={styles.pageWrapper}>
       <div className={`textBig ${styles.title}`}>Поиск пользователей</div>
