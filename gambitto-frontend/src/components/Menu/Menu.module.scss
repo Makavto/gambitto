@@ -42,7 +42,9 @@
       margin-top: -1px;
       padding: 20px 25px;
       font-size: 1.2rem;
-      display: block;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       background: lighten($color: $color-background-2, $amount: 10%);
       box-shadow: 10px 0 12px 12px lighten($color: $color-background-2, $amount: 10%);
       clip-path: inset(-1px -50px 1px);
@@ -59,6 +61,18 @@
         background: lighten($color: $color-background-2, $amount: 55%);
         color: lighten($color: $color-background-2, $amount: 10%);
         box-shadow: 10px 0 15px 15px lighten($color: $color-background-2, $amount: 55%);
+      }
+
+      .notifications {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1rem;
+        background-color: $color-accent;
+        border-radius: 100%;
+        color: $color-primary;
+        width: 30px;
+        height: 30px;
       }
     }
 
