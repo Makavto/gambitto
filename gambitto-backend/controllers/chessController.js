@@ -48,11 +48,12 @@ class ChessController {
   async connect(ws, req) {
     try {
       ws.user = req.user;
+      const games = await chessService.getUserGames(req.user.id);
       chessClients.add(ws);
       ws.send(JSON.stringify({
         method: 'initChess',
         data: {
-          status: 'ok'
+          games
         }
       }));
     } catch (error) {

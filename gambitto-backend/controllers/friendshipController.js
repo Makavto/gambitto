@@ -8,10 +8,11 @@ class FrienshipController {
     try {
       ws.user = req.user;
       friendshipClients.add(ws);
+      const friendships = await friendshipService.getNotifications(req.user.id);
       ws.send(JSON.stringify({
         method: 'initFriendship',
         data: {
-          status: 'ok'
+          friendships
         }
       }));
     } catch (error) {
