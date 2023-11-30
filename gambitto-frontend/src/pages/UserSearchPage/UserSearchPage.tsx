@@ -33,10 +33,14 @@ function UserSearchPage() {
   }
 
   const onAddFriend = (id: number) => {
-    sendFriendInvitation({inviteeId: id}).then((res) => {
-      getUsers({searchQuery: searchParams.get('searchQuery') ?? ''})
-    })
+    sendFriendInvitation({inviteeId: id});
   }
+
+  useEffect(() => {
+    if (!!friendInvitationData) {
+      getUsers({searchQuery: searchParams.get('searchQuery') ?? ''});
+    }
+  }, [friendInvitationData])
 
   return (
     <div className={styles.pageWrapper}>

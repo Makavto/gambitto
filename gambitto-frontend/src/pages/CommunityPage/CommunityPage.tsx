@@ -31,8 +31,14 @@ function CommunityPage() {
   }
 
   const onDeleteFriend = (id: number) => {
-    deleteFriend({invitationId: id}).then((res) => getAllFriends());
+    deleteFriend({invitationId: id});
   }
+
+  useEffect(() => {
+    if (!!deleteFriendData) {
+      getAllFriends()
+    }
+  }, [deleteFriendData])
 
   return (
     <div className={styles.pageWrapper}>
