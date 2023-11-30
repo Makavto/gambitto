@@ -81,13 +81,13 @@ function ProfilePage() {
                     </div>
                   </div>
                   <div className={styles.historyCardRow}>
-                    <div>
+                    <div className={styles.historyCardItem}>
                       Вы: за {game.blackPlayerId === user?.id ? 'чёрных' : 'белых'}
                     </div>
-                    <div>
+                    <div className={styles.historyCardItem}>
                       {game.blackPlayerId === user?.id ? game.whitePlayerName : game.blackPlayerName}: за {game.blackPlayerId !== user?.id ? 'чёрных' : 'белых'}
                     </div>
-                    <div className='textSecondary'>
+                    <div className={`textSecondary ${styles.historyCardItem}`}>
                       Партия началась {new Date(game.createdAt).toLocaleDateString()} в {new Date(game.createdAt).getHours()}:{new Date(game.createdAt).getMinutes()}
                     </div>
                   </div>
