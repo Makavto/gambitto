@@ -35,7 +35,11 @@ router.ws('/', WsAuthMiddleware, (ws, req, next) => {
 
       case "getAllGames":
         chessController.getAllGames(ws, req);
-        break
+        break;
+
+      case 'chessNotifications':
+        chessController.getNotifications(ws, req);
+        break;
         
       default:
         ws.send(JSON.stringify({method: 'error', data: {status: 404, message: 'Not existing endpoint'}}))

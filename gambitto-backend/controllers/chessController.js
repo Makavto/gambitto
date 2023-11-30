@@ -25,6 +25,26 @@ class ChessController {
     }
   }
 
+  async getNotifications(ws, req) {
+    try {
+      ws.user = req.user;
+      const games = await chessService.getNotifications(req.user.id);
+      ws.send(JSON.stringify({
+        method: 'chessNotifications',
+        data: {
+          games
+        }
+      }));
+    } catch (error) {
+      ws.send(JSON.stringify({
+        method: 'error',
+        data: {
+          error
+        }
+      }))
+    }
+  }
+
   async connect(ws, req) {
     try {
       ws.user = req.user;

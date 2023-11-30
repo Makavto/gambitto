@@ -49,6 +49,14 @@ class FrienshipService {
     friendship.destroy();
     return await new FriendshipDto(friendship);
   }
+
+  async getNotifications(userId) {
+    const invitationStatus = await FriendshipStatus.findOne({where: {status: 'invitation'}});
+    const friendships = await Friendship.findAll({where: {friendshipStatusId: invitationStatus.id, inviteeId: userId}});
+    return await Promise.all(friendships.map(async (friendship) => {
+      return await new FriendshipDto(friendship);
+    }))
+  }
 }
 
 module.exports = new FrienshipService();

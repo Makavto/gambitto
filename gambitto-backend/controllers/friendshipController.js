@@ -183,6 +183,26 @@ class FrienshipController {
       }))
     }
   }
+
+  async getNotifications(ws, req) {
+    try {
+      ws.user = req.user;
+      const friendships = await friendshipService.getNotifications(req.user.id);
+      ws.send(JSON.stringify({
+        method: 'friendshipNotifications',
+        data: {
+          friendships
+        }
+      }));
+    } catch (error) {
+      ws.send(JSON.stringify({
+        method: 'error',
+        data: {
+          error
+        }
+      }))
+    }
+  }
 }
 
 module.exports = new FrienshipController();
