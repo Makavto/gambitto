@@ -5,7 +5,8 @@ export enum ChessWsMethodsEnum {
   AcceptInvitation = 'accept',
   Resign = 'resign',
   GetGameInfo = 'getGame',
-  GetAllGames = 'getAllGames'
+  GetAllGames = 'getAllGames',
+  GetNotifications = 'chessNotifications'
 }
 
 export enum ChessWsServerMethodsEnum {
