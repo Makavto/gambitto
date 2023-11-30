@@ -48,7 +48,7 @@ class ChessController {
   async connect(ws, req) {
     try {
       ws.user = req.user;
-      const games = await chessService.getUserGames(req.user.id);
+      const games = await chessService.getNotifications(req.user.id);
       chessClients.add(ws);
       ws.send(JSON.stringify({
         method: 'initChess',
