@@ -31,6 +31,14 @@
         &:not(:last-child){
           margin-bottom: 1rem;
         }
+
+        .historyCardItem {
+          flex: .33 1 33%;
+
+          &:last-child {
+            text-align: end;
+          }
+        }
       }
     }
   }

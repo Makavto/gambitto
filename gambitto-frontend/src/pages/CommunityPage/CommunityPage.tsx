@@ -6,6 +6,7 @@ import Card from '../../components/Card/Card';
 import styles from './CommunityPage.module.scss';
 import { ButtonTypesEnum } from '../../utils/ButtonTypesEnum';
 import { UserAPI } from '../../services/UserService';
+import { useNavigate } from 'react-router';
 
 function CommunityPage() {
   const {user} = useAppSelector(state => state.userSlice);
@@ -14,12 +15,30 @@ function CommunityPage() {
   const [getAllFriends, {data: allFriendsData}] = FriendshipAPI.useLazyGetAllFriendsQuery();
   const [getTop, {data: topData, isLoading: isTopLoading}] = UserAPI.useLazyGetTopQuery();
 
+  const [deleteFriend, {data: deleteFriendData}] = FriendshipAPI.useLazyDeleteFriendshipQuery();
+
   useEffect(() => {
     if (friendshipWsReady) {
       getAllFriends();
       getTop();
     }
   }, [friendshipWsReady]);
+
+  const navigate = useNavigate();
+
+  const onAddFriend = () => {
+    navigate('/community/add');
+  }
+
+  const onDeleteFriend = (id: number) => {
+    deleteFriend({invitationId: id});
+  }
+
+  useEffect(() => {
+    if (!!deleteFriendData) {
+      getAllFriends()
+    }
+  }, [deleteFriendData])
 
   return (
     <div className={styles.pageWrapper}>
@@ -60,7 +79,7 @@ function CommunityPage() {
       }
       <div className={styles.row}>
         <div className={`textBig`}>Друзья</div>
-        <Button type={ButtonTypesEnum.Primary} onClick={() => {}}>Добавить друга</Button>
+        <Button type={ButtonTypesEnum.Primary} onClick={onAddFriend}>Добавить друга</Button>
       </div>
       <div>
         {
@@ -78,11 +97,18 @@ function CommunityPage() {
                       {user?.id === friendship.inviteeId ? friendship.senderName : friendship.inviteeName}
                     </div>
                     <div>
-                      {new Date(friendship.createdAt).toLocaleDateString()}
+                      <Button onClick={() => onDeleteFriend(friendship.id)} type={ButtonTypesEnum.Danger}>
+                        Удалить друга
+                      </Button>
                     </div>
                   </div>
-                  <div>
-                    {friendship.friendshipStatusFormatted}
+                  <div className={styles.friendshipCardRow}>
+                    <div>
+                      {friendship.friendshipStatusFormatted}
+                    </div>
+                    <div>
+                      {new Date(friendship.createdAt).toLocaleDateString()}
+                    </div>
                   </div>
                 </Card>
               </div>

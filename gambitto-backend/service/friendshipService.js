@@ -42,8 +42,7 @@ class FrienshipService {
   }
 
   async deleteFriend(invitationId, userId) {
-    const acceptedStatus = await FriendshipStatus.findOne({where: {status: 'friends'}});
-    const friendship = await Friendship.findOne({where: {id: invitationId, friendshipStatusId: acceptedStatus.id, [Op.or]: [{senderId: userId}, {inviteeId: userId}]}});
+    const friendship = await Friendship.findOne({where: {id: invitationId, [Op.or]: [{senderId: userId}, {inviteeId: userId}]}});
     if (!friendship) {
       throw ApiError.badRequest('no such friendship')
     }

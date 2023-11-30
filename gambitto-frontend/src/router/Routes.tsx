@@ -25,7 +25,7 @@ const MainRoutes: RouteProps[] = [
   },
   {
     path: '/community/add',
-    element: <UserSearchPage />,
+    element: <UserSearchPage isForChessGame={false}/>,
   },
   {
     path: '/community/:userId',
@@ -37,7 +37,7 @@ const MainRoutes: RouteProps[] = [
   },
   {
     path: '/chess',
-    element: <UserSearchPage />
+    element: <UserSearchPage isForChessGame={true}/>
   },
   {
     path: '/chess/:gameId',

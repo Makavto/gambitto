@@ -59,7 +59,7 @@ class FrienshipController {
       }
       const friendship = await friendshipService.addFriend(req.user.id, msg.inviteeId);
       ws.send(JSON.stringify({
-        method: 'invitation',
+        method: 'invite',
         data: {
           friendship
         }
@@ -67,7 +67,7 @@ class FrienshipController {
       for (const client of friendshipClients) {
         if (client.user.id === msg.inviteeId) {
           client.send(JSON.stringify({
-            method: 'invitated',
+            method: 'invited',
             data: {
               friendship
             }
