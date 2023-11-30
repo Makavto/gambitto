@@ -1,0 +1,30 @@
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    margin-bottom: 1.5rem;
+  }
+
+  .searchWrapper {
+    margin-bottom: 1.3rem;
+  }
+
+  .cardWrapper {
+    margin-bottom: 1rem;
+
+    .cardRow {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      &:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+
+      .cardItem {
+        flex: .33 1 33%;
+      }
+    }
+  }
+}

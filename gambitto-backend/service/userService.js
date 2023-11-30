@@ -5,6 +5,7 @@ const tokenService = require("./tokenService");
 const UserDto = require("../dtos/userDto");
 const {Op} = require("sequelize");
 const UserTopDto = require("../dtos/userTopDto");
+const UserSearchDto = require("../dtos/userSearchDto");
 
 class UserService {
   // Сервис регистрации пользователя
@@ -66,15 +67,16 @@ class UserService {
   }
 
   // Поиск по юзерам
-  async getUsers(searchQuery) {
+  async getUsers(searchQuery, userId) {
     const users = await User.findAll({
       where: {
         username: {
           [Op.iLike]: `%${searchQuery}%`
-        }
+        },
+        id: {[Op.ne]: userId}
       }
     });
-    const userDtos = users.map(user => new UserDto(user));
+    const userDtos = await Promise.all(users.map(async user => await new UserSearchDto(user, userId)));
     return userDtos;
   }
 

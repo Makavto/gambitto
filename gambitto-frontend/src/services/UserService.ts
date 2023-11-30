@@ -2,6 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { IUser } from '../models/IUser';
 import { baseQueryWithReauth } from '../utils/baseQuery';
 import { IUserTop } from '../dtos/IUserTop';
+import { IUserSearchDto } from '../dtos/IUserSearch';
 
 export const UserAPI = createApi({
   reducerPath: 'UserAPI',
@@ -19,7 +20,7 @@ export const UserAPI = createApi({
       })
     }),
 
-    getUsers: builder.query<IUser[], {searchQuery: string}>({
+    getUsers: builder.query<IUserSearchDto[], {searchQuery: string}>({
       query: ({searchQuery}) => ({
         url: '/user/users',
         params: {
