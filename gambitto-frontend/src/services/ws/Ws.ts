@@ -35,14 +35,14 @@ export class Ws {
       const data = JSON.parse(event.data);
       if (data.method === 'initChess') {
         store.dispatch(wsSlice.actions.setChessWsReady(true));
-        if (!!data.data.games) {
+        if (data.data.games.length > 0) {
           store.dispatch(notificationsSlice.actions.setChessNotification(data.data.games))
         }
       }
-      if (data.data.method === 'initFriendship') {
+      if (data.method === 'initFriendship') {
         store.dispatch(wsSlice.actions.setFriendshipWsReady(true));
         if (!!data.data.friendships) {
-          store.dispatch(notificationsSlice.actions.setChessNotification(data.data.friendships))
+          store.dispatch(notificationsSlice.actions.setFriendshipNotification(data.data.friendships))
         }
       }
     }
