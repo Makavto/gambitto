@@ -6,6 +6,7 @@ import { IGameFullInfoDto } from '../../dtos/IGameFullInfoDto';
 import { ChessWsServerMethodsEnum } from '../../models/enums/ChessWsMethodsEnum';
 import ChessBoard from '../../components/ChessBoard/ChessBoard';
 import styles from './GamePage.module.scss';
+import { Chess } from 'chess.js';
 
 interface IHistoryMove {
   moveCode: string;
@@ -114,6 +115,12 @@ function GamePage() {
     setActiveMove(newActiveMove);
   }
 
+  const getPositionAfterMove = (positionBefore: string, moveCode: string) => {
+    const game = new Chess(positionBefore);
+    game.move(moveCode);
+    return game.fen();
+  }
+
   return (
     <div className={styles.pageWrapper}>
       {
@@ -135,8 +142,8 @@ function GamePage() {
             <div className={styles.boardWrapper}>
               <div className='textBig'>{user?.id === chessGame.blackPlayerId ? chessGame.whitePlayerName : chessGame.blackPlayerName}</div>
               <ChessBoard
-                startingFen={chessGame.gameMoves.length > 0 ? chessGame.gameMoves[chessGame.gameMoves.length - 1].positionBefore : undefined}
-                lastMove={chessGame.gameMoves.length > 0 ? chessGame.gameMoves[chessGame.gameMoves.length - 1].moveCode : undefined}
+                startingFen={activeMove ? getPositionAfterMove(activeMove.positionBefore, activeMove.moveCode) : undefined}
+                isMovingBlocked={activeMove?.number !== chessGame.gameMoves[chessGame.gameMoves.length - 1].moveNumber}
                 makeMove={onMakeMove}
                 boardOrientation={chessGame.blackPlayerId === user?.id ? 'black' : 'white'}
               />

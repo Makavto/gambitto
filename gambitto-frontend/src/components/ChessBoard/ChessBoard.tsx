@@ -6,16 +6,16 @@ import { CustomSquareProps, PromotionPieceOption } from 'react-chessboard/dist/c
 
 interface IChessBoardProps {
   startingFen?: string;
-  lastMove?: string;
   makeMove: (moveCode: string) => void;
   boardOrientation: 'black' | 'white',
+  isMovingBlocked?: boolean
 }
 
 type ISquares = {
   [key in Square]?: any
 }
 
-const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, makeMove, lastMove}: IChessBoardProps) {
+const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, makeMove, isMovingBlocked}: IChessBoardProps) {
 
   const [game, setGame] = useState(new Chess(startingFen));
   const [moveFrom, setMoveFrom] = useState<Square | null>(null);
@@ -45,14 +45,10 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
 
   useEffect(() => {
     if (!!startingFen) {
+      game.load(startingFen);
       checkDangerSquares();
     }
   }, [startingFen])
-
-  if (!!lastMove && game.moves().find(value => value === lastMove)) {
-    game.move(lastMove);
-    checkDangerSquares();
-  }
 
   const getMoveOptions = (square: Square) => {
     if (game.get(square).color === 'b' && boardOrientation === 'white' || game.get(square).color === 'w' && boardOrientation === 'black') {
@@ -88,6 +84,9 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
   }
 
   const onSquareClick = (square: Square) => {
+    if (isMovingBlocked) {
+      return;
+    }
     if (!moveFrom) {
       const hasMoveOptions = getMoveOptions(square);
       if (hasMoveOptions) setMoveFrom(square);
