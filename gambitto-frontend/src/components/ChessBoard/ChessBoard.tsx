@@ -176,7 +176,6 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
   return (
     <div className={styles.board}>
       <Chessboard
-        id="ClickToMove"
         animationDuration={200}
         arePiecesDraggable={false}
         position={game.fen()}

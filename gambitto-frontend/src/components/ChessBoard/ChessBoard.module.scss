@@ -1,8 +1,8 @@
 @import '/src/styles/variables.scss';
 
-$board-width: 600px;
-
 .board {
+  margin: 1.8rem 0;
+  width: 100%;
   max-width: $board-width;
 }
 

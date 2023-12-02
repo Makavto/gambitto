@@ -1,0 +1,54 @@
+@import '/src/styles/variables.scss';
+
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+
+  .gameBlock {
+    display: flex;
+    width: 100%;
+    
+    .boardWrapper {
+      margin-right: 4rem;
+      width: 100%;
+      max-width: $board-width;
+      // max-height: 100vh;
+      // max-width: calc(100vh - 50px);
+  
+      .user {
+        display: flex;
+        justify-content: end;
+      }
+    }
+  
+    .statusWrapper {
+      display: flex;
+      flex-direction: column;
+  
+      .historyWrapper {
+        margin-top: 1.8rem;
+
+        .historyItem {
+          margin-bottom: .6rem;
+          font-size: .9rem;
+          color: darken($color: $color-primary, $amount: 15%);
+
+          &:first-child {
+            margin-top: 1rem;
+          }
+
+          .historyMove {
+            cursor: pointer;
+            transition: color .3s ease-in-out;
+
+            &.active {
+              color: $color-accent;
+            }
+          }
+        }
+      }
+    }
+  }
+}
