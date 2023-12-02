@@ -1,0 +1,23 @@
+@import '/src/styles/variables.scss';
+
+$board-width: 600px;
+
+.board {
+  max-width: $board-width;
+}
+
+.darkSquare {
+  background-color: lighten($color: $color-background-2, $amount: 20%);
+
+  div {
+    color: lighten($color: $color-background-2, $amount: 65%) !important;
+  }
+}
+
+.lightSquare {
+  background-color: lighten($color: $color-background-2, $amount: 65%);
+
+  div {
+    color: lighten($color: $color-background-2, $amount: 20%) !important;
+  }
+}
