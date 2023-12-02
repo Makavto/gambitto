@@ -1,5 +1,5 @@
 import { Chess, Square } from 'chess.js';
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import { Chessboard } from 'react-chessboard';
 import styles from './ChessBoard.module.scss';
 import { CustomSquareProps, PromotionPieceOption } from 'react-chessboard/dist/chessboard/types';
@@ -17,7 +17,8 @@ type ISquares = {
 
 const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, makeMove, isMovingBlocked}: IChessBoardProps) {
 
-  const [game, setGame] = useState(new Chess(startingFen));
+  const game = useMemo(() => new Chess(startingFen), []);
+  const [chessBoardPosition, setChessBoardPosition] = useState('start');
   const [moveFrom, setMoveFrom] = useState<Square | null>(null);
   const [moveTo, setMoveTo] = useState<Square | null>(null);
   const [optionSquares, setOptionSquares] = useState<ISquares>({});
@@ -47,6 +48,7 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
     if (!!startingFen) {
       game.load(startingFen);
       checkDangerSquares();
+      setChessBoardPosition(game.fen())
     }
   }, [startingFen])
 
@@ -160,7 +162,6 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
         to: moveTo,
         promotion: piece[1].toLowerCase() ?? "q",
       });
-      setGame(game);
       checkDangerSquares();
       makeMove(move.san);
     }
@@ -177,7 +178,7 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
       <Chessboard
         animationDuration={200}
         arePiecesDraggable={false}
-        position={game.fen()}
+        position={chessBoardPosition}
         boardOrientation={boardOrientation}
         onSquareClick={onSquareClick}
         customSquareStyles={{
@@ -194,9 +195,9 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
   );
 })
 
-const CustomSquare = React.forwardRef(({squareColor, children, style}: CustomSquareProps, ref) => {
+const CustomSquare = React.forwardRef<HTMLDivElement, CustomSquareProps>(({squareColor, children, style}: CustomSquareProps, ref) => {
   return (
-    <div style={style} className={`${squareColor === 'black' ? styles.darkSquare : styles.lightSquare}`}>
+    <div ref={ref} style={style} className={`${squareColor === 'black' ? styles.darkSquare : styles.lightSquare}`}>
       {children}
     </div>
   )
