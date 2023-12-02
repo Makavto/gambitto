@@ -134,6 +134,14 @@ class ChessService {
     game.save();
     return await new ChessGameDto(game);
   }
+
+  async getNotifications(userId) {
+    const invitationStatus = await GameStatus.findOne({where: {status: 'invitation'}});
+    const games = await ChessGame.findAll({where: {inviteeId: userId, gameStatusId: invitationStatus.id}});
+    return await Promise.all(games.map(async (game) => {
+      return await new ChessGameDto(game);
+    }));
+  }
   
 }
 

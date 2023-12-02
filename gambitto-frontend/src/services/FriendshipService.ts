@@ -28,7 +28,7 @@ export const FriendshipAPI = createApi({
       }
     }),
 
-    friendshipNotifications: builder.query<IFriendshipInvitation | null, void>({
+    friendshipNotificationsListener: builder.query<IFriendshipInvitation | null, void>({
       queryFn: async () => {
         return {data: null}
       },
@@ -42,7 +42,7 @@ export const FriendshipAPI = createApi({
             const data = JSON.parse(event.data);
             if (!Object.values(FriendshipWsMethodsEnum).find((method) => method === data.method)) {
               api.updateCachedData((draft) => {
-                return data.data
+                return data
               });
             }
           }
@@ -158,6 +158,32 @@ export const FriendshipAPI = createApi({
     }),
 
     getAllFriends: builder.query<{friendships: IFriendshipDto[]} | null, void>({
+      queryFn: async () => {
+        friendshipWs.ws.send(JSON.stringify({method: FriendshipWsMethodsEnum.GetAllFriends}))
+        return {data: null}
+      },
+      async onCacheEntryAdded(
+        arg,
+        api,
+      ) {
+        try {
+          await api.cacheDataLoaded
+          const listener = (event: MessageEvent) => {
+            const data = JSON.parse(event.data);
+            if (data.method === FriendshipWsMethodsEnum.GetAllFriends) {
+              api.updateCachedData((draft) => {
+                return data.data
+              });
+            }
+          }
+          friendshipWs.ws.addEventListener('message', listener)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    }),
+
+    getNotifications: builder.query<{friendships: IFriendshipDto[]} | null, void>({
       queryFn: async () => {
         friendshipWs.ws.send(JSON.stringify({method: FriendshipWsMethodsEnum.GetAllFriends}))
         return {data: null}

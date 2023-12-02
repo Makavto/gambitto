@@ -1,8 +1,11 @@
 import React from 'react'
 import styles from './Menu.module.scss';
 import { NavLink } from 'react-router-dom';
+import { useAppSelector } from '../../hooks/redux';
 
 function Menu() {
+  const {chessNotifications, friendshipNotifications} = useAppSelector(state => state.notificationsSlice);
+
   return (
     <div className={styles.menuContainer}>
       <div className={styles.logoShadow}>
@@ -16,7 +19,7 @@ function Menu() {
           Профиль
         </NavLink>
         <NavLink to={'/notifications'} className={({isActive}) => isActive ? `${styles.activeBtn} ${styles.menuBtn}` : styles.menuBtn}>
-          Уведомления
+          Уведомления {(chessNotifications.length > 0 || friendshipNotifications.length > 0) && <div className={styles.notifications}>{chessNotifications.length + friendshipNotifications.length}</div>}
         </NavLink>
         <NavLink to={'/stats'} className={({isActive}) => isActive ? `${styles.activeBtn} ${styles.menuBtn}` : styles.menuBtn}>
           Статистика

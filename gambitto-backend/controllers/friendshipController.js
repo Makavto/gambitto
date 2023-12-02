@@ -8,10 +8,11 @@ class FrienshipController {
     try {
       ws.user = req.user;
       friendshipClients.add(ws);
+      const friendships = await friendshipService.getNotifications(req.user.id);
       ws.send(JSON.stringify({
         method: 'initFriendship',
         data: {
-          status: 'ok'
+          friendships
         }
       }));
     } catch (error) {
@@ -98,7 +99,7 @@ class FrienshipController {
         }
       }));
       for (const client of friendshipClients) {
-        if (client.user.id === friendship.friendship.senderId) {
+        if (client.user.id === friendship.senderId) {
           client.send(JSON.stringify({
             method: 'accepted',
             data: {
@@ -131,7 +132,7 @@ class FrienshipController {
         }
       }));
       for (const client of friendshipClients) {
-        if (client.user.id === friendship.friendship.senderId) {
+        if (client.user.id === friendship.senderId) {
           client.send(JSON.stringify({
             method: 'declined',
             data: {
@@ -164,7 +165,7 @@ class FrienshipController {
         }
       }));
       for (const client of friendshipClients) {
-        if (client.user.id === friendship.friendship.senderId) {
+        if (client.user.id === friendship.senderId) {
           client.send(JSON.stringify({
             method: 'deleted',
             data: {
@@ -174,6 +175,26 @@ class FrienshipController {
           break;
         }
       }
+    } catch (error) {
+      ws.send(JSON.stringify({
+        method: 'error',
+        data: {
+          error
+        }
+      }))
+    }
+  }
+
+  async getNotifications(ws, req) {
+    try {
+      ws.user = req.user;
+      const friendships = await friendshipService.getNotifications(req.user.id);
+      ws.send(JSON.stringify({
+        method: 'friendshipNotifications',
+        data: {
+          friendships
+        }
+      }));
     } catch (error) {
       ws.send(JSON.stringify({
         method: 'error',

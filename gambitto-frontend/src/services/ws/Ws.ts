@@ -1,3 +1,4 @@
+import { notificationsSlice } from "../../store/reducers/notificationsSlice";
 import {wsSlice} from "../../store/reducers/wsSlice";
 import { AppStore } from "../../store/store";
 
@@ -33,10 +34,16 @@ export class Ws {
     const listener = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
       if (data.method === 'initChess') {
-        store.dispatch(wsSlice.actions.setChessWsReady(true))
+        store.dispatch(wsSlice.actions.setChessWsReady(true));
+        if (data.data.games.length > 0) {
+          store.dispatch(notificationsSlice.actions.setChessNotification(data.data.games))
+        }
       }
       if (data.method === 'initFriendship') {
-        store.dispatch(wsSlice.actions.setFriendshipWsReady(true))
+        store.dispatch(wsSlice.actions.setFriendshipWsReady(true));
+        if (!!data.data.friendships) {
+          store.dispatch(notificationsSlice.actions.setFriendshipNotification(data.data.friendships))
+        }
       }
     }
     ws.addEventListener('message', listener);

@@ -1,4 +1,4 @@
-import React, { MouseEvent } from 'react'
+import React, { MouseEvent, memo } from 'react'
 import { ButtonTypesEnum } from '../../utils/ButtonTypesEnum';
 import styles from './Button.module.scss';
 
@@ -8,7 +8,7 @@ interface IButtonProps {
   type?: ButtonTypesEnum;
 }
 
-function Button({children,onClick,type}: IButtonProps) {
+const Button = memo(function Button({children,onClick,type}: IButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -23,6 +23,6 @@ function Button({children,onClick,type}: IButtonProps) {
       {children}
     </button>
   )
-}
+})
 
 export default Button

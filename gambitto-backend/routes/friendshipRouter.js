@@ -29,6 +29,10 @@ router.ws('/', WsAuthMiddleware, (ws, req, next) => {
       case 'getAllFriends':
         friendshipController.getFriends(ws, req);
         break;
+
+      case 'friendshipNotifications':
+        friendshipController.getNotifications(ws, req);
+        break;
         
       default:
         ws.send('Not existing endpoint')

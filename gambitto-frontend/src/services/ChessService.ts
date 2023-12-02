@@ -31,7 +31,7 @@ export const ChessAPI = createApi({
       }
     }),
 
-    chessNotifications: builder.query<IChessWsDto | IChessWsFullInfoDto | null, void>({
+    chessNotificationsListener: builder.query<IChessWsDto | IChessWsFullInfoDto | null, void>({
       queryFn: async () => {
         return {data: null}
       },
@@ -45,7 +45,7 @@ export const ChessAPI = createApi({
             const data = JSON.parse(event.data);
             if (!Object.values(ChessWsMethodsEnum).find((method) => method === data.method)) {
               api.updateCachedData((draft) => {
-                return data.data
+                return data
               });
             }
           }
@@ -70,6 +70,32 @@ export const ChessAPI = createApi({
           const listener = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
             if (data.method === ChessWsMethodsEnum.GetAllGames) {
+              api.updateCachedData((draft) => {
+                return data.data
+              })
+            }
+          }
+          chessWs.ws.addEventListener('message', listener)
+        } catch (error) {
+          console.log(error)
+        }
+      },
+    }),
+
+    getChessNotifications: builder.query<{games: IGameDto[]} | null, void>({
+      queryFn: async (arg) => {
+        chessWs.ws.send(JSON.stringify({method: ChessWsMethodsEnum.GetNotifications}))
+        return {data: null}
+      },
+      async onCacheEntryAdded(
+        arg,
+        api,
+      ) {
+        try {
+          await api.cacheDataLoaded
+          const listener = (event: MessageEvent) => {
+            const data = JSON.parse(event.data);
+            if (data.method === ChessWsMethodsEnum.GetNotifications) {
               api.updateCachedData((draft) => {
                 return data.data
               })

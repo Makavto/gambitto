@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useAppSelector } from '../../hooks/redux'
+import { useAppDispatch, useAppSelector } from '../../hooks/redux'
 import { FriendshipAPI } from '../../services/FriendshipService';
 import Button from '../../components/Button/Button';
 import Card from '../../components/Card/Card';
@@ -7,15 +7,22 @@ import styles from './CommunityPage.module.scss';
 import { ButtonTypesEnum } from '../../utils/ButtonTypesEnum';
 import { UserAPI } from '../../services/UserService';
 import { useNavigate } from 'react-router';
+import { notificationsSlice } from '../../store/reducers/notificationsSlice';
+import UserCard from '../../components/UserCard/UserCard';
 
 function CommunityPage() {
-  const {user} = useAppSelector(state => state.userSlice);
+  const dispatch = useAppDispatch();
+
   const {friendshipWsReady} = useAppSelector(state => state.wsSlice);
+
+  const {deleteFriendshipNotification} = notificationsSlice.actions;
 
   const [getAllFriends, {data: allFriendsData}] = FriendshipAPI.useLazyGetAllFriendsQuery();
   const [getTop, {data: topData, isLoading: isTopLoading}] = UserAPI.useLazyGetTopQuery();
 
   const [deleteFriend, {data: deleteFriendData}] = FriendshipAPI.useLazyDeleteFriendshipQuery();
+  const [acceptFriend, {data: acceptFriendData}] = FriendshipAPI.useLazyAcceptInvitationQuery();
+  const [declineFriend, {data: declineFriendData}] = FriendshipAPI.useLazyDeclineInvitationQuery();
 
   useEffect(() => {
     if (friendshipWsReady) {
@@ -34,11 +41,37 @@ function CommunityPage() {
     deleteFriend({invitationId: id});
   }
 
+  const onDeclineFriend = (id: number) => {
+    declineFriend({invitationId: id});
+  }
+
+  const onAcceptFriend = (id: number) => {
+    acceptFriend({invitationId: id});
+  }
+
+  useEffect(() => {
+    if (!!deleteFriendData || !!acceptFriendData || !!declineFriendData) {
+      getAllFriends();
+    }
+  }, [deleteFriendData, acceptFriendData, declineFriendData]);
+
   useEffect(() => {
     if (!!deleteFriendData) {
-      getAllFriends()
+      dispatch(deleteFriendshipNotification(deleteFriendData.friendship))
     }
   }, [deleteFriendData])
+
+  useEffect(() => {
+    if (!!declineFriendData) {
+      dispatch(deleteFriendshipNotification(declineFriendData.friendship))
+    }
+  }, [declineFriendData])
+
+  useEffect(() => {
+    if (!!acceptFriendData) {
+      dispatch(deleteFriendshipNotification(acceptFriendData.friendship))
+    }
+  }, [acceptFriendData])
 
   return (
     <div className={styles.pageWrapper}>
@@ -91,26 +124,12 @@ function CommunityPage() {
             <div>Список друзей пуст. Самое время подружиться!</div> :
             allFriendsData.friendships.map((friendship, i) => (
               <div className={styles.friendshipCardWrapper} key={i}>
-                <Card>
-                  <div className={styles.friendshipCardRow}>
-                    <div>
-                      {user?.id === friendship.inviteeId ? friendship.senderName : friendship.inviteeName}
-                    </div>
-                    <div>
-                      <Button onClick={() => onDeleteFriend(friendship.id)} type={ButtonTypesEnum.Danger}>
-                        Удалить друга
-                      </Button>
-                    </div>
-                  </div>
-                  <div className={styles.friendshipCardRow}>
-                    <div>
-                      {friendship.friendshipStatusFormatted}
-                    </div>
-                    <div>
-                      {new Date(friendship.createdAt).toLocaleDateString()}
-                    </div>
-                  </div>
-                </Card>
+                <UserCard
+                  friendship={friendship}
+                  onAcceptFriend={onAcceptFriend}
+                  onDeclineFriend={onDeclineFriend}
+                  onDeleteFriend={onDeleteFriend}
+                />
               </div>
             )))
         }
