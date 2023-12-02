@@ -42,7 +42,7 @@ export const FriendshipAPI = createApi({
             const data = JSON.parse(event.data);
             if (!Object.values(FriendshipWsMethodsEnum).find((method) => method === data.method)) {
               api.updateCachedData((draft) => {
-                return data.data
+                return data
               });
             }
           }

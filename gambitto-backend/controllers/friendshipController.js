@@ -99,7 +99,7 @@ class FrienshipController {
         }
       }));
       for (const client of friendshipClients) {
-        if (client.user.id === friendship.friendship.senderId) {
+        if (client.user.id === friendship.senderId) {
           client.send(JSON.stringify({
             method: 'accepted',
             data: {
@@ -132,7 +132,7 @@ class FrienshipController {
         }
       }));
       for (const client of friendshipClients) {
-        if (client.user.id === friendship.friendship.senderId) {
+        if (client.user.id === friendship.senderId) {
           client.send(JSON.stringify({
             method: 'declined',
             data: {
@@ -165,7 +165,7 @@ class FrienshipController {
         }
       }));
       for (const client of friendshipClients) {
-        if (client.user.id === friendship.friendship.senderId) {
+        if (client.user.id === friendship.senderId) {
           client.send(JSON.stringify({
             method: 'deleted',
             data: {

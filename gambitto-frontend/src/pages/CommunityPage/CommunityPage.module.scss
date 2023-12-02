@@ -17,15 +17,6 @@
 
   .friendshipCardWrapper {
     margin-bottom: 1.5rem;
-
-    .friendshipCardRow {
-      display: flex;
-      justify-content: space-between;
-
-      &:not(:last-child){
-        margin-bottom: 1rem;
-      }
-    }
   }
 
   .table th h1 {

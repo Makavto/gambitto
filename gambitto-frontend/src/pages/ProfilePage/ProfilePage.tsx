@@ -7,12 +7,22 @@ import { AuthAPI } from '../../services/AuthService';
 import { userSlice } from '../../store/reducers/userSlice';
 import { ButtonTypesEnum } from '../../utils/ButtonTypesEnum';
 import { ChessAPI } from '../../services/ChessService';
+import ChessCard from '../../components/ChessCard/ChessCard';
+import { useNavigate } from 'react-router-dom';
+import { notificationsSlice } from '../../store/reducers/notificationsSlice';
 
 function ProfilePage() {
   const {user} = useAppSelector(state => state.userSlice);
   const {setUser} = userSlice.actions;
+  
+  const navigate = useNavigate();
 
   const {chessWsReady: wsReady} = useAppSelector(state => state.wsSlice);
+
+  const [acceptChess, {data: acceptChessData}] = ChessAPI.useLazyAcceptInvitationQuery();
+  const [declineChess, {data: declineChessData}] = ChessAPI.useLazyDeclineInvitationQuery();
+
+  const {deleteChessNotification} = notificationsSlice.actions;
 
 
   const dispatch = useAppDispatch();
@@ -33,6 +43,31 @@ function ProfilePage() {
       getAllGames();
     }
   }, [wsReady])
+
+  const onAcceptChess = (id: number) => {
+    acceptChess({gameId: id})
+  }
+
+  const onDeclineChess = (id: number) => {
+    declineChess({gameId: id});
+  }
+
+  const onEnterChess = (id: number) => {
+    navigate(`/chess/${id}`);
+  }
+
+  useEffect(() => {
+    if (!!acceptChessData) {
+      dispatch(deleteChessNotification(acceptChessData.game));
+      navigate(`/chess/${acceptChessData.game.id}`)
+    }
+  }, [acceptChessData])
+
+  useEffect(() => {
+    if (!!declineChessData) {
+      dispatch(deleteChessNotification(declineChessData.game))
+    }
+  }, [declineChessData])
 
   return (
     <>
@@ -71,27 +106,12 @@ function ProfilePage() {
             <div>Не сыграно ни одной партии</div> :
             allGames.games.map((game, i) => (
               <div className={styles.historyCardWrapper} key={i}>
-                <Card>
-                  <div className={styles.historyCardRow}>
-                    <div>
-                      Партия с <span className='textBold'>{game.blackPlayerId === user?.id ? game.whitePlayerName : game.blackPlayerName}</span>
-                    </div>
-                    <div className='textBold'>
-                      {game.gameStatusFormatted}
-                    </div>
-                  </div>
-                  <div className={styles.historyCardRow}>
-                    <div className={styles.historyCardItem}>
-                      Вы: за {game.blackPlayerId === user?.id ? 'чёрных' : 'белых'}
-                    </div>
-                    <div className={styles.historyCardItem}>
-                      {game.blackPlayerId === user?.id ? game.whitePlayerName : game.blackPlayerName}: за {game.blackPlayerId !== user?.id ? 'чёрных' : 'белых'}
-                    </div>
-                    <div className={`textSecondary ${styles.historyCardItem}`}>
-                      Партия началась {new Date(game.createdAt).toLocaleDateString()} в {new Date(game.createdAt).getHours()}:{new Date(game.createdAt).getMinutes()}
-                    </div>
-                  </div>
-                </Card>
+                <ChessCard
+                  game={game}
+                  onAcceptGame={onAcceptChess}
+                  onDeclineGame={onDeclineChess}
+                  onEnterGame={onEnterChess}
+                />
               </div>
             )))
           }

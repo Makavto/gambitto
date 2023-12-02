@@ -5,6 +5,8 @@ const UserDto = require("./userDto");
 module.exports = class ChessGameDto {
   id;
   createdAt;
+  senderId;
+  inviteeId;
   blackPlayerId;
   whitePlayerId;
   blackPlayerName;
@@ -19,6 +21,8 @@ module.exports = class ChessGameDto {
       const gameStatus = await GameStatus.findOne({where: {id: chessGameModel.gameStatusId}})
       this.id = chessGameModel.id;
       this.createdAt = chessGameModel.createdAt;
+      this.senderId = chessGameModel.senderId;
+      this.inviteeId = chessGameModel.inviteeId;
       this.blackPlayerId = chessGameModel.blackPlayerId;
       this.whitePlayerId = chessGameModel.whitePlayerId;
       this.blackPlayerName = blackPlayer.username;

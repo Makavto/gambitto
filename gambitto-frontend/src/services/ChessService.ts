@@ -45,7 +45,7 @@ export const ChessAPI = createApi({
             const data = JSON.parse(event.data);
             if (!Object.values(ChessWsMethodsEnum).find((method) => method === data.method)) {
               api.updateCachedData((draft) => {
-                return data.data
+                return data
               });
             }
           }
