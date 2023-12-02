@@ -41,8 +41,8 @@ function ChessCard({game, onAcceptGame, onDeclineGame, onEnterGame}: IChessCard)
              game.gameStatus === 'whiteWin' ||
              game.gameStatus === 'stalemate' ||
              game.gameStatus === 'draw' ||
-             game.gameStatus === 'invitation' ||
-             game.gameStatus === 'inProgress' && user?.id === game.senderId
+             game.gameStatus === 'invitation' && user?.id === game.senderId ||
+             game.gameStatus === 'inProgress'
             ) &&
             <Button onClick={() => onEnterGame ? onEnterGame(game.id) : {}} type={ButtonTypesEnum.Primary}>
               Сесть за доску
