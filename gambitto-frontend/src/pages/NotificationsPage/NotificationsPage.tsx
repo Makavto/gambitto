@@ -85,7 +85,7 @@ function NotificationsPage() {
       <div className={`textBig ${styles.title}`}>Заявки в друзья</div>
       <div>
         {
-          friendshipNotifications.length === 0 && <div className='textSecondary'>Нет новых заявок</div>
+          friendshipNotifications.length === 0 && <div className={`textSecondary ${styles.noInvitations}`}>Нет новых заявок</div>
         }
         {
           friendshipNotifications.length > 0 && friendshipNotifications.map((friendship, i) => (

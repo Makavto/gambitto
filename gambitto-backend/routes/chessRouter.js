@@ -21,7 +21,7 @@ router.ws('/', WsAuthMiddleware, (ws, req, next) => {
         chessController.declineInvitation(ws, msg, req);
         break;
 
-      case "getGame":
+      case "gameInfo":
         chessController.getGameById(ws, msg, req);
         break;
 

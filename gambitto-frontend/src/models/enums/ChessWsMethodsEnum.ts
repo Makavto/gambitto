@@ -4,7 +4,7 @@ export enum ChessWsMethodsEnum {
   DeclineInvitation = 'decline',
   AcceptInvitation = 'accept',
   Resign = 'resign',
-  GetGameInfo = 'getGame',
+  GetGameInfo = 'gameInfo',
   GetAllGames = 'getAllGames',
   GetNotifications = 'chessNotifications'
 }
