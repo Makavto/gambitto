@@ -7,7 +7,7 @@ import { IChessWsDto } from "../dtos/IChessWsDto";
 import { IChessWsFullInfoDto } from "../dtos/IChessWsFullInfoDto";
 import { Ws } from "./ws/Ws";
 
-const chessWs = new Ws('ws://localhost:5000/api/chess');
+const chessWs = new Ws(`${process.env.REACT_APP_WS_URL}/chess`);
 
 export const ChessAPI = createApi({
   reducerPath: 'ChessAPI',

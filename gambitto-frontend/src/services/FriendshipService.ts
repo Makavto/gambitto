@@ -5,7 +5,7 @@ import { IFriendshipDto } from "../dtos/IFriendshipDto";
 import { IFriendshipInvitation } from "../dtos/IFriendshipInvitation";
 import { FriendshipWsMethodsEnum } from "../models/enums/FriendshipWsMethodsEnum";
 
-const friendshipWs = new Ws('ws://localhost:5000/api/friendship');
+const friendshipWs = new Ws(`${process.env.REACT_APP_WS_URL}/friendship`);
 
 export const FriendshipAPI = createApi({
   reducerPath: 'FriendshipAPI',
