@@ -208,7 +208,7 @@ class ChessController {
           gameFullInfo
         }
       }));
-      const opponentId = req.user.id !== gameUpdateInfo.game.blackPlayerId ? gameUpdateInfo.game.blackPlayerId : gameUpdateInfo.game.whitePlayerId;
+      const opponentId = req.user.id !== gameFullInfo.blackPlayerId ? gameFullInfo.blackPlayerId : gameFullInfo.whitePlayerId;
       for (const client of chessClients) {
         if (client.user.id === opponentId) {
           client.send(JSON.stringify({
