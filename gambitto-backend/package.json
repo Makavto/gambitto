@@ -4,7 +4,8 @@
   "description": "backend for chess app gambitto",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=prod node index.js",
+    "start": "NODE_ENV=prod pm2 start index.js",
+    "stop": "pm2 stop 'all'",
     "dev": "NODE_ENV=dev nodemon index.js",
     "dev:test": "NODE_ENV=test nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,6 +27,7 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
+    "pm2": "^5.3.0",
     "sequelize": "^6.33.0",
     "uuid": "^9.0.1"
   },
