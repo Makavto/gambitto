@@ -1,0 +1,49 @@
+@import "/src/styles/variables";
+
+.cardWrapper {
+  margin: 1.5rem 0;
+
+  .statsWrapper {
+    display: flex;
+    flex-direction: column;
+  
+    .statsItemsRow {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      width: 100%;
+  
+      &:not(:last-child) {
+        margin-bottom: 1.2rem;
+      }
+
+      .statsItem {
+        flex: .45 1 45%;
+        display: flex;
+        justify-content: space-between;
+        align-self: center;
+  
+        .title {
+          width: 30%;
+          min-width: 200px;
+          display: flex;
+          align-items: center;
+        }
+  
+        .stat {
+          width: 70%;
+          font-size: 1.3rem;
+        }
+      }
+    }
+  }
+}
+
+
+.historyWrapper {
+  margin-top: 1.5rem;
+
+  .historyCardWrapper {
+    margin-bottom: 1.5rem;
+  }
+}

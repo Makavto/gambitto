@@ -76,7 +76,7 @@ function CommunityPage() {
   return (
     <div className={styles.pageWrapper}>
       <div>
-        <div className={`textBig ${styles.row}`}>Список лидеров</div>
+        <div className={`textBig ${styles.row} title`}>Список лидеров</div>
       </div>
       {
         isTopLoading && <div>Загрузка...</div>
@@ -111,7 +111,7 @@ function CommunityPage() {
         </table>
       }
       <div className={styles.row}>
-        <div className={`textBig`}>Друзья</div>
+        <div className={`textBig title`}>Друзья</div>
         <Button type={ButtonTypesEnum.Primary} onClick={onAddFriend}>Добавить друга</Button>
       </div>
       <div>

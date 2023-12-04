@@ -82,7 +82,7 @@ function NotificationsPage() {
 
   return (
     <div>
-      <div className={`textBig ${styles.title}`}>Заявки в друзья</div>
+      <div className={`textBig ${styles.title} title`}>Заявки в друзья</div>
       <div>
         {
           friendshipNotifications.length === 0 && <div className={`textSecondary ${styles.noInvitations}`}>Нет новых заявок</div>
@@ -100,7 +100,7 @@ function NotificationsPage() {
           ))
         }
       </div>
-      <div className={`textBig ${styles.title}`}>Приглашения на игру в шахматы</div>
+      <div className={`textBig ${styles.title} title`}>Приглашения на игру в шахматы</div>
       <div>
         {
           chessNotifications.length === 0 && <div className='textSecondary'>Нет новых приглашений</div>
