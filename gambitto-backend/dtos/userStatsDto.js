@@ -21,30 +21,31 @@ module.exports = class UserStatsDto {
       let winStreak = 0;
       let defeatStreak = 0;
       let maxDefeatStreak = 0;
-      games.forEach((game, i, games) => {
-        if (game.gameStatus === 'blackWin' && game.blackPlayerId === userModel.id) wins++;
-        if (game.gameStatus === 'whiteWin' && game.whitePlayerId === userModel.id) wins++;
-        if (game.gameStatus === 'whiteWin' && game.blackPlayerId === userModel.id) defeats++;
-        if (game.gameStatus === 'blackWin' && game.whitePlayerId === userModel.id) defeats++;
+      const isWin = (game) => game.gameStatus === 'blackWin' && game.blackPlayerId === userModel.id || game.gameStatus === 'whiteWin' && game.whitePlayerId === userModel.id;
+      const isDefeat = (game) => game.gameStatus === 'whiteWin' && game.blackPlayerId === userModel.id ||game.gameStatus === 'blackWin' && game.whitePlayerId === userModel.id;
+      games.forEach((game) => {
+        if (isWin(game)) wins++;
+        if (isDefeat(game)) defeats++;
         if (game.gameStatus === 'draw' || game.gameStatus === 'stalemate' || game.gameStatus === 'threefold' || game.gameStatus === 'insufficient') draws++;
-        if (i > 0 &&
-          (games[i - 1].gameStatus === 'blackWin' && games[i].gameStatus === 'blackWin' && game.blackPlayerId === userModel.id) ||
-          (games[i - 1].gameStatus === 'whiteWin' && games[i].gameStatus === 'whiteWin' && game.whitePlayerId === userModel.id)) {
+        if (isWin(game)) {
           winStreak++;
         } else {
           if (winStreak > maxWinStreak) maxWinStreak = winStreak;
           winStreak = 0;
         }
-
-        if (i > 0 &&
-          (games[i - 1].gameStatus === 'blackWin' && games[i].gameStatus === 'blackWin' && game.whitePlayerId === userModel.id) ||
-          (games[i - 1].gameStatus === 'whiteWin' && games[i].gameStatus === 'whiteWin' && game.blackPlayerId === userModel.id)) {
+        if (isDefeat(game)) {
           defeatStreak++;
         } else {
           if (defeatStreak > maxDefeatStreak) maxDefeatStreak = defeatStreak;
           defeatStreak = 0;
         }
       });
+      if (winStreak > maxWinStreak) {
+        maxWinStreak = winStreak;
+      }
+      if (defeatStreak > maxDefeatStreak) {
+        maxDefeatStreak = defeatStreak;
+      }
       this.id = userModel.id;
       this.createdAt = userModel.createdAt;
       this.username = userModel.username;
