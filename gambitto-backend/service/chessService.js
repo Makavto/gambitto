@@ -104,6 +104,16 @@ class ChessService {
       game.gameStatusId = gameStatus.id;
       game.save();
     }
+    if (chess.isThreefoldRepetition()) {
+      gameStatus = await GameStatus.findOne({where: {status: 'threefold'}});
+      game.gameStatusId = gameStatus.id;
+      game.save();
+    }
+    if (chess.isInsufficientMaterial()) {
+      gameStatus = await GameStatus.findOne({where: {status: 'insufficient'}});
+      game.gameStatusId = gameStatus.id;
+      game.save();
+    }
     if (chess.isDraw()) {
       gameStatus = await GameStatus.findOne({where: {status: 'draw'}});
       game.gameStatusId = gameStatus.id;

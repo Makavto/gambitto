@@ -37,6 +37,14 @@ const GAME_STATUSES = [
   {
     status: 'stalemate',
     statusFormatted: 'Пат'
+  },
+  {
+    status: 'threefold',
+    statusFormatted: 'Ничья. Троекратное повторение позиции'
+  },
+  {
+    status: 'insufficient',
+    statusFormatted: 'Ничья. Недостаточность фигур'
   }
 ]
 
