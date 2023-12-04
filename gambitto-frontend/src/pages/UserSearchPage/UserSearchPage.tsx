@@ -63,7 +63,7 @@ function UserSearchPage({isForChessGame}: IUserSearchPageProps) {
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={`textBig ${styles.title}`}>Поиск пользователей</div>
+      <div className={`textBig ${styles.title} title`}>Поиск пользователей</div>
       <div className={styles.searchWrapper}>
         <Input name='searchQuery' registerField={register} placeholder='Найти пользователя' onChange={onSearch}/>
       </div>

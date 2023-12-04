@@ -60,6 +60,14 @@ a {
   color: darken($color: $color-primary, $amount: 15%);
 }
 
+.textAccent {
+  color: $color-accent;
+}
+
+.textSuccess {
+  color: $color-success;
+}
+
 .title {
   margin-left: 1rem;
 }

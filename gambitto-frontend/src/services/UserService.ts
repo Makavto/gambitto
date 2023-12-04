@@ -30,7 +30,7 @@ export const UserAPI = createApi({
       })
     }),
 
-    getUserStats: builder.query<IUserStatsDto, string | void>({
+    getUserStats: builder.query<IUserStatsDto, number | void>({
       query: (id) => ({
         url: '/user/stats',
         params: {
