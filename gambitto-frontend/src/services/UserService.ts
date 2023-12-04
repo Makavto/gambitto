@@ -3,6 +3,7 @@ import { IUser } from '../models/IUser';
 import { baseQueryWithReauth } from '../utils/baseQuery';
 import { IUserTop } from '../dtos/IUserTop';
 import { IUserSearchDto } from '../dtos/IUserSearch';
+import { IUserStatsDto } from '../dtos/IUserStats';
 
 export const UserAPI = createApi({
   reducerPath: 'UserAPI',
@@ -25,6 +26,15 @@ export const UserAPI = createApi({
         url: '/user/users',
         params: {
           searchQuery
+        }
+      })
+    }),
+
+    getUserStats: builder.query<IUserStatsDto, number | void>({
+      query: (id) => ({
+        url: '/user/stats',
+        params: {
+          userId: id
         }
       })
     })

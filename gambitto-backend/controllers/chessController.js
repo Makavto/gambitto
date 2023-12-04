@@ -5,10 +5,9 @@ const chessClients = require("../wss clients/chessClients");
 
 class ChessController {
 
-  async getAllGames(ws, req) {
+  async getAllGames(ws, msg, req) {
     try {
-      ws.user = req.user;
-      const games = await chessService.getUserGames(req.user.id);
+      const games = await chessService.getUserGames(msg.userId ?? req.user.id);
       ws.send(JSON.stringify({
         method: 'getAllGames',
         data: {
@@ -27,7 +26,6 @@ class ChessController {
 
   async getNotifications(ws, req) {
     try {
-      ws.user = req.user;
       const games = await chessService.getNotifications(req.user.id);
       ws.send(JSON.stringify({
         method: 'chessNotifications',

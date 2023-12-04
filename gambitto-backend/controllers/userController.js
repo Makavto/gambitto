@@ -114,6 +114,16 @@ class UserController {
     }
   }
 
+  async getUserStats(req,res,next) {
+    try {
+      const {userId} = req.query;
+      const stats = await userService.getUserStats(userId ?? req.user.id);
+      return res.json(stats);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
 }
 
 module.exports = new UserController();

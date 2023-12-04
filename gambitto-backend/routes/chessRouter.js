@@ -34,7 +34,7 @@ router.ws('/', WsAuthMiddleware, (ws, req, next) => {
         break;
 
       case "getAllGames":
-        chessController.getAllGames(ws, req);
+        chessController.getAllGames(ws, msg, req);
         break;
 
       case 'chessNotifications':
