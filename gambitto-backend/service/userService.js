@@ -6,6 +6,7 @@ const UserDto = require("../dtos/userDto");
 const {Op} = require("sequelize");
 const UserTopDto = require("../dtos/userTopDto");
 const UserSearchDto = require("../dtos/userSearchDto");
+const UserStatsDto = require("../dtos/userStatsDto");
 
 class UserService {
   // Сервис регистрации пользователя
@@ -94,6 +95,11 @@ class UserService {
     }));
     response = response.sort((a, b) => b.wins - a.wins).slice(0, 5);
     return response
+  }
+
+  async getUserStats(id) {
+    const user = await User.findOne({ where: { id } });
+    return new UserStatsDto(user);
   }
 
 }

@@ -27,6 +27,8 @@ router.get('/me', AuthMiddleware, userController.getMe);
 
 router.get('/top', AuthMiddleware, userController.getTop);
 
+router.get('/stats', AuthMiddleware, userController.getUserStats);
+
 router.get('/:userId', AuthMiddleware, userController.getUserById);
 
 module.exports = router
