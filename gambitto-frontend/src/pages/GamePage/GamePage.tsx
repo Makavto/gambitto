@@ -139,7 +139,7 @@ function GamePage() {
               <div className='textBig'>{user?.id === chessGame.blackPlayerId ? chessGame.whitePlayerName : chessGame.blackPlayerName}</div>
               <ChessBoard
                 startingFen={activeMove ? getPositionAfterMove(activeMove.positionBefore, activeMove.moveCode) : undefined}
-                isMovingBlocked={activeMove?.number !== chessGame.gameMoves[chessGame.gameMoves.length - 1].moveNumber || chessGame.gameStatus !== 'inProgress'}
+                isMovingBlocked={activeMove?.number !== chessGame.gameMoves[chessGame.gameMoves.length - 1]?.moveNumber || chessGame.gameStatus !== 'inProgress'}
                 makeMove={onMakeMove}
                 boardOrientation={chessGame.blackPlayerId === user?.id ? 'black' : 'white'}
               />
