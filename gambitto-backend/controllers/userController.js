@@ -44,7 +44,7 @@ class UserController {
       }
       const {email, password} = req.body;
       const userData = await userService.login(email, password);
-      res.cookie('refreshToken', userData.refreshToken, {maxAge: Number(process.env.JWT_REFRESH_EXPIRES_IN_MILLISECONDS), httpOnly: true, secure: false, sameSite: 'none'});
+      res.cookie('refreshToken', userData.refreshToken, {maxAge: Number(process.env.JWT_REFRESH_EXPIRES_IN_MILLISECONDS), httpOnly: true, secure: false});
       return res.json(userData);
     } catch (error) {
       return next(error)
