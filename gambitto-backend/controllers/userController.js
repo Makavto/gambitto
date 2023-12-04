@@ -22,7 +22,7 @@ class UserController {
       }
       const {email, password, username} = req.body;
       const userData = await userService.register(username, email, password);
-      res.cookie('refreshToken', userData.refreshToken, {maxAge: Number(process.env.JWT_REFRESH_EXPIRES_IN_MILLISECONDS), httpOnly: true, secure: true});
+      res.cookie('refreshToken', userData.refreshToken, {maxAge: Number(process.env.JWT_REFRESH_EXPIRES_IN_MILLISECONDS), httpOnly: true, secure: false});
       return res.json(userData);
     } catch (error) {
       return next(error)
