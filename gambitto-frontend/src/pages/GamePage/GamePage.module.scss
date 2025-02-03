@@ -14,8 +14,6 @@
       margin-right: 4rem;
       width: 100%;
       max-width: $board-width;
-      // max-height: 100vh;
-      // max-width: calc(100vh - 50px);
   
       .user {
         display: flex;
@@ -48,6 +46,10 @@
             }
           }
         }
+      }
+
+      .giveUpBtn {
+        margin-top: 1.8rem;
       }
     }
   }
