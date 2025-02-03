@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { AuthAPI } from '../../services/AuthService';
-import { userSlice } from '../../store/reducers/userSlice';
-import { useAppDispatch } from '../../hooks/redux';
 import styles from './AuthPage.module.scss';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Input from '../../components/Input/Input';
 import Button from '../../components/Button/Button';
-import { isFetchBaseQueryErrorType } from '../../utils/fetchBaseQueryErrorCheck';
-import { ButtonTypesEnum } from '../../utils/ButtonTypesEnum';
 import Card from '../../components/Card/Card';
-import { ChessAPI } from '../../services/ChessService';
-import { FriendshipAPI } from '../../services/FriendshipService';
+import { useAuthPageController } from '../../controllers/pages/AuthPage';
+import { isFetchBaseQueryErrorType, ButtonTypesEnum } from '../../utils';
 
 interface IAuthForm {
   email: string;
@@ -23,16 +18,7 @@ function AuthPage() {
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const [loginUser, {data: userData, error: userError}] = AuthAPI.useLoginUserMutation();
-
-  const [registerUser, {data: registerData, error: registerError}] = AuthAPI.useRegisterUserMutation();
-
-  const [createChessWs] = ChessAPI.useLazyCreateWsQuery();
-  const [createFriendshipWs] = FriendshipAPI.useLazyCreateWsQuery();
-
-  const {setUser} = userSlice.actions;
-
-  const dispatch = useAppDispatch();
+  const {loginUser, registerError, registerUser, userError} = useAuthPageController();
 
   const {register, handleSubmit} = useForm<IAuthForm>();
 
@@ -56,21 +42,6 @@ function AuthPage() {
     setErrorMessage(null);
     setRegistrationPage(!registrationPage);
   }
-
-  useEffect(() => {
-    if (!!userData) {
-      dispatch(setUser(userData.user));
-      localStorage.setItem('accessToken', userData.accessToken);
-      createChessWs();
-      createFriendshipWs();
-    }
-    if (!!registerData) {
-      dispatch(setUser(registerData.user));
-      localStorage.setItem('accessToken', registerData.accessToken);
-      createChessWs();
-      createFriendshipWs();
-    }
-  }, [userData, registerData]);
 
   useEffect(() => {
     if (!!userError && isFetchBaseQueryErrorType(userError)) {
