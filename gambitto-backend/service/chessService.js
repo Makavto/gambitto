@@ -135,10 +135,10 @@ class ChessService {
     }
     let gameStatus;
     if (userId === game.whitePlayerId) {
-      gameStatus = await GameStatus.findOne({where: {status: 'whiteWin'}});
+      gameStatus = await GameStatus.findOne({where: {status: 'blackWin'}});
     }
     if (userId === game.blackPlayerId) {
-      gameStatus = await GameStatus.findOne({where: {status: 'blackWin'}});
+      gameStatus = await GameStatus.findOne({where: {status: 'whiteWin'}});
     };
     game.gameStatusId = gameStatus.id;
     game.save();
