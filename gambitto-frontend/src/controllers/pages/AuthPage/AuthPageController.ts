@@ -1,7 +1,9 @@
 import { useEffect } from "react";
-import { AuthAPI, ChessAPI, FriendshipAPI } from "../../../services";
-import { useAppDispatch } from "../../../hooks";
-import { userSlice } from "../../../store";
+import { useAppDispatch } from "../../../hooks/redux";
+import { AuthAPI } from "../../../services/AuthService";
+import { ChessAPI } from "../../../services/ChessService";
+import { FriendshipAPI } from "../../../services/FriendshipService";
+import { userSlice } from "../../../store/reducers/userSlice";
 
 export const useAuthPageController = () => {
   const [loginUser, { data: userData, error: userError }] =

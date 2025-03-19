@@ -14,7 +14,7 @@ interface IChessCard {
 }
 
 function ChessCard({game, onAcceptGame, onDeclineGame, onEnterGame}: IChessCard) {
-  const {user} = useAppSelector(state => state.userSlice);
+    const {user} = useAppSelector(state => state.userSlice);
 
   return (
     <Card>
