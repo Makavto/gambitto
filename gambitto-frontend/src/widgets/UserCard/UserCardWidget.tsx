@@ -1,4 +1,4 @@
-import styles from "./UserCard.module.scss";
+import styles from "./UserCardWidget.module.scss";
 import React from "react";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
