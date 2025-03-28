@@ -11,7 +11,6 @@ const { Chess } = require("chess.js");
 const { STARTING_POSITION } = require("../constants");
 const ChessGameDto = require("../dtos/chessGameDto");
 const ChessGameFullInfoDto = require("../dtos/chessGameFullInfoDto");
-const countPlayersRating = require("../utils/RatingFunction");
 const ratingService = require("./ratingService");
 
 class ChessService {
