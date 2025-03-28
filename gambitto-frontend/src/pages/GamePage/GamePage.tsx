@@ -4,6 +4,7 @@ import styles from "./GamePage.module.scss";
 import Button from "../../components/Button/Button";
 import { ButtonTypesEnum } from "../../utils/ButtonTypesEnum";
 import { useGamePageController } from "../../controllers/pages/GamePage/GamePageController";
+import { GetSignedNumber } from "../../utils/GetSignedNumber";
 
 function GamePage() {
   const {
@@ -15,6 +16,7 @@ function GamePage() {
     onMakeMoveActive,
     onResign,
     user,
+    opponentData,
   } = useGamePageController();
 
   return (
@@ -32,9 +34,41 @@ function GamePage() {
           <div className={styles.gameBlock}>
             <div className={styles.boardWrapper}>
               <div className="textBig">
-                {user?.id === chessGame.blackPlayerId
-                  ? chessGame.whitePlayerName
-                  : chessGame.blackPlayerName}
+                {opponentData && (
+                  <span>
+                    {opponentData.username} (
+                    {chessGame.gameStatus === "inProgress"
+                      ? opponentData.rating
+                      : chessGame.blackPlayerId === opponentData.id
+                      ? chessGame.blackPlayerRating
+                      : chessGame.whitePlayerRating}
+                    ){" "}
+                    {chessGame.gameStatus !== "inProgress" &&
+                    chessGame.blackPlayerId === opponentData.id
+                      ? chessGame.blackPlayerDelta && (
+                          <span
+                            className={`textSmall ${
+                              chessGame.blackPlayerDelta > 0
+                                ? "textSuccess"
+                                : "textAccent"
+                            }`}
+                          >
+                            {GetSignedNumber(chessGame.blackPlayerDelta)}
+                          </span>
+                        )
+                      : chessGame.whitePlayerDelta && (
+                          <span
+                            className={`textSmall ${
+                              chessGame.whitePlayerDelta > 0
+                                ? "textSuccess"
+                                : "textAccent"
+                            }`}
+                          >
+                            {GetSignedNumber(chessGame.whitePlayerDelta)}
+                          </span>
+                        )}
+                  </span>
+                )}
               </div>
               <ChessBoard
                 startingFen={
@@ -55,7 +89,41 @@ function GamePage() {
                   chessGame.blackPlayerId === user?.id ? "black" : "white"
                 }
               />
-              <div className={`textBig ${styles.user}`}>{user?.username}</div>
+              <div className={`textBig ${styles.user}`}>
+                <span>
+                  {user?.username} (
+                  {chessGame.gameStatus === "inProgress"
+                    ? user?.rating
+                    : chessGame.blackPlayerId === user?.id
+                    ? chessGame.blackPlayerRating
+                    : chessGame.whitePlayerRating}
+                  ){" "}
+                  {chessGame.gameStatus !== "inProgress" &&
+                  chessGame.blackPlayerId === user?.id
+                    ? chessGame.blackPlayerDelta && (
+                        <span
+                          className={`textSmall ${
+                            chessGame.blackPlayerDelta > 0
+                              ? "textSuccess"
+                              : "textAccent"
+                          }`}
+                        >
+                          {GetSignedNumber(chessGame.blackPlayerDelta)}
+                        </span>
+                      )
+                    : chessGame.whitePlayerDelta && (
+                        <span
+                          className={`textSmall ${
+                            chessGame.whitePlayerDelta > 0
+                              ? "textSuccess"
+                              : "textAccent"
+                          }`}
+                        >
+                          {GetSignedNumber(chessGame.whitePlayerDelta)}
+                        </span>
+                      )}
+                </span>
+              </div>
             </div>
             <div className={styles.statusWrapper}>
               <div>

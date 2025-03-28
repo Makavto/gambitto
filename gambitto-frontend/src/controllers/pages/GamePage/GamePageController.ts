@@ -5,6 +5,7 @@ import { IGameFullInfoDto } from "../../../dtos/IGameFullInfoDto";
 import { useAppSelector } from "../../../hooks/redux";
 import { ChessWsServerMethodsEnum } from "../../../models/enums/ChessWsMethodsEnum";
 import { ChessAPI } from "../../../services/ChessService";
+import { UserAPI } from "../../../services/UserService";
 
 interface IHistoryMove {
   moveCode: string;
@@ -21,6 +22,8 @@ export const useGamePageController = () => {
     ChessAPI.useLazyChessNotificationsListenerQuery();
   const [makeMove, { data: makeMoveData }] = ChessAPI.useLazyMakeMoveQuery();
   const [resign, { data: resignData }] = ChessAPI.useLazyResignQuery();
+  const [getOpponent, { data: opponentData }] =
+    UserAPI.useLazyGetUserByIdQuery();
 
   const [chessGame, setChessGame] = useState<IGameFullInfoDto>();
 
@@ -75,9 +78,14 @@ export const useGamePageController = () => {
   };
 
   useEffect(() => {
-    if (!!gameInfoData) {
+    if (!!gameInfoData && !!user) {
       setChessGame(gameInfoData.gameFullInfo);
       resetHistory(gameInfoData.gameFullInfo);
+      getOpponent(
+        gameInfoData.gameFullInfo.whitePlayerId === user.id
+          ? gameInfoData.gameFullInfo.blackPlayerId
+          : gameInfoData.gameFullInfo.whitePlayerId
+      );
     }
   }, [gameInfoData]);
 
@@ -165,7 +173,8 @@ export const useGamePageController = () => {
     getPositionAfterMove,
     chessGame,
     user,
+    opponentData,
     history,
-    activeMove
+    activeMove,
   };
 };
