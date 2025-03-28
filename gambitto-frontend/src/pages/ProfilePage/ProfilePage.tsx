@@ -28,6 +28,9 @@ function ProfilePage() {
                   </div>
                 </div>
                 <div className={styles.cardItem}>
+                  <span className="textSecondary">Шахматный рейтинг: {user.rating}</span>
+                </div>
+                <div className={styles.cardItem}>
                   <span className="textSecondary">E-mail: {user.email}</span>
                 </div>
                 <div>
