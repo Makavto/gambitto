@@ -19,7 +19,7 @@ class UserService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 3);
-    const user = await User.create({username, email, password: hashedPassword});
+    const user = await User.create({username, email, password: hashedPassword, rating: 400, ratingDeviation: 350});
     const userDto = new UserDto(user); // username, email, id
     const tokens = tokenService.generateToken({...userDto});
     tokenService.saveToken(user.id, tokens.refreshToken);

@@ -10,6 +10,7 @@ module.exports = () => {
     models.User.hasMany(models.Message);
     models.User.hasMany(models.ChessMove);
     models.User.hasOne(models.Token);
+    models.User.hasMany(models.RatingsHistory);
 
     models.Chat.hasMany(models.Message);
     models.Chat.belongsTo(models.User, {as: 'userOne', onDelete: 'CASCADE'});
@@ -20,8 +21,12 @@ module.exports = () => {
 
     models.ChessGame.belongsTo(models.GameStatus);
     models.ChessGame.hasMany(models.ChessMove);
+    models.ChessGame.hasMany(models.RatingsHistory);
     models.ChessGame.belongsTo(models.User, {as: 'blackPlayer', onDelete: 'CASCADE'});
     models.ChessGame.belongsTo(models.User, {as: 'whitePlayer', onDelete: 'CASCADE'});
+
+    models.RatingsHistory.belongsTo(models.User);
+    models.RatingsHistory.belongsTo(models.ChessGame);
 
     models.ChessMove.belongsTo(models.ChessGame);
     models.ChessMove.belongsTo(models.User);
