@@ -10,6 +10,7 @@ module.exports = class UserSearchDto {
   totalGames;
   friendshipStatus;
   friendshipStatusFromatted;
+  rating;
 
   constructor(userModel, userId) {
     return (async () => {
@@ -34,6 +35,7 @@ module.exports = class UserSearchDto {
       this.totalGames = games.length;
       this.friendshipStatus = friendshipStatus;
       this.friendshipStatusFromatted = friendshipStatusFromatted;
+      this.rating = userModel.rating;
       return this
     })();
   }

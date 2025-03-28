@@ -6,6 +6,8 @@ const User = sequalize.define('users', {
     username: {type: DataTypes.STRING, allowNull: false, unique: true},
     email: {type: DataTypes.STRING, allowNull: false, unique: true},
     password: {type: DataTypes.STRING, allowNull: false},
+    rating: {type: DataTypes.INTEGER, allowNull: false},
+    ratingDeviation: {type: DataTypes.INTEGER, allowNull: false},
 });
 
 module.exports = User
