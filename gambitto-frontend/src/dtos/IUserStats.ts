@@ -1,3 +1,5 @@
+import { IRatingsHistoryDto } from "./IRatingsHistoryDto";
+
 export interface IUserStatsDto {
   id: string;
   createdAt: string;
@@ -8,4 +10,6 @@ export interface IUserStatsDto {
   totalGames: number;
   winStreak: number;
   defeatStreak: number;
+  rating: number;
+  ratingsHistory?: IRatingsHistoryDto[];
 }

@@ -28,6 +28,9 @@ function CommunityPage() {
                 <h1>Имя пользователя</h1>
               </th>
               <th>
+                <h1>Рейтинг</h1>
+              </th>
+              <th>
                 <h1>Количество побед</h1>
               </th>
               <th>
@@ -39,6 +42,7 @@ function CommunityPage() {
             {topData.map((user, i) => (
               <tr key={i}>
                 <td>{user.username}</td>
+                <td>{user.rating}</td>
                 <td>{user.wins}</td>
                 <td>{user.totalGames}</td>
               </tr>
