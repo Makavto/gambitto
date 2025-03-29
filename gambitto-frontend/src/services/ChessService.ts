@@ -5,9 +5,9 @@ import { IGameDto } from "../dtos/IGameDto";
 import { IGameFullInfoDto } from "../dtos/IGameFullInfoDto";
 import { IChessWsDto } from "../dtos/IChessWsDto";
 import { IChessWsFullInfoDto } from "../dtos/IChessWsFullInfoDto";
-import { Ws } from "./ws/Ws";
+import { WebSocketClient } from "./ws/Ws";
 
-const chessWs = new Ws(`${process.env.REACT_APP_WS_URL}/chess`);
+const chessWs = new WebSocketClient(`${process.env.REACT_APP_WS_URL}/chess`);
 
 export const ChessAPI = createApi({
   reducerPath: 'ChessAPI',
@@ -24,7 +24,7 @@ export const ChessAPI = createApi({
       ) {
         try {
           await api.cacheDataLoaded
-          chessWs.revalidateWs();
+          chessWs.getSocket();
         } catch (error) {
           console.log(error)
         }
@@ -49,7 +49,7 @@ export const ChessAPI = createApi({
               });
             }
           }
-          chessWs.ws.addEventListener('message', listener)
+          chessWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -58,7 +58,7 @@ export const ChessAPI = createApi({
 
     getAllGames: builder.query<{games: IGameDto[]} | null, void>({
       queryFn: async (arg) => {
-        chessWs.ws.send(JSON.stringify({method: ChessWsMethodsEnum.GetAllGames}))
+        chessWs.getSocket()?.send(JSON.stringify({method: ChessWsMethodsEnum.GetAllGames}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -75,33 +75,45 @@ export const ChessAPI = createApi({
               })
             }
           }
-          chessWs.ws.addEventListener('message', listener)
+          chessWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
       },
     }),
 
-    getChessNotifications: builder.query<{games: IGameDto[]} | null, void>({
+    getChessNotifications: builder.query<IGameDto[], void>({
       queryFn: async (arg) => {
-        chessWs.ws.send(JSON.stringify({method: ChessWsMethodsEnum.GetNotifications}))
-        return {data: null}
+        chessWs.getSocket()?.send(JSON.stringify({method: ChessWsMethodsEnum.GetNotifications}))
+        return {data: []}
       },
       async onCacheEntryAdded(
-        arg,
-        api,
+        _,
+        {updateCachedData, cacheDataLoaded, cacheEntryRemoved},
       ) {
         try {
-          await api.cacheDataLoaded
-          const listener = (event: MessageEvent) => {
+          await cacheDataLoaded
+          const allNotificationsListener = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
             if (data.method === ChessWsMethodsEnum.GetNotifications) {
-              api.updateCachedData((draft) => {
-                return data.data
+              updateCachedData((draft) => {
+                return data.data.games
               })
             }
           }
-          chessWs.ws.addEventListener('message', listener)
+
+          const acceptInvitaionListener = (event: MessageEvent) => {
+            const data = JSON.parse(event.data);
+            if (data.method === ChessWsMethodsEnum.AcceptInvitation) {
+              updateCachedData((draft) => {
+                return data.data.games
+              })
+            }
+          }
+
+          chessWs.getSocket()?.addEventListener('message', acceptInvitaionListener)
+          
+          chessWs.getSocket()?.addEventListener('message', allNotificationsListener)
         } catch (error) {
           console.log(error)
         }
@@ -110,7 +122,7 @@ export const ChessAPI = createApi({
 
     sendInvitation: builder.query<{game: IGameDto} | null, {inviteeId: number}>({
       queryFn: async ({inviteeId}) => {
-        chessWs.ws.send(JSON.stringify({method: ChessWsMethodsEnum.Invite, inviteeId}))
+        chessWs.getSocket()?.send(JSON.stringify({method: ChessWsMethodsEnum.Invite, inviteeId}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -127,7 +139,7 @@ export const ChessAPI = createApi({
               });
             }
           }
-          chessWs.ws.addEventListener('message', listener)
+          chessWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -136,7 +148,7 @@ export const ChessAPI = createApi({
 
     acceptInvitation: builder.query<{game: IGameDto} | null, {gameId: number}>({
       queryFn: async ({gameId}) => {
-        chessWs.ws.send(JSON.stringify({method: ChessWsMethodsEnum.AcceptInvitation, gameId}))
+        chessWs.getSocket()?.send(JSON.stringify({method: ChessWsMethodsEnum.AcceptInvitation, gameId}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -153,7 +165,7 @@ export const ChessAPI = createApi({
               });
             }
           }
-          chessWs.ws.addEventListener('message', listener)
+          chessWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -162,7 +174,7 @@ export const ChessAPI = createApi({
 
     declineInvitation: builder.query<{game: IGameDto} | null, {gameId: number}>({
       queryFn: async ({gameId}) => {
-        chessWs.ws.send(JSON.stringify({method: ChessWsMethodsEnum.DeclineInvitation, gameId}))
+        chessWs.getSocket()?.send(JSON.stringify({method: ChessWsMethodsEnum.DeclineInvitation, gameId}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -179,7 +191,7 @@ export const ChessAPI = createApi({
               });
             }
           }
-          chessWs.ws.addEventListener('message', listener)
+          chessWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -188,7 +200,7 @@ export const ChessAPI = createApi({
 
     makeMove: builder.query<{gameFullInfo: IGameFullInfoDto} | null, {gameId: number, moveCode: string}>({
       queryFn: async ({gameId, moveCode}) => {
-        chessWs.ws.send(JSON.stringify({method: ChessWsMethodsEnum.MakeMove, gameId, moveCode}))
+        chessWs.getSocket()?.send(JSON.stringify({method: ChessWsMethodsEnum.MakeMove, gameId, moveCode}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -205,7 +217,7 @@ export const ChessAPI = createApi({
               });
             }
           }
-          chessWs.ws.addEventListener('message', listener)
+          chessWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -214,7 +226,7 @@ export const ChessAPI = createApi({
 
     getGameInfo: builder.query<{gameFullInfo: IGameFullInfoDto} | null, {gameId: number}>({
       queryFn: async ({gameId}) => {
-        chessWs.ws.send(JSON.stringify({method: ChessWsMethodsEnum.GetGameInfo, gameId}))
+        chessWs.getSocket()?.send(JSON.stringify({method: ChessWsMethodsEnum.GetGameInfo, gameId}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -231,7 +243,7 @@ export const ChessAPI = createApi({
               });
             }
           }
-          chessWs.ws.addEventListener('message', listener)
+          chessWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -240,7 +252,7 @@ export const ChessAPI = createApi({
 
     resign: builder.query<{game: IGameDto} | null, {gameId: number}>({
       queryFn: async ({gameId}) => {
-        chessWs.ws.send(JSON.stringify({method: ChessWsMethodsEnum.Resign, gameId}))
+        chessWs.getSocket()?.send(JSON.stringify({method: ChessWsMethodsEnum.Resign, gameId}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -257,7 +269,7 @@ export const ChessAPI = createApi({
               });
             }
           }
-          chessWs.ws.addEventListener('message', listener)
+          chessWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }

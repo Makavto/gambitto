@@ -1,11 +1,11 @@
 import { createApi } from "@reduxjs/toolkit/query/react"
 import { baseQueryWithReauth } from "../utils/baseQuery"
-import { Ws } from "./ws/Ws";
+import { WebSocketClient } from "./ws/Ws";
 import { IFriendshipDto } from "../dtos/IFriendshipDto";
 import { IFriendshipInvitation } from "../dtos/IFriendshipInvitation";
 import { FriendshipWsMethodsEnum } from "../models/enums/FriendshipWsMethodsEnum";
 
-const friendshipWs = new Ws(`${process.env.REACT_APP_WS_URL}/friendship`);
+const friendshipWs = new WebSocketClient(`${process.env.REACT_APP_WS_URL}/friendship`);
 
 export const FriendshipAPI = createApi({
   reducerPath: 'FriendshipAPI',
@@ -21,7 +21,7 @@ export const FriendshipAPI = createApi({
       ) {
         try {
           await api.cacheDataLoaded
-          friendshipWs.revalidateWs();
+          friendshipWs.getSocket();
         } catch (error) {
           console.log(error)
         }
@@ -46,7 +46,7 @@ export const FriendshipAPI = createApi({
               });
             }
           }
-          friendshipWs.ws.addEventListener('message', listener)
+          friendshipWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -55,7 +55,7 @@ export const FriendshipAPI = createApi({
 
     sendInvitation: builder.query<{friendship: IFriendshipDto} | null, {inviteeId: number}>({
       queryFn: async ({inviteeId}) => {
-        friendshipWs.ws.send(JSON.stringify({method: FriendshipWsMethodsEnum.Invite, inviteeId}))
+        friendshipWs.getSocket()?.send(JSON.stringify({method: FriendshipWsMethodsEnum.Invite, inviteeId}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -72,7 +72,7 @@ export const FriendshipAPI = createApi({
               });
             }
           }
-          friendshipWs.ws.addEventListener('message', listener)
+          friendshipWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -81,7 +81,7 @@ export const FriendshipAPI = createApi({
 
     declineInvitation: builder.query<{friendship: IFriendshipDto} | null, {invitationId: number}>({
       queryFn: async ({invitationId}) => {
-        friendshipWs.ws.send(JSON.stringify({method: FriendshipWsMethodsEnum.DeclineInvitation, invitationId}))
+        friendshipWs.getSocket()?.send(JSON.stringify({method: FriendshipWsMethodsEnum.DeclineInvitation, invitationId}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -98,7 +98,7 @@ export const FriendshipAPI = createApi({
               });
             }
           }
-          friendshipWs.ws.addEventListener('message', listener)
+          friendshipWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -107,7 +107,7 @@ export const FriendshipAPI = createApi({
 
     acceptInvitation: builder.query<{friendship: IFriendshipDto} | null, {invitationId: number}>({
       queryFn: async ({invitationId}) => {
-        friendshipWs.ws.send(JSON.stringify({method: FriendshipWsMethodsEnum.AcceptInvitation, invitationId}))
+        friendshipWs.getSocket()?.send(JSON.stringify({method: FriendshipWsMethodsEnum.AcceptInvitation, invitationId}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -124,7 +124,7 @@ export const FriendshipAPI = createApi({
               });
             }
           }
-          friendshipWs.ws.addEventListener('message', listener)
+          friendshipWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -133,7 +133,7 @@ export const FriendshipAPI = createApi({
 
     deleteFriendship: builder.query<{friendship: IFriendshipDto} | null, {invitationId: number}>({
       queryFn: async ({invitationId}) => {
-        friendshipWs.ws.send(JSON.stringify({method: FriendshipWsMethodsEnum.Delete, invitationId}))
+        friendshipWs.getSocket()?.send(JSON.stringify({method: FriendshipWsMethodsEnum.Delete, invitationId}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -150,7 +150,7 @@ export const FriendshipAPI = createApi({
               });
             }
           }
-          friendshipWs.ws.addEventListener('message', listener)
+          friendshipWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -159,7 +159,7 @@ export const FriendshipAPI = createApi({
 
     getAllFriends: builder.query<{friendships: IFriendshipDto[]} | null, void>({
       queryFn: async () => {
-        friendshipWs.ws.send(JSON.stringify({method: FriendshipWsMethodsEnum.GetAllFriends}))
+        friendshipWs.getSocket()?.send(JSON.stringify({method: FriendshipWsMethodsEnum.GetAllFriends}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -176,7 +176,7 @@ export const FriendshipAPI = createApi({
               });
             }
           }
-          friendshipWs.ws.addEventListener('message', listener)
+          friendshipWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }
@@ -185,7 +185,7 @@ export const FriendshipAPI = createApi({
 
     getNotifications: builder.query<{friendships: IFriendshipDto[]} | null, void>({
       queryFn: async () => {
-        friendshipWs.ws.send(JSON.stringify({method: FriendshipWsMethodsEnum.GetAllFriends}))
+        friendshipWs.getSocket()?.send(JSON.stringify({method: FriendshipWsMethodsEnum.GetAllFriends}))
         return {data: null}
       },
       async onCacheEntryAdded(
@@ -202,7 +202,7 @@ export const FriendshipAPI = createApi({
               });
             }
           }
-          friendshipWs.ws.addEventListener('message', listener)
+          friendshipWs.getSocket()?.addEventListener('message', listener)
         } catch (error) {
           console.log(error)
         }

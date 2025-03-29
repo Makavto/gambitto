@@ -10,16 +10,12 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { setupStore } from './store/store';
 import { Provider } from 'react-redux';
-import { injectStore } from './services/ws/Ws';
-
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
 const store = setupStore();
-
-injectStore(store);
 
 root.render(
   <Provider store={store}>
