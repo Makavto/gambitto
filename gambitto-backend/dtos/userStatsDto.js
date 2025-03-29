@@ -1,3 +1,4 @@
+const { RatingsHistory } = require("../models");
 const chessService = require("../service/chessService");
 
 module.exports = class UserStatsDto {
@@ -10,10 +11,15 @@ module.exports = class UserStatsDto {
   totalGames;
   winStreak;
   defeatStreak;
+  rating;
+  ratingsHistory;
 
   constructor(userModel) {
     return (async () => {
       const games = await chessService.getUserGames(userModel.id);
+      const ratingsHistory = await RatingsHistory.findAll({
+        where: { userId: userModel.id },
+      });
       let wins = 0;
       let defeats = 0;
       let draws = 0;
@@ -21,12 +27,24 @@ module.exports = class UserStatsDto {
       let winStreak = 0;
       let defeatStreak = 0;
       let maxDefeatStreak = 0;
-      const isWin = (game) => game.gameStatus === 'blackWin' && game.blackPlayerId === userModel.id || game.gameStatus === 'whiteWin' && game.whitePlayerId === userModel.id;
-      const isDefeat = (game) => game.gameStatus === 'whiteWin' && game.blackPlayerId === userModel.id ||game.gameStatus === 'blackWin' && game.whitePlayerId === userModel.id;
+      const isWin = (game) =>
+        (game.gameStatus === "blackWin" &&
+          game.blackPlayerId === userModel.id) ||
+        (game.gameStatus === "whiteWin" && game.whitePlayerId === userModel.id);
+      const isDefeat = (game) =>
+        (game.gameStatus === "whiteWin" &&
+          game.blackPlayerId === userModel.id) ||
+        (game.gameStatus === "blackWin" && game.whitePlayerId === userModel.id);
       games.forEach((game) => {
         if (isWin(game)) wins++;
         if (isDefeat(game)) defeats++;
-        if (game.gameStatus === 'draw' || game.gameStatus === 'stalemate' || game.gameStatus === 'threefold' || game.gameStatus === 'insufficient') draws++;
+        if (
+          game.gameStatus === "draw" ||
+          game.gameStatus === "stalemate" ||
+          game.gameStatus === "threefold" ||
+          game.gameStatus === "insufficient"
+        )
+          draws++;
         if (isWin(game)) {
           winStreak++;
         } else {
@@ -55,7 +73,9 @@ module.exports = class UserStatsDto {
       this.winStreak = maxWinStreak;
       this.defeatStreak = maxDefeatStreak;
       this.totalGames = games.length;
-      return this
+      this.rating = userModel.rating;
+      this.ratingsHistory = ratingsHistory;
+      return this;
     })();
   }
-}
+};

@@ -28,18 +28,24 @@ module.exports = class ChessGameFullInfoDto {
       const gameStatus = await GameStatus.findOne({
         where: { id: chessGameModel.gameStatusId },
       });
-      const whitePlayerRating = await RatingsHistory.findOne({
-        where: {
-          gameId: chessGameModel.id,
-          userId: chessGameModel.whitePlayerId,
-        },
-      });
-      const blackPlayerRating = await RatingsHistory.findOne({
-        where: {
-          gameId: chessGameModel.id,
-          userId: chessGameModel.blackPlayerId,
-        },
-      });
+      try {
+        const whitePlayerRating = await RatingsHistory.findOne({
+          where: {
+            chessGameId: chessGameModel.id,
+            userId: chessGameModel.whitePlayerId,
+          },
+        });
+        const blackPlayerRating = await RatingsHistory.findOne({
+          where: {
+            chessGameId: chessGameModel.id,
+            userId: chessGameModel.blackPlayerId,
+          },
+        });
+        this.blackPlayerRating = blackPlayerRating?.rating;
+        this.whitePlayerRating = whitePlayerRating?.rating;
+        this.blackPlayerDelta = blackPlayerRating?.ratingDelta;
+        this.whitePlayerDelta = whitePlayerRating?.ratingDelta;
+      } catch (error) {}
       this.id = chessGameModel.id;
       this.createdAt = chessGameModel.createdAt;
       this.senderId = chessGameModel.senderId;
@@ -48,10 +54,6 @@ module.exports = class ChessGameFullInfoDto {
       this.whitePlayerId = chessGameModel.whitePlayerId;
       this.blackPlayerName = blackPlayer.username;
       this.whitePlayerName = whitePlayer.username;
-      this.blackPlayerRating = blackPlayerRating?.rating;
-      this.whitePlayerRating = whitePlayerRating?.rating;
-      this.blackPlayerDelta = blackPlayerRating?.ratingDelta;
-      this.whitePlayerDelta = whitePlayerRating?.ratingDelta;
       this.gameStatusFormatted = gameStatus.statusFormatted;
       this.gameStatus = gameStatus.status;
       this.gameMoves = await ChessMove.findAll({
