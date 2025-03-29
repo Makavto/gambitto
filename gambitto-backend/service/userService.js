@@ -3,7 +3,7 @@ const ApiError = require("../error/ApiError");
 const bcrypt = require("bcrypt");
 const tokenService = require("./tokenService");
 const UserDto = require("../dtos/userDto");
-const {Op} = require("sequelize");
+const { Op } = require("sequelize");
 const UserTopDto = require("../dtos/userTopDto");
 const UserSearchDto = require("../dtos/userSearchDto");
 const UserStatsDto = require("../dtos/userStatsDto");
@@ -11,43 +11,55 @@ const UserStatsDto = require("../dtos/userStatsDto");
 class UserService {
   // Сервис регистрации пользователя
   async register(username, email, password) {
-    if (await User.findOne({where: {email}})) {
-      throw ApiError.badRequest(`Пользователь с почтовым адресом ${email} уже существует.`)
+    if (await User.findOne({ where: { email } })) {
+      throw ApiError.badRequest(
+        `Пользователь с почтовым адресом ${email} уже существует.`
+      );
     }
-    if (await User.findOne({where: {username}})) {
-      throw ApiError.badRequest(`Пользователь с ником ${username} уже существует.`);
+    if (await User.findOne({ where: { username } })) {
+      throw ApiError.badRequest(
+        `Пользователь с ником ${username} уже существует.`
+      );
     }
 
     const hashedPassword = await bcrypt.hash(password, 3);
-    const user = await User.create({username, email, password: hashedPassword, rating: 400, ratingDeviation: 350});
+    const user = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+      rating: 400,
+      ratingDeviation: 350,
+    });
     const userDto = new UserDto(user); // username, email, id
-    const tokens = tokenService.generateToken({...userDto});
+    const tokens = tokenService.generateToken({ ...userDto });
     tokenService.saveToken(user.id, tokens.refreshToken);
 
-    return {...tokens, user: userDto}
+    return { ...tokens, user: userDto };
   }
 
   // Сервис авторизации пользователя
   async login(email, password) {
-    const user = await User.findOne({where: {email}});
+    const user = await User.findOne({ where: { email } });
     if (!user) {
-      throw ApiError.badRequest('Пользователь с таким почтовым адресом не найден.');
+      throw ApiError.badRequest(
+        "Пользователь с таким почтовым адресом не найден."
+      );
     }
     const isPasswordEqual = await bcrypt.compare(password, user.password);
     if (!isPasswordEqual) {
-      throw ApiError.badRequest('Неверный пароль');
+      throw ApiError.badRequest("Неверный пароль");
     }
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateToken({...userDto});
+    const tokens = tokenService.generateToken({ ...userDto });
     tokenService.saveToken(user.id, tokens.refreshToken);
 
-    return {...tokens, user: userDto}
+    return { ...tokens, user: userDto };
   }
 
   // Сервис логаута
   async logout(refreshToken) {
     const token = await tokenService.removeToken(refreshToken);
-    return token
+    return token;
   }
 
   // Сервис обновления access token
@@ -60,11 +72,11 @@ class UserService {
     if (!userData || !tokenFromDb) {
       throw ApiError.unauthorized();
     }
-    const user = await User.findOne({where: {id: userData.id}});
+    const user = await User.findOne({ where: { id: userData.id } });
     const userDto = new UserDto(user); // username, email, id, createdAt
-    const tokens = tokenService.generateToken({...userDto});
+    const tokens = tokenService.generateToken({ ...userDto });
     tokenService.saveToken(user.id, tokens.refreshToken);
-    return {...tokens, user: userDto}
+    return { ...tokens, user: userDto };
   }
 
   // Поиск по юзерам
@@ -72,12 +84,14 @@ class UserService {
     const users = await User.findAll({
       where: {
         username: {
-          [Op.iLike]: `%${searchQuery}%`
+          [Op.iLike]: `%${searchQuery}%`,
         },
-        id: {[Op.ne]: userId}
-      }
+        id: { [Op.ne]: userId },
+      },
     });
-    const userDtos = await Promise.all(users.map(async user => await new UserSearchDto(user, userId)));
+    const userDtos = await Promise.all(
+      users.map(async (user) => await new UserSearchDto(user, userId))
+    );
     return userDtos;
   }
 
@@ -88,20 +102,23 @@ class UserService {
   }
 
   async getTopUsers() {
-    const users = await User.findAll();
+    const users = await User.findAll({
+      order: [["rating", "DESC"]],
+      limit: 5,
+    });
 
-    let response =  await Promise.all(users.map(async (user) => {
-      return await new UserTopDto(user);
-    }));
-    response = response.sort((a, b) => b.wins - a.wins).slice(0, 5);
-    return response
+    let response = await Promise.all(
+      users.map(async (user) => {
+        return await new UserTopDto(user);
+      })
+    );
+    return response;
   }
 
   async getUserStats(id) {
     const user = await User.findOne({ where: { id } });
     return new UserStatsDto(user);
   }
-
 }
 
 module.exports = new UserService();

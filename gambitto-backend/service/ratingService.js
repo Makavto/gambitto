@@ -1,9 +1,5 @@
 const { Op } = require("sequelize");
-const {
-  User,
-  ChessGame,
-  RatingsHistory,
-} = require("../models");
+const { User, ChessGame, RatingsHistory } = require("../models");
 const countPlayersRating = require("../utils/RatingFunction");
 
 class RatingService {
@@ -58,14 +54,14 @@ class RatingService {
     await blackPlayer.save();
 
     const ratingHistoryWhite = await RatingsHistory.create({
-      gameId: game.id,
+      chessGameId: game.id,
       userId: game.whitePlayerId,
       rating: Math.round(newPlayerWhite.rating),
       ratingDelta: Math.round(newPlayerWhite.delta),
     });
 
     const ratingHistoryBlack = await RatingsHistory.create({
-      gameId: game.id,
+      chessGameId: game.id,
       userId: game.blackPlayerId,
       rating: Math.round(newPlayerBlack.rating),
       ratingDelta: Math.round(newPlayerBlack.delta),
