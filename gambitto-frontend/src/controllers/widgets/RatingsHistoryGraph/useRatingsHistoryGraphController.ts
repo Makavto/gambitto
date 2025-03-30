@@ -9,5 +9,6 @@ export const useRatingsHistoryGraphController = () => {
 
   return {
     graphData: statsData?.ratingsHistory,
+    isStatsLoading,
   };
 };

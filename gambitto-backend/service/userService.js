@@ -7,6 +7,7 @@ const { Op } = require("sequelize");
 const UserTopDto = require("../dtos/userTopDto");
 const UserSearchDto = require("../dtos/userSearchDto");
 const UserStatsDto = require("../dtos/userStatsDto");
+const { RatingsHistory } = require("../models");
 
 class UserService {
   // Сервис регистрации пользователя
@@ -27,8 +28,13 @@ class UserService {
       username,
       email,
       password: hashedPassword,
-      rating: 400,
+      rating: 800,
       ratingDeviation: 350,
+    });
+    await RatingsHistory.create({
+      userId: user.id,
+      rating: 800,
+      ratingDelta: 0,
     });
     const userDto = new UserDto(user); // username, email, id
     const tokens = tokenService.generateToken({ ...userDto });
