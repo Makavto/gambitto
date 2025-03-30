@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch } from "../../../hooks/redux";
 import { AuthAPI } from "../../../services/AuthService";
 import { ChessAPI } from "../../../services/ChessService";
 import { userSlice } from "../../../store/reducers/userSlice";
+import { UserAPI } from "../../../services/UserService";
 
 export const useProfilePageController = () => {
   const { user } = useAppSelector((state) => state.userSlice);
@@ -15,6 +16,7 @@ export const useProfilePageController = () => {
   const [logoutUser] = AuthAPI.useLogoutUserMutation();
 
   const [getAllGames, { data: allGames }] = ChessAPI.useLazyGetAllGamesQuery();
+  const [getMe] = UserAPI.useLazyGetMeQuery();
 
   const onLogout = () => {
     logoutUser().then(() => {
@@ -28,6 +30,14 @@ export const useProfilePageController = () => {
       getAllGames();
     }
   }, [wsReady]);
+
+  useEffect(() => {
+    getMe().then((res) => {
+      if (res.data) {
+        dispatch(setUser(res.data));
+      }
+    });
+  }, []);
 
   return {
     user,
