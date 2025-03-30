@@ -45,6 +45,7 @@ class ChessService {
   async getUserGames(userId) {
     const games = await ChessGame.findAll({
       where: { [Op.or]: [{ senderId: userId }, { inviteeId: userId }] },
+      order: [["createdAt", "DESC"]],
     });
     if (games.length === 0 || !games) return [];
     return await Promise.all(
