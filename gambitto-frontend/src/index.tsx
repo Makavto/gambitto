@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import 'simplebar-react/dist/simplebar.min.css';
 import './styles/normalize.css';
-import './styles/variables.scss';
+import './styles/variables.module.scss';
 import './styles/fonts.scss';
 import './styles/index.scss';
 import App from './App';

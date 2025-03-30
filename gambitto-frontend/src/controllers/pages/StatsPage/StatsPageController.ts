@@ -18,7 +18,9 @@ export const useStatsPageController = () => {
   const { userId } = useParams();
 
   const { data: statsData, isLoading: isStatsLoading } =
-    UserAPI.useGetUserStatsQuery(userId ? Number(userId) : undefined);
+    UserAPI.useGetUserStatsQuery(userId ? Number(userId) : undefined, {
+      refetchOnMountOrArgChange: true,
+    });
 
   return {
     allGames,

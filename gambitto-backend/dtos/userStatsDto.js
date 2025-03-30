@@ -74,7 +74,11 @@ module.exports = class UserStatsDto {
       this.defeatStreak = maxDefeatStreak;
       this.totalGames = games.length;
       this.rating = userModel.rating;
-      this.ratingsHistory = ratingsHistory;
+      this.ratingsHistory = ratingsHistory?.map((rating) => ({
+        rating: rating.rating,
+        createdAt: rating.createdAt,
+        ratingDelta: rating.ratingDelta,
+      }));
       return this;
     })();
   }

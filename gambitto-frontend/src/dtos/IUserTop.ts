@@ -4,4 +4,5 @@ export interface IUserTop {
   username: string;
   wins: number;
   totalGames: number;
+  rating: number;
 }

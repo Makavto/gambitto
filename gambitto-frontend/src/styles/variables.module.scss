@@ -1,0 +1,16 @@
+$color-background-1: #0c0813;
+$color-background-2: #373855;
+$color-primary: #ffffff;
+$color-secondary: #3d4aeb;
+$color-secondary-2: #185875;
+$color-accent: #b15653;
+$color-success: #4db6ac;
+
+$font-size: 20px;
+$font-weight: 600;
+
+$board-width: 600px;
+
+:export {
+  colorSuccess: $color-success;
+}
