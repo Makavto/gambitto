@@ -16,7 +16,9 @@ function StatsPage() {
         <>
           <div className={styles.cardWrapper}>
             <Card>
-              <div className="textBig">Рейтинг: {statsData.rating}</div>
+              <div className={`textBig ${styles.ratingTitle}`}>
+                Рейтинг: {statsData.rating}
+              </div>
               <RatingsHistoryGraph />
             </Card>
           </div>
