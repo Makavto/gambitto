@@ -6,11 +6,16 @@ import { useStatsPageController } from "../../controllers/pages/StatsPage/StatsP
 import { RatingsHistoryGraph } from "../../widgets/RatingsHistoryGraph/RatingsHistoryGraph";
 
 function StatsPage() {
-  const { allGames, isStatsLoading, statsData } = useStatsPageController();
+  const { allGames, isStatsLoading, statsData, isUserById } =
+    useStatsPageController();
 
   return (
     <div>
-      <div className="textBig title">Статистика</div>
+      <div className="textBig title">
+        {isUserById
+          ? `Статистика игрока ${statsData?.username}`
+          : `Моя статистика`}
+      </div>
       {isStatsLoading && <div>Загрузка...</div>}
       {statsData && (
         <>

@@ -61,13 +61,10 @@ const ChessCardWidgetComponent = ({ game }: IChessCard) => {
       </div>
       <div className={styles.historyCardRow}>
         <div className={styles.historyCardItem}>
-          Вы: за {game.blackPlayerId === user?.id ? "чёрных" : "белых"}
+          {game.whitePlayerName}: за белых
         </div>
         <div className={styles.historyCardItem}>
-          {game.blackPlayerId === user?.id
-            ? game.whitePlayerName
-            : game.blackPlayerName}
-          : за {game.blackPlayerId !== user?.id ? "чёрных" : "белых"}
+          {game.blackPlayerName}: за чёрных
         </div>
         <div className={`textSecondary ${styles.historyCardItem}`}></div>
       </div>

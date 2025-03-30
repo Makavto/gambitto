@@ -43,6 +43,10 @@ export const useUserSearchPageController = () => {
     sendChessGameInvitation({ inviteeId: id });
   };
 
+  const onViewUser = (id: number) => {
+    navigate(`/community/${id}`);
+  };
+
   useEffect(() => {
     if (!!friendInvitationData) {
       getUsers({ searchQuery: searchParams.get("searchQuery") ?? "" });
@@ -59,6 +63,7 @@ export const useUserSearchPageController = () => {
     onSearch,
     onStartChessGame,
     register,
+    onViewUser,
     usersData,
     isUsersDataFetching,
   };

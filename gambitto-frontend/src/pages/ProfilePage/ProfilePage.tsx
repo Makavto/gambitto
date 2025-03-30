@@ -7,7 +7,8 @@ import { ChessCardWidget } from "../../widgets/ChessCard/ChessCardWidget";
 import { useProfilePageController } from "../../controllers/pages/ProfilePage/ProfilePageController";
 
 function ProfilePage() {
-  const { allGames, onLogout, user } = useProfilePageController();
+  const { allGames, onLogout, user, isUserById, onViewUserStats } =
+    useProfilePageController();
 
   return (
     <>
@@ -22,13 +23,24 @@ function ProfilePage() {
                     <span className="textBold">{user.username}</span>
                   </span>
                   <div>
-                    <Button type={ButtonTypesEnum.Danger} onClick={onLogout}>
-                      Выйти
-                    </Button>
+                    {!isUserById ? (
+                      <Button type={ButtonTypesEnum.Danger} onClick={onLogout}>
+                        Выйти
+                      </Button>
+                    ) : (
+                      <Button
+                        type={ButtonTypesEnum.Primary}
+                        onClick={onViewUserStats}
+                      >
+                        Статистика
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <div className={styles.cardItem}>
-                  <span className="textSecondary">Шахматный рейтинг: {user.rating}</span>
+                  <span className="textSecondary">
+                    Шахматный рейтинг: {user.rating}
+                  </span>
                 </div>
                 <div className={styles.cardItem}>
                   <span className="textSecondary">E-mail: {user.email}</span>
