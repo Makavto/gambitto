@@ -14,7 +14,7 @@ interface IHistoryMove {
 }
 
 export const useGamePageController = () => {
-  const { gameId } = useParams();
+  const { gameId, userId } = useParams();
 
   const [getGameInfo, { data: gameInfoData }] =
     ChessAPI.useLazyGetGameInfoQuery();
@@ -24,6 +24,8 @@ export const useGamePageController = () => {
   const [resign, { data: resignData }] = ChessAPI.useLazyResignQuery();
   const [getOpponent, { data: opponentData }] =
     UserAPI.useLazyGetUserByIdQuery();
+
+  const [getUser, { data: userData }] = UserAPI.useLazyGetUserByIdQuery();
 
   const [chessGame, setChessGame] = useState<IGameFullInfoDto>();
 
@@ -40,6 +42,12 @@ export const useGamePageController = () => {
       getChessNotification();
     }
   }, [chessWsReady]);
+
+  useEffect(() => {
+    if (userId) {
+      getUser(Number(userId));
+    }
+  }, [userId]);
 
   const resetHistory = (gameFullInfo: IGameFullInfoDto) => {
     let newHistoryArray: IHistoryMove[][] = [];
@@ -78,16 +86,24 @@ export const useGamePageController = () => {
   };
 
   useEffect(() => {
-    if (!!gameInfoData && !!user) {
+    if (!!gameInfoData) {
       setChessGame(gameInfoData.gameFullInfo);
       resetHistory(gameInfoData.gameFullInfo);
-      getOpponent(
-        gameInfoData.gameFullInfo.whitePlayerId === user.id
-          ? gameInfoData.gameFullInfo.blackPlayerId
-          : gameInfoData.gameFullInfo.whitePlayerId
-      );
+      if (userId) {
+        getOpponent(
+          gameInfoData.gameFullInfo.whitePlayerId === Number(userId)
+            ? gameInfoData.gameFullInfo.blackPlayerId
+            : gameInfoData.gameFullInfo.whitePlayerId
+        );
+      } else if (user) {
+        getOpponent(
+          gameInfoData.gameFullInfo.whitePlayerId === user.id
+            ? gameInfoData.gameFullInfo.blackPlayerId
+            : gameInfoData.gameFullInfo.whitePlayerId
+        );
+      }
     }
-  }, [gameInfoData]);
+  }, [gameInfoData, userId]);
 
   useEffect(() => {
     if (!!makeMoveData) {
@@ -172,7 +188,7 @@ export const useGamePageController = () => {
     onResign,
     getPositionAfterMove,
     chessGame,
-    user,
+    user: !!userId ? userData : user,
     opponentData,
     history,
     activeMove,

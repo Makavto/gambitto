@@ -5,25 +5,50 @@ import Card from "../../components/Card/Card";
 import { ButtonTypesEnum } from "../../utils/ButtonTypesEnum";
 import { useChessCardWidgetController } from "../../controllers/widgets/ChessCard/ChessCardWidgetController";
 import { IGameDto } from "../../dtos/IGameDto";
+import { useNavigate } from "react-router";
 
 interface IChessCard {
   game: IGameDto;
 }
 
 const ChessCardWidgetComponent = ({ game }: IChessCard) => {
-  const { onAcceptGame, onDeclineGame, onEnterGame, user } =
+  const { onAcceptGame, onDeclineGame, onEnterGame, userId, user } =
     useChessCardWidgetController();
+
+  const navigate = useNavigate();
 
   return (
     <Card>
       <div className={styles.historyCardRow}>
         <div>
           Партия с{" "}
-          <span className="textBold">
-            {game.blackPlayerId === user?.id
-              ? game.whitePlayerName
-              : game.blackPlayerName}
-          </span>
+          {game.blackPlayerId === userId ? (
+            <Button
+              type={ButtonTypesEnum.Link}
+              onClick={() =>
+                navigate(
+                  game.whitePlayerId === user?.id
+                    ? "/profile"
+                    : `/community/${game.whitePlayerId}`
+                )
+              }
+            >
+              {game.whitePlayerName}
+            </Button>
+          ) : (
+            <Button
+              type={ButtonTypesEnum.Link}
+              onClick={() =>
+                navigate(
+                  game.blackPlayerId === user?.id
+                    ? "/profile"
+                    : `/community/${game.blackPlayerId}`
+                )
+              }
+            >
+              {game.blackPlayerName}
+            </Button>
+          )}
         </div>
         <div>
           {game.gameStatus === "invitation" && user?.id === game.inviteeId && (
@@ -51,7 +76,7 @@ const ChessCardWidgetComponent = ({ game }: IChessCard) => {
             (game.gameStatus === "invitation" && user?.id === game.senderId) ||
             game.gameStatus === "inProgress") && (
             <Button
-              onClick={() => (onEnterGame ? onEnterGame(game.id) : {})}
+              onClick={() => onEnterGame(game.id)}
               type={ButtonTypesEnum.Primary}
             >
               Сесть за доску
