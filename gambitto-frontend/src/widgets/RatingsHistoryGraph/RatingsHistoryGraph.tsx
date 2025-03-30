@@ -141,10 +141,14 @@ const RatingsHistoryGraphComponent = () => {
               callback: (value) => {
                 return format(new Date(value as number), "dd.MM.yyyy");
               },
+              color: variables.colorPrimary,
             },
           },
           y: {
             beginAtZero: false,
+            ticks: {
+              color: variables.colorPrimary,
+            },
           },
         },
       });
