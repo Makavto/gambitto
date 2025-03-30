@@ -44,6 +44,10 @@ const MainRoutes: RouteProps[] = [
     element: <GamePage />,
   },
   {
+    path: '/chess/:gameId/user/:userId',
+    element: <GamePage />,
+  },
+  {
     path: '/*',
     element: <Navigate to={'/profile'} replace/>
   }

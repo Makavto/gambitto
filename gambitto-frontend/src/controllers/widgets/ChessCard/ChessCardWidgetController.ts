@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useAppDispatch, useAppSelector } from "../../../hooks/redux";
 import { ChessAPI } from "../../../services/ChessService";
 import { notificationsSlice } from "../../../store/reducers/notificationsSlice";
@@ -10,6 +10,8 @@ export const useChessCardWidgetController = () => {
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
+
+  const { userId } = useParams();
 
   const [acceptChess, { data: acceptChessData }] =
     ChessAPI.useLazyAcceptInvitationQuery();
@@ -27,7 +29,11 @@ export const useChessCardWidgetController = () => {
   };
 
   const onEnterGame = (id: number) => {
-    navigate(`/chess/${id}`);
+    if (userId) {
+      navigate(`/chess/${id}/user/${userId}`);
+    } else {
+      navigate(`/chess/${id}`);
+    }
   };
 
   useEffect(() => {
@@ -44,6 +50,7 @@ export const useChessCardWidgetController = () => {
   }, [declineChessData]);
 
   return {
+    userId: !!userId ? Number(userId) : user?.id,
     user,
     onAcceptGame,
     onDeclineGame,

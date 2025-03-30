@@ -9,13 +9,13 @@ export const useStatsPageController = () => {
 
   const [getAllGames, { data: allGames }] = ChessAPI.useLazyGetAllGamesQuery();
 
+  const { userId } = useParams();
+
   useEffect(() => {
     if (wsReady) {
-      getAllGames();
+      getAllGames(userId ? Number(userId) : undefined);
     }
-  }, [wsReady]);
-
-  const { userId } = useParams();
+  }, [wsReady, userId]);
 
   const { data: statsData, isLoading: isStatsLoading } =
     UserAPI.useGetUserStatsQuery(userId ? Number(userId) : undefined, {
@@ -26,5 +26,6 @@ export const useStatsPageController = () => {
     allGames,
     statsData,
     isStatsLoading,
+    isUserById: !!userId,
   };
 };

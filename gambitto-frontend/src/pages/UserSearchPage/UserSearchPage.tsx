@@ -17,6 +17,7 @@ function UserSearchPage({ isForChessGame }: IUserSearchPageProps) {
     onSearch,
     onStartChessGame,
     register,
+    onViewUser,
     usersData,
   } = useUserSearchPageController();
 
@@ -40,7 +41,12 @@ function UserSearchPage({ isForChessGame }: IUserSearchPageProps) {
           <div className={styles.cardWrapper} key={i}>
             <Card>
               <div className={styles.cardRow}>
-                <div className={`textBold`}>{user.username}</div>
+                <Button
+                  onClick={() => onViewUser(user.id)}
+                  type={ButtonTypesEnum.Link}
+                >
+                  {user.username}
+                </Button>
                 {(!user.friendshipStatus || isForChessGame) && (
                   <div>
                     <Button

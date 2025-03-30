@@ -100,7 +100,6 @@ class ChessService {
     const game = await ChessGame.findOne({
       where: {
         id: gameId,
-        [Op.or]: [{ senderId: userId }, { inviteeId: userId }],
       },
     });
     if (!game) {
