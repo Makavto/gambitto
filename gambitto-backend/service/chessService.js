@@ -8,10 +8,14 @@ const {
   RatingsHistory,
 } = require("../models");
 const { Chess } = require("chess.js");
-const { STARTING_POSITION } = require("../constants");
+const {
+  STARTING_POSITION,
+  MAX_OPPONENTS_RATING_RANGE,
+} = require("../constants");
 const ChessGameDto = require("../dtos/chessGameDto");
 const ChessGameFullInfoDto = require("../dtos/chessGameFullInfoDto");
 const ratingService = require("./ratingService");
+const chessClients = require("../wss clients/chessClients");
 
 class ChessService {
   async sendInvitation(senderId, inviteeId) {
@@ -40,6 +44,65 @@ class ChessService {
       inviteeId,
     });
     return await new ChessGameDto(newGame);
+  }
+
+  async startGameSearch(userId) {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw ApiError.badRequest("invalid user id");
+    }
+    let newGame = null;
+    for (let chessClient of chessClients) {
+      if (
+        chessClient.isRatingGameSearch &&
+        Math.abs(chessClient.user.rating - user.rating) <=
+          MAX_OPPONENTS_RATING_RANGE
+      ) {
+        const inProgressStatus = await GameStatus.findOne({
+          where: { status: "inProgress" },
+        });
+        let blackPlayerId;
+        let whitePlayerId;
+        const senderId = userId;
+        const inviteeId = chessClient.user.id;
+        if (Math.round(Math.random()) < 0.5) {
+          blackPlayerId = senderId;
+          whitePlayerId = inviteeId;
+        } else {
+          blackPlayerId = inviteeId;
+          whitePlayerId = senderId;
+        }
+        newGame = await ChessGame.create({
+          blackPlayerId,
+          whitePlayerId,
+          gameStatusId: inProgressStatus.id,
+          senderId,
+          inviteeId,
+        });
+        break;
+      }
+    }
+    if (newGame) {
+      return await new ChessGameDto(newGame);
+    } else {
+      for (let chessClient of chessClients) {
+        if (chessClient.user.id === userId) {
+          chessClient.isRatingGameSearch = true;
+          break;
+        }
+      }
+      return null;
+    }
+  }
+
+  async endGameSearch(userId) {
+    for (let chessClient of chessClients) {
+      if (chessClient.user.id === userId) {
+        chessClient.isRatingGameSearch = false;
+        break;
+      }
+    }
+    return null;
   }
 
   async getUserGames(userId) {
