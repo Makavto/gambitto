@@ -131,7 +131,7 @@ class ChessController {
       const game = await chessService.startGameSearch(req.user.id);
       ws.send(
         JSON.stringify({
-          method: game ? "accept" : "startSearch",
+          method: game ? "accepted" : "startSearch",
           data: {
             game,
           },
@@ -139,7 +139,7 @@ class ChessController {
       );
       if (game) {
         for (const client of chessClients) {
-          if (client.user.id === game.senderId) {
+          if (client.user.id === game.inviteeId) {
             client.send(
               JSON.stringify({
                 method: "accepted",
@@ -344,26 +344,26 @@ class ChessController {
       if (!msg.gameId) {
         throw ApiError.badRequest("not valid message schema");
       }
-      const game = await chessService.resign(msg.gameId, req.user.id);
+      const gameFullInfo = await chessService.resign(msg.gameId, req.user.id);
       ws.send(
         JSON.stringify({
           method: "resign",
           data: {
-            game,
+            gameFullInfo,
           },
         })
       );
       const opponentId =
-        req.user.id !== game.blackPlayerId
-          ? game.blackPlayerId
-          : game.whitePlayerId;
+        req.user.id !== gameFullInfo.blackPlayerId
+          ? gameFullInfo.blackPlayerId
+          : gameFullInfo.whitePlayerId;
       for (const client of chessClients) {
         if (client.user.id === opponentId) {
           client.send(
             JSON.stringify({
               method: "resigned",
               data: {
-                game,
+                gameFullInfo,
               },
             })
           );

@@ -81,7 +81,7 @@ function GamePage() {
                 }
                 isMovingBlocked={
                   activeMove?.number !==
-                    chessGame.gameMoves[chessGame.gameMoves.length - 1]
+                    chessGame.gameMoves[chessGame.gameMoves?.length - 1]
                       ?.moveNumber || chessGame.gameStatus !== "inProgress"
                 }
                 makeMove={onMakeMove}
