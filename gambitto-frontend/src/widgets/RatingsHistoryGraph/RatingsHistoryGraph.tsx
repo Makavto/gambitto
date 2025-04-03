@@ -20,7 +20,7 @@ import {
 import { Line } from "react-chartjs-2";
 import "chartjs-adapter-date-fns";
 import { ru } from "date-fns/locale";
-import { parseISO, format, startOfDay } from "date-fns";
+import { parseISO, format, startOfDay, isSameDay } from "date-fns";
 import { useRatingsHistoryGraphController } from "../../controllers/widgets/RatingsHistoryGraph/useRatingsHistoryGraphController";
 import { _DeepPartialObject } from "chart.js/dist/types/utils";
 import variables from "../../styles/variables.module.scss";
@@ -84,6 +84,15 @@ const RatingsHistoryGraphComponent = () => {
         (date) => groupedData[format(date, "yyyy-MM-dd")].games
       );
 
+      // Добавляем текущую дату, если её нет
+      const today = startOfDay(new Date());
+      const lastRating = ratings[ratings.length - 1] || 0;
+      if (!labels.some((date) => isSameDay(date, today))) {
+        labels.push(today);
+        ratings.push(lastRating);
+        gamesCount.push(0);
+      }
+
       setChartData({
         labels,
         datasets: [
@@ -93,7 +102,6 @@ const RatingsHistoryGraphComponent = () => {
             borderColor: variables.colorSuccess || "#4DB6AC",
             backgroundColor: "rgba(77, 182, 172, 0.2)",
             fill: false,
-            tension: 0.4,
           },
         ],
       });
