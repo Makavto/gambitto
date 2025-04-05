@@ -4,8 +4,13 @@ import { FriendlyChessIcon } from "../../icons/FriendlyChessIcon";
 import { RatingChessIcon } from "../../icons/RatingChessIcon";
 import styles from "./ChooseGamePage.module.scss";
 import React from "react";
+import { useChooseGamePageController } from "../../controllers/pages/ChooseGamePage/ChooseGamePageController";
+import { Loader } from "../../components/Loader/Loader";
+import { ChessCardWidget } from "../../widgets/ChessCard/ChessCardWidget";
 
 const ChooseGamePageComponent = () => {
+  const { gamesInProgress, isGamesLoading } = useChooseGamePageController();
+
   return (
     <div className={styles.pageWrapper}>
       <div className="textBig title">Новая партия</div>
@@ -31,7 +36,19 @@ const ChooseGamePageComponent = () => {
           </Card>
         </NavLink>
       </div>
-      <div className="textBig title">Партии в процессе</div>
+      <div className={`textBig title ${styles.gamesTitle}`}>Партии в процессе</div>
+      <div>
+        {isGamesLoading ? (
+          <Loader />
+        ) : (
+          gamesInProgress &&
+          (gamesInProgress.length === 0 ? (
+            <div className="textSecondary">Нет активных партий</div>
+          ) : (
+            gamesInProgress.map((game, i) => <ChessCardWidget game={game} />)
+          ))
+        )}
+      </div>
     </div>
   );
 };
