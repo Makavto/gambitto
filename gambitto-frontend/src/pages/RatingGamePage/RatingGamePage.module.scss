@@ -1,0 +1,14 @@
+.pageWrapper {
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 50px);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  .loaderWrapper {
+    margin-bottom: 3rem;
+    width: 300px;
+    height: 300px;
+  }
+}

@@ -1,6 +1,9 @@
 import { createApi } from "@reduxjs/toolkit/dist/query/react";
 import { baseQueryWithReauth } from "../utils/baseQuery";
-import { ChessWsMethodsEnum } from "../models/enums/ChessWsMethodsEnum";
+import {
+  ChessWsMethodsEnum,
+  ChessWsServerMethodsEnum,
+} from "../models/enums/ChessWsMethodsEnum";
 import { IGameDto } from "../dtos/IGameDto";
 import { IGameFullInfoDto } from "../dtos/IGameFullInfoDto";
 import { IChessWsDto } from "../dtos/IChessWsDto";
@@ -134,6 +137,43 @@ export const ChessAPI = createApi({
       },
     }),
 
+    startRatingGameSearch: builder.query<
+      { game: IGameDto | null } | null,
+      void
+    >({
+      queryFn: async () => {
+        chessWs.ws.send(
+          JSON.stringify({ method: ChessWsMethodsEnum.StartSearch })
+        );
+        return { data: null };
+      },
+      async onCacheEntryAdded(arg, api) {
+        try {
+          await api.cacheDataLoaded;
+          const listener = (event: MessageEvent) => {
+            const data = JSON.parse(event.data);
+            if (data.method === ChessWsServerMethodsEnum.Accepted) {
+              api.updateCachedData((draft) => {
+                return data.data;
+              });
+            }
+          };
+          chessWs.ws.addEventListener("message", listener);
+        } catch (error) {
+          console.log(error);
+        }
+      },
+    }),
+
+    endRatingGameSearch: builder.query<null, void>({
+      queryFn: async () => {
+        chessWs.ws.send(
+          JSON.stringify({ method: ChessWsMethodsEnum.EndSearch })
+        );
+        return { data: null };
+      },
+    }),
+
     acceptInvitation: builder.query<
       { game: IGameDto } | null,
       { gameId: number }
@@ -256,7 +296,7 @@ export const ChessAPI = createApi({
       },
     }),
 
-    resign: builder.query<{ game: IGameDto } | null, { gameId: number }>({
+    resign: builder.query<{ gameFullInfo: IGameFullInfoDto } | null, { gameId: number }>({
       queryFn: async ({ gameId }) => {
         chessWs.ws.send(
           JSON.stringify({ method: ChessWsMethodsEnum.Resign, gameId })

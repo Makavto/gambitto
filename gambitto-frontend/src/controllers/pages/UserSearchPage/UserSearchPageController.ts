@@ -55,7 +55,7 @@ export const useUserSearchPageController = () => {
 
   useEffect(() => {
     if (!!chessGameInvitationData) {
-      navigate(`/chess/${chessGameInvitationData.game.id}`);
+      navigate(`/chess/game/${chessGameInvitationData.game.id}`);
     }
   }, [chessGameInvitationData]);
   return {

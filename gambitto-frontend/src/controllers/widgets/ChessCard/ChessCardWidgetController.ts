@@ -30,16 +30,16 @@ export const useChessCardWidgetController = () => {
 
   const onEnterGame = (id: number) => {
     if (userId) {
-      navigate(`/chess/${id}/user/${userId}`);
+      navigate(`/chess/game/${id}/user/${userId}`);
     } else {
-      navigate(`/chess/${id}`);
+      navigate(`/chess/game/${id}`);
     }
   };
 
   useEffect(() => {
     if (!!acceptChessData) {
       dispatch(deleteChessNotification(acceptChessData.game));
-      navigate(`/chess/${acceptChessData.game.id}`);
+      navigate(`/chess/game/${acceptChessData.game.id}`);
     }
   }, [acceptChessData]);
 

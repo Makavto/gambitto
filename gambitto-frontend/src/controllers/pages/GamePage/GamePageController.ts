@@ -114,11 +114,7 @@ export const useGamePageController = () => {
 
   useEffect(() => {
     if (!!resignData) {
-      setChessGame((prev) => ({
-        ...prev!,
-        gameStatus: resignData.game.gameStatus,
-        gameStatusFormatted: resignData.game.gameStatusFormatted,
-      }));
+      setChessGame(resignData.gameFullInfo);
     }
   }, [resignData]);
 
@@ -153,13 +149,9 @@ export const useGamePageController = () => {
       }
       if (
         chessListenerData.method === ChessWsServerMethodsEnum.Resigned &&
-        chessListenerData.data.game.id === Number(gameId)
+        chessListenerData.data.gameFullInfo.id === Number(gameId)
       ) {
-        setChessGame((prev) => ({
-          ...prev!,
-          gameStatus: chessListenerData.data.game.gameStatus,
-          gameStatusFormatted: chessListenerData.data.game.gameStatusFormatted,
-        }));
+        setChessGame(chessListenerData.data.gameFullInfo);
       }
     }
   }, [chessListenerData]);

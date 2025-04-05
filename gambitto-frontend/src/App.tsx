@@ -12,6 +12,7 @@ import { ChessWsServerMethodsEnum } from './models/enums/ChessWsMethodsEnum';
 import { notificationsSlice } from './store/reducers/notificationsSlice';
 import { FriendshipAPI } from './services/FriendshipService';
 import { FriendshipWsServerMethodsEnum } from './models/enums/FriendshipWsMethodsEnum';
+import { Loader } from './components/Loader/Loader';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -71,7 +72,7 @@ function App() {
 
   if (isGetMeLoading) return (
     <div className={styles.appContainer}>
-      Загрузка
+      <Loader />
     </div>
   )
 
