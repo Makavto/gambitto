@@ -14,11 +14,6 @@
       margin-right: 4rem;
       width: 100%;
       max-width: $board-width;
-  
-      .user {
-        display: flex;
-        justify-content: end;
-      }
     }
   
     .statusWrapper {
@@ -27,25 +22,6 @@
   
       .historyWrapper {
         margin-top: 1.8rem;
-
-        .historyItem {
-          margin-bottom: .6rem;
-          font-size: .9rem;
-          color: darken($color: $color-primary, $amount: 15%);
-
-          &:first-child {
-            margin-top: 1rem;
-          }
-
-          .historyMove {
-            cursor: pointer;
-            transition: color .3s ease-in-out;
-
-            &.active {
-              color: $color-accent;
-            }
-          }
-        }
       }
 
       .giveUpBtn {

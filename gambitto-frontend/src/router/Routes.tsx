@@ -7,6 +7,7 @@ import GamePage from "../pages/GamePage/GamePage";
 import NotificationsPage from "../pages/NotificationsPage/NotificationsPage";
 import { ChooseGamePage } from "../pages/ChooseGamePage/ChooseGamePage";
 import { RatingGamePage } from "../pages/RatingGamePage/RatingGamePage";
+import GameAnalysisPage from "../pages/GameAnalysisPage/GameAnalysisPage";
 
 const MainRoutes: RouteProps[] = [
   {
@@ -54,8 +55,16 @@ const MainRoutes: RouteProps[] = [
     element: <GamePage />,
   },
   {
+    path: "/chess/game/:gameId/analysis",
+    element: <GameAnalysisPage />,
+  },
+  {
     path: "/chess/game/:gameId/user/:userId",
     element: <GamePage />,
+  },
+  {
+    path: "/chess/game/:gameId/user/:userId/analysis",
+    element: <GameAnalysisPage />,
   },
   {
     path: "/*",
