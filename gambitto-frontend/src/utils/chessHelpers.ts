@@ -42,9 +42,8 @@ export function parseEvaluations(lines: string[]): IEvaluation[] {
 
 export function classifyMoveQuality(delta: number): MoveQualityEnum {
   const abs = Math.abs(delta);
-  if (abs < 5) return MoveQualityEnum.Brilliant;
-  if (abs < 50) return MoveQualityEnum.Excellent;
-  if (abs < 100) return MoveQualityEnum.Good;
+  if (abs < 20) return MoveQualityEnum.Excellent;
+  if (abs < 60) return MoveQualityEnum.Good;
   if (abs < 150) return MoveQualityEnum.Inaccuracy;
   if (abs < 500) return MoveQualityEnum.Mistake;
   return MoveQualityEnum.Blunder;

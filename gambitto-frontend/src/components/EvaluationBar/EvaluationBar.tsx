@@ -2,40 +2,43 @@ import React from "react";
 import styles from "./EvaluationBar.module.scss";
 
 interface IEvaluationBarProps {
-  evalCp: number; // от -∞ до +∞
+  evalCp?: number; // от -∞ до +∞
   maxCp?: number; // опционально, по умолчанию 1000
+  mate?: number;
 }
 
 const EvaluationBarComponent = ({
-  evalCp,
+  evalCp = 0,
   maxCp = 1000,
+  mate,
 }: IEvaluationBarProps) => {
   const clamped = Math.max(-maxCp, Math.min(evalCp, maxCp));
   const percent = ((clamped + maxCp) / (2 * maxCp)) * 100;
 
-  const displayValue =
-    evalCp > 900
-      ? "Мат в N"
-      : evalCp < -900
-      ? "Мат в N"
-      : `${(evalCp / 100).toFixed(2)}`;
+  const formatEval = () => {
+    if (mate) {
+      if (mate > 0) return `М${mate}`;
+      if (mate < 0) return `-М${Math.abs(mate)}`;
+    }
+
+    const absCp = Math.abs(evalCp);
+    const sign = evalCp > 0 ? "+" : "-";
+    const pawns = (absCp / 100).toFixed(1);
+
+    return `${sign}${pawns}`;
+  };
 
   return (
-    <div className={styles.evaluationBar}>
-      <div className={styles.label + " " + styles.top}>Преимущество чёрных</div>
-
-      <div className={styles.bar}>
-        <div className={styles.whiteZone} style={{ height: `${percent}%` }} />
-        <div
-          className={styles.blackZone}
-          style={{ height: `${100 - percent}%` }}
-        />
-        <div className={styles.evalText}>{displayValue}</div>
-      </div>
-
-      <div className={styles.label + " " + styles.bottom}>
-        Преимущество белых
-      </div>
+    <div className={styles.bar}>
+      <div
+        className={styles.whiteZone}
+        style={{ height: `${mate ? (mate > 0 ? 100 : 0) : percent}%` }}
+      />
+      <div
+        className={styles.blackZone}
+        style={{ height: `${100 - (mate ? (mate > 0 ? 100 : 0) : percent)}%` }}
+      />
+      <div className={styles.evalText}>{formatEval()}</div>
     </div>
   );
 };

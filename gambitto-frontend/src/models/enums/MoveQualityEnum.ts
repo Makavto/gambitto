@@ -1,8 +1,8 @@
 export enum MoveQualityEnum {
-  Brilliant = "brilliant",
-  Excellent = "excellent",
-  Good = "good",
-  Inaccuracy = "inaccuracy",
-  Mistake = "mistake",
-  Blunder = "blunder",
+  Best = "Лучший ход",
+  Excellent = "Отличный ход",
+  Good = "Хороший ход",
+  Inaccuracy = "Неточность",
+  Mistake = "Ошибка",
+  Blunder = "Грубая ошибка",
 }

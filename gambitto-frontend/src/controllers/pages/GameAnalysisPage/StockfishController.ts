@@ -5,6 +5,7 @@ import {
   parseEvaluations,
   classifyMoveQuality,
 } from "../../../utils/chessHelpers";
+import { Chess } from "chess.js";
 
 export const useStockfishController = () => {
   const [ready, setReady] = useState(false);
@@ -70,28 +71,46 @@ export const useStockfishController = () => {
     });
   };
 
-  const evaluatePosition = async (fen: string): Promise<number> => {
+  const evaluatePosition = async (
+    fen: string
+  ): Promise<{ cp?: number; mate?: number }> => {
     const evals = await waitEval(fen);
-    return evals[0]?.cp ?? 0;
+    const chess = new Chess(fen);
+    const isBlackToMove = chess.turn() === "b";
+    return {
+      cp: isBlackToMove && evals[0].cp ? -evals[0].cp : evals[0]?.cp,
+      mate: evals[0]?.mate
+        ? isBlackToMove
+          ? -evals[0].mate
+          : evals[0].mate
+        : undefined,
+    };
   };
 
   const evaluateMove = async (
     fen: string,
     move: string
-  ): Promise<{ quality: MoveQualityEnum; diff: number }> => {
+  ): Promise<{ quality: MoveQualityEnum; bestMove: string }> => {
     const [topEval] = await waitEval(fen);
+    const chess = new Chess(fen);
+    
+    // Convert UCI move to SAN
+    const bestMoveSan = chess.move(topEval.move).san;
+    
     if (topEval.move === move) {
-      return { quality: MoveQualityEnum.Excellent, diff: 0 };
+      return { quality: MoveQualityEnum.Best, bestMove: bestMoveSan };
     }
+    
+    const isBlackToMove = chess.turn() === "b";
     const afterMove = await waitEval(fen, [move]);
-    console.log(topEval, afterMove);
-    if (afterMove[0].mate) {
-      return { quality: MoveQualityEnum.Blunder, diff: 1000 };
-    }
 
-    const delta = (topEval.cp ?? 0) - (afterMove[0]?.cp ?? 0);
+    const delta =
+      (isBlackToMove && topEval?.cp ? -topEval?.cp : topEval?.cp ?? 0) -
+      (!isBlackToMove && afterMove[0]?.cp
+        ? -afterMove[0]?.cp
+        : afterMove[0]?.cp ?? 0);
     const quality = classifyMoveQuality(delta);
-    return { quality, diff: delta };
+    return { quality, bestMove: bestMoveSan };
   };
 
   const getBestMoves = async (fen: string): Promise<IEvaluation[]> => {

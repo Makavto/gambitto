@@ -7,6 +7,7 @@ import { IHistoryMove } from "../../../models/IHistoryMove";
 import { ChessAPI } from "../../../services/ChessService";
 import { UserAPI } from "../../../services/UserService";
 import { useStockfishController } from "./StockfishController";
+import { MoveQualityEnum } from "../../../models/enums/MoveQualityEnum";
 
 export const useGameAnalysisPageController = () => {
   const { gameId, userId } = useParams();
@@ -26,6 +27,14 @@ export const useGameAnalysisPageController = () => {
 
   const [history, setHistory] = useState<IHistoryMove[][]>([]);
   const [activeMove, setActiveMove] = useState<IHistoryMove>();
+  const [moveEvaluation, setMoveEvaluation] = useState<{
+    quality: MoveQualityEnum;
+    bestMove: string;
+  } | null>(null);
+  const [positionEvaluation, setPositionEvaluation] = useState<{
+    cp?: number;
+    mate?: number;
+  } | null>(null);
 
   const {
     endStockfish,
@@ -41,6 +50,9 @@ export const useGameAnalysisPageController = () => {
       getGameInfo({ gameId: Number(gameId) });
       startStockfish();
     }
+    return () => {
+      endStockfish();
+    };
   }, [chessWsReady]);
 
   useEffect(() => {
@@ -105,12 +117,20 @@ export const useGameAnalysisPageController = () => {
     }
   }, [gameInfoData, userId]);
 
-  const onMakeMoveActive = (newActiveMove: IHistoryMove) => {
+  const onMakeMoveActive = async (newActiveMove: IHistoryMove) => {
     setActiveMove(newActiveMove);
-    evaluateMove(
+    const evaluation = await evaluateMove(
       newActiveMove.positionBefore,
       sanToUciMove(newActiveMove.positionBefore, newActiveMove.moveCode)
-    ).then((res) => console.log(res));
+    );
+    setMoveEvaluation(evaluation);
+
+    const positionAfter = getPositionAfterMove(
+      newActiveMove.positionBefore,
+      newActiveMove.moveCode
+    );
+    const positionEval = await evaluatePosition(positionAfter);
+    setPositionEvaluation(positionEval);
   };
 
   const getPositionAfterMove = (positionBefore: string, moveCode: string) => {
@@ -135,5 +155,7 @@ export const useGameAnalysisPageController = () => {
     opponentData,
     history,
     activeMove,
+    moveEvaluation,
+    positionEvaluation,
   };
 };
