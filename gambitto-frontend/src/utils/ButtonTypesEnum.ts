@@ -1,5 +1,6 @@
 export enum ButtonTypesEnum {
-  Link = 'link',
-  Primary = 'primary',
-  Danger = 'Danger'
+  Link = "link",
+  Primary = "primary",
+  Danger = "Danger",
+  Icon = "icon",
 }

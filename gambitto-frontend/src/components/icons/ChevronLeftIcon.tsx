@@ -1,15 +1,14 @@
 import React from 'react';
 
 interface ChevronLeftIconProps {
-  className?: string;
+  size: number;
 }
 
-export const ChevronLeftIcon: React.FC<ChevronLeftIconProps> = ({ className }) => {
+export const ChevronLeftIcon: React.FC<ChevronLeftIconProps> = ({ size }) => {
   return (
     <svg
-      className={className}
-      width="24"
-      height="24"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
