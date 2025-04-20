@@ -22,11 +22,16 @@
     flex-direction: column;
 
     .moveEvaluationWrapper {
-      margin-bottom: 1.8rem;
+      margin: 0.5rem 0;
     }
 
     .historyWrapper {
-      margin-top: 1.8rem;
+      .navigationButtons {
+        width: 30%;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
     }
   }
 

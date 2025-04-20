@@ -12,6 +12,7 @@ interface IChessGameFieldProps {
   startingFen?: string;
   isMovingBlocked: boolean;
   onMakeMove: (moveCode: string) => void;
+  bestMoves?: string[];
 }
 
 const ChessGameFieldComponent = ({
@@ -21,6 +22,7 @@ const ChessGameFieldComponent = ({
   startingFen,
   isMovingBlocked,
   onMakeMove,
+  bestMoves,
 }: IChessGameFieldProps) => {
   return (
     <>
@@ -68,6 +70,7 @@ const ChessGameFieldComponent = ({
         boardOrientation={
           chessGame.blackPlayerId === user?.id ? "black" : "white"
         }
+        bestMoves={bestMoves}
       />
       <div className={`textBig ${styles.user}`}>
         <span>

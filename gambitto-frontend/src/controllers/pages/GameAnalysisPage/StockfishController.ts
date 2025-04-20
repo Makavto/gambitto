@@ -6,7 +6,7 @@ import {
   classifyMoveQuality,
 } from "../../../utils/chessHelpers";
 import { Chess } from "chess.js";
-
+import { IMoveEvaluation } from "../../../models/IMoveEvaluation";
 export const useStockfishController = () => {
   const [ready, setReady] = useState(false);
   const stockfishRef = useRef<Worker | null>(null);
@@ -24,6 +24,7 @@ export const useStockfishController = () => {
       const line =
         typeof event.data === "string" ? event.data : event.data?.data;
       if (!line) return;
+      console.log("received", line);
 
       buffer.current.push(line);
 
@@ -38,6 +39,9 @@ export const useStockfishController = () => {
         resolveRef.current = null;
         buffer.current = [];
       }
+    };
+    worker.onerror = (event) => {
+      console.log("Stockfish worker error", event);
     };
 
     worker.postMessage("uci");
@@ -90,27 +94,54 @@ export const useStockfishController = () => {
   const evaluateMove = async (
     fen: string,
     move: string
-  ): Promise<{ quality: MoveQualityEnum; bestMove: string }> => {
-    const [topEval] = await waitEval(fen);
-    const chess = new Chess(fen);
-    
-    // Convert UCI move to SAN
-    const bestMoveSan = chess.move(topEval.move).san;
-    
-    if (topEval.move === move) {
-      return { quality: MoveQualityEnum.Best, bestMove: bestMoveSan };
+  ): Promise<IMoveEvaluation> => {
+    try {
+      const [topEval] = await waitEval(fen);
+      const chess = new Chess(fen);
+  
+      // Convert UCI move to SAN
+      const bestMoveSan = chess.move(topEval.move).san;
+  
+      const isBlackToMove = chess.turn() === "b";
+      if (topEval.move === move) {
+        return {
+          move: { quality: MoveQualityEnum.Best, bestMove: bestMoveSan },
+          evaluation: {
+            cp: !isBlackToMove && topEval.cp ? -topEval.cp : topEval?.cp,
+            mate: topEval?.mate
+              ? !isBlackToMove
+                ? -topEval.mate
+                : topEval.mate
+              : undefined,
+          },
+        };
+      }
+      const afterMove = await waitEval(fen, [move]);
+  
+      const delta =
+        (isBlackToMove && topEval?.cp ? -topEval?.cp : topEval?.cp ?? 0) -
+        (!isBlackToMove && afterMove[0]?.cp
+          ? -afterMove[0]?.cp
+          : afterMove[0]?.cp ?? 0);
+      const quality = classifyMoveQuality(delta);
+      return {
+        move: { quality, bestMove: bestMoveSan },
+        evaluation: {
+          cp:
+            isBlackToMove && afterMove[0]?.cp
+              ? -afterMove[0]?.cp
+              : afterMove[0]?.cp,
+          mate: afterMove[0]?.mate
+            ? isBlackToMove
+              ? -afterMove[0].mate
+              : afterMove[0].mate
+            : undefined,
+        },
+        bestMoves: afterMove.map((move) => move.move),
+      };
+    } catch (error) {
+      throw error;
     }
-    
-    const isBlackToMove = chess.turn() === "b";
-    const afterMove = await waitEval(fen, [move]);
-
-    const delta =
-      (isBlackToMove && topEval?.cp ? -topEval?.cp : topEval?.cp ?? 0) -
-      (!isBlackToMove && afterMove[0]?.cp
-        ? -afterMove[0]?.cp
-        : afterMove[0]?.cp ?? 0);
-    const quality = classifyMoveQuality(delta);
-    return { quality, bestMove: bestMoveSan };
   };
 
   const getBestMoves = async (fen: string): Promise<IEvaluation[]> => {

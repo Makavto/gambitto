@@ -1,5 +1,5 @@
 import { Chess } from "chess.js";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import { IGameFullInfoDto } from "../../../dtos/IGameFullInfoDto";
 import { useAppSelector } from "../../../hooks/redux";
@@ -8,6 +8,7 @@ import { ChessAPI } from "../../../services/ChessService";
 import { UserAPI } from "../../../services/UserService";
 import { useStockfishController } from "./StockfishController";
 import { MoveQualityEnum } from "../../../models/enums/MoveQualityEnum";
+import { IMoveEvaluation } from "../../../models/IMoveEvaluation";
 
 export const useGameAnalysisPageController = () => {
   const { gameId, userId } = useParams();
@@ -34,16 +35,22 @@ export const useGameAnalysisPageController = () => {
   const [positionEvaluation, setPositionEvaluation] = useState<{
     cp?: number;
     mate?: number;
-  } | null>(null);
+  } | null>({
+    cp: 0,
+    mate: 0,
+  });
+  const [bestMoves, setBestMoves] = useState<string[]>();
 
   const {
     endStockfish,
     startStockfish,
     evaluateMove,
-    evaluatePosition,
     getBestMoves,
     ready,
   } = useStockfishController();
+
+  const evaluationTimeoutRef = useRef<NodeJS.Timeout>();
+  const evaluationsCache = useRef<Map<string, IMoveEvaluation>>(new Map());
 
   useEffect(() => {
     if (!!chessWsReady && !!gameId) {
@@ -119,18 +126,34 @@ export const useGameAnalysisPageController = () => {
 
   const onMakeMoveActive = async (newActiveMove: IHistoryMove) => {
     setActiveMove(newActiveMove);
-    const evaluation = await evaluateMove(
-      newActiveMove.positionBefore,
-      sanToUciMove(newActiveMove.positionBefore, newActiveMove.moveCode)
-    );
-    setMoveEvaluation(evaluation);
+    
+    const cacheKey = `${newActiveMove.positionBefore}-${newActiveMove.moveCode}`;
+    const cachedEvaluation = evaluationsCache.current.get(cacheKey);
 
-    const positionAfter = getPositionAfterMove(
-      newActiveMove.positionBefore,
-      newActiveMove.moveCode
-    );
-    const positionEval = await evaluatePosition(positionAfter);
-    setPositionEvaluation(positionEval);
+    if (cachedEvaluation) {
+      setMoveEvaluation(cachedEvaluation.move);
+      setPositionEvaluation(cachedEvaluation.evaluation);
+      setBestMoves(cachedEvaluation.bestMoves);
+      return;
+    }
+
+    // Clear previous timeout if exists
+    if (evaluationTimeoutRef.current) {
+      clearTimeout(evaluationTimeoutRef.current);
+    }
+
+    // Set new timeout
+    evaluationTimeoutRef.current = setTimeout(async () => {
+      const evaluation = await evaluateMove(
+        newActiveMove.positionBefore,
+        sanToUciMove(newActiveMove.positionBefore, newActiveMove.moveCode)
+      );
+      console.log("evaluation", evaluation);
+      setMoveEvaluation(evaluation.move);
+      setPositionEvaluation(evaluation.evaluation);
+      setBestMoves(evaluation.bestMoves);
+      evaluationsCache.current.set(cacheKey, evaluation);
+    }, 1000);
   };
 
   const getPositionAfterMove = (positionBefore: string, moveCode: string) => {
@@ -157,5 +180,6 @@ export const useGameAnalysisPageController = () => {
     activeMove,
     moveEvaluation,
     positionEvaluation,
+    bestMoves,
   };
 };

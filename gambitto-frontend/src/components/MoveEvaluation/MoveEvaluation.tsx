@@ -3,15 +3,15 @@ import { MoveQualityEnum } from "../../models/enums/MoveQualityEnum";
 import styles from "./MoveEvaluation.module.scss";
 
 interface IMoveEvaluationProps {
-  quality: MoveQualityEnum;
-  bestMove: string;
+  quality?: MoveQualityEnum | null;
+  bestMove?: string | null;
 }
 
 const MoveEvaluationComponent: React.FC<IMoveEvaluationProps> = ({
   quality,
   bestMove,
 }) => {
-  const getQualityClass = (quality: MoveQualityEnum) => {
+  const getQualityClass = (quality?: MoveQualityEnum | null) => {
     switch (quality) {
       case MoveQualityEnum.Best:
       case MoveQualityEnum.Excellent:
@@ -32,7 +32,7 @@ const MoveEvaluationComponent: React.FC<IMoveEvaluationProps> = ({
       <div className={`${styles.quality} ${getQualityClass(quality)}`}>
         {quality}
       </div>
-      {quality !== MoveQualityEnum.Best && (
+      {quality !== MoveQualityEnum.Best && bestMove && (
         <div className={styles.bestMove}>Лучший ход: {bestMove}</div>
       )}
     </div>

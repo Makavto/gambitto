@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useGameAnalysisPageController } from "../../controllers/pages/GameAnalysisPage/GameAnalysisPageController";
 import styles from "./GameAnalysisPage.module.scss";
 import { Loader } from "../../components/Loader/Loader";
@@ -7,6 +7,8 @@ import { MovesHistory } from "../../components/MovesHistory/MovesHistory";
 import { MoveEvaluation } from "../../components/MoveEvaluation/MoveEvaluation";
 import { EvaluationBar } from "../../components/EvaluationBar/EvaluationBar";
 import { ChevronLeftIcon, ChevronRightIcon } from "../../components/icons";
+import SimpleBar from "simplebar-react";
+import variables from "../../styles/variables.module.scss";
 
 const GameAnalysisPage = () => {
   const {
@@ -19,7 +21,23 @@ const GameAnalysisPage = () => {
     user,
     moveEvaluation,
     positionEvaluation,
+    bestMoves,
   } = useGameAnalysisPageController();
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        handlePreviousMove();
+      } else if (event.key === "ArrowRight") {
+        handleNextMove();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [history, activeMove]);
 
   const findCurrentMoveIndex = () => {
     if (!activeMove) return -1;
@@ -87,41 +105,10 @@ const GameAnalysisPage = () => {
                       )
                     : undefined
                 }
+                bestMoves={bestMoves}
               />
-              <div className={styles.navigationButtons}>
-                <button
-                  onClick={handlePreviousMove}
-                  className={styles.navButton}
-                  disabled={
-                    findCurrentMoveIndex() === -1 ||
-                    ((findCurrentMoveIndex() as any).movePairIndex === 0 &&
-                      (findCurrentMoveIndex() as any).moveIndex === 0)
-                  }
-                >
-                  <ChevronLeftIcon />
-                </button>
-                <button
-                  onClick={handleNextMove}
-                  className={styles.navButton}
-                  disabled={
-                    findCurrentMoveIndex() === -1 ||
-                    ((findCurrentMoveIndex() as any).movePairIndex ===
-                      history.length - 1 &&
-                      (findCurrentMoveIndex() as any).moveIndex ===
-                        history[history.length - 1].length - 1)
-                  }
-                >
-                  <ChevronRightIcon />
-                </button>
-              </div>
             </div>
             <div className={styles.evaluationWrapper}>
-              {moveEvaluation && (
-                <MoveEvaluation
-                  quality={moveEvaluation.quality}
-                  bestMove={moveEvaluation.bestMove}
-                />
-              )}
               {positionEvaluation !== null && (
                 <div className={styles.evaluationBarWrapper}>
                   <EvaluationBar
@@ -136,13 +123,47 @@ const GameAnalysisPage = () => {
                 Статус партии:{" "}
                 <span className="textBig">{chessGame.gameStatusFormatted}</span>
               </div>
+              <div className={styles.moveEvaluationWrapper}>
+                <MoveEvaluation
+                  quality={moveEvaluation?.quality}
+                  bestMove={moveEvaluation?.bestMove}
+                />
+              </div>
               {history.length > 0 && (
                 <div className={styles.historyWrapper}>
-                  <MovesHistory
-                    history={history}
-                    onMakeMoveActive={onMakeMoveActive}
-                    activeMove={activeMove}
-                  />
+                  <SimpleBar style={{ maxHeight: variables.boardWidth }}>
+                    <MovesHistory
+                      history={history}
+                      onMakeMoveActive={onMakeMoveActive}
+                      activeMove={activeMove}
+                    />
+                  </SimpleBar>
+                  <div className={styles.navigationButtons}>
+                    <button
+                      onClick={handlePreviousMove}
+                      className={styles.navButton}
+                      disabled={
+                        findCurrentMoveIndex() === -1 ||
+                        ((findCurrentMoveIndex() as any).movePairIndex === 0 &&
+                          (findCurrentMoveIndex() as any).moveIndex === 0)
+                      }
+                    >
+                      <ChevronLeftIcon />
+                    </button>
+                    <button
+                      onClick={handleNextMove}
+                      className={styles.navButton}
+                      disabled={
+                        findCurrentMoveIndex() === -1 ||
+                        ((findCurrentMoveIndex() as any).movePairIndex ===
+                          history.length - 1 &&
+                          (findCurrentMoveIndex() as any).moveIndex ===
+                            history[history.length - 1].length - 1)
+                      }
+                    >
+                      <ChevronRightIcon />
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
