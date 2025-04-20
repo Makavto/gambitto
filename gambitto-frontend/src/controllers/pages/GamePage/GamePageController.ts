@@ -1,17 +1,12 @@
 import { Chess } from "chess.js";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { IGameFullInfoDto } from "../../../dtos/IGameFullInfoDto";
 import { useAppSelector } from "../../../hooks/redux";
 import { ChessWsServerMethodsEnum } from "../../../models/enums/ChessWsMethodsEnum";
 import { ChessAPI } from "../../../services/ChessService";
 import { UserAPI } from "../../../services/UserService";
-
-interface IHistoryMove {
-  moveCode: string;
-  positionBefore: string;
-  number: number;
-}
+import { IHistoryMove } from "../../../models/IHistoryMove";
 
 export const useGamePageController = () => {
   const { gameId, userId } = useParams();
@@ -26,6 +21,8 @@ export const useGamePageController = () => {
     UserAPI.useLazyGetUserByIdQuery();
 
   const [getUser, { data: userData }] = UserAPI.useLazyGetUserByIdQuery();
+
+  const navigate = useNavigate();
 
   const [chessGame, setChessGame] = useState<IGameFullInfoDto>();
 
@@ -48,6 +45,14 @@ export const useGamePageController = () => {
       getUser(Number(userId));
     }
   }, [userId]);
+
+  const onAnalysis = () => {
+    if (gameId) {
+      userId
+        ? navigate(`/chess/game/${gameId}/user/${userId}/analysis`)
+        : navigate(`/chess/game/${gameId}/analysis`);
+    }
+  };
 
   const resetHistory = (gameFullInfo: IGameFullInfoDto) => {
     let newHistoryArray: IHistoryMove[][] = [];
@@ -178,6 +183,7 @@ export const useGamePageController = () => {
     onMakeMove,
     onMakeMoveActive,
     onResign,
+    onAnalysis,
     getPositionAfterMove,
     chessGame,
     user: !!userId ? userData : user,

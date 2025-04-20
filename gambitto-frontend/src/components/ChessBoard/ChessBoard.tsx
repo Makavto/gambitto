@@ -1,29 +1,40 @@
-import { Chess, Square } from 'chess.js';
-import React, { memo, useEffect, useMemo, useState } from 'react'
-import { Chessboard } from 'react-chessboard';
-import styles from './ChessBoard.module.scss';
-import { CustomSquareProps, PromotionPieceOption } from 'react-chessboard/dist/chessboard/types';
+import { Chess, Square } from "chess.js";
+import React, { memo, useEffect, useMemo, useState } from "react";
+import { Chessboard } from "react-chessboard";
+import styles from "./ChessBoard.module.scss";
+import {
+  CustomSquareProps,
+  PromotionPieceOption,
+} from "react-chessboard/dist/chessboard/types";
+import { MoveQualityEnum } from "../../models/enums/MoveQualityEnum";
 
 interface IChessBoardProps {
   startingFen?: string;
   makeMove: (moveCode: string) => void;
-  boardOrientation: 'black' | 'white',
-  isMovingBlocked?: boolean
+  boardOrientation: "black" | "white";
+  isMovingBlocked?: boolean;
+  bestMoves?: string[];
 }
 
 type ISquares = {
-  [key in Square]?: any
-}
+  [key in Square]?: any;
+};
 
-const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, makeMove, isMovingBlocked}: IChessBoardProps) {
-
+const ChessBoard = memo(function ChessBoard({
+  startingFen,
+  boardOrientation,
+  makeMove,
+  isMovingBlocked,
+  bestMoves,
+}: IChessBoardProps) {
   const game = useMemo(() => new Chess(startingFen), []);
-  const [chessBoardPosition, setChessBoardPosition] = useState('start');
+  const [chessBoardPosition, setChessBoardPosition] = useState("start");
   const [moveFrom, setMoveFrom] = useState<Square | null>(null);
   const [moveTo, setMoveTo] = useState<Square | null>(null);
   const [optionSquares, setOptionSquares] = useState<ISquares>({});
   const [dangerSquares, setDangerSquares] = useState<ISquares>({});
   const [showPromotionDialog, setShowPromotionDialog] = useState(false);
+  const [arrows, setArrows] = useState<[Square, Square][]>([]);
 
   const checkDangerSquares = () => {
     setDangerSquares({});
@@ -33,32 +44,55 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
       let newDangerSquares: ISquares = {};
       for (let row of board) {
         for (let square of row) {
-          if (square?.type === 'k' && (square.color === 'b' && turn === 'b' || square.color === 'w' && turn === 'w')) {
+          if (
+            square?.type === "k" &&
+            ((square.color === "b" && turn === "b") ||
+              (square.color === "w" && turn === "w"))
+          ) {
             newDangerSquares[square.square] = {
-              boxShadow: 'inset 0 0 5px 5px #B15653'
-            }
+              boxShadow: "inset 0 0 5px 5px #B15653",
+            };
           }
         }
       }
       setDangerSquares(newDangerSquares);
     }
-  }
+  };
 
   useEffect(() => {
     if (!!startingFen) {
       game.load(startingFen);
       checkDangerSquares();
-      setChessBoardPosition(game.fen())
+      setChessBoardPosition(game.fen());
     }
-  }, [startingFen])
+  }, [startingFen]);
+
+  useEffect(() => {
+    if (bestMoves) {
+      const newArrows: [Square, Square][] = [];
+
+      bestMoves.forEach((move) => {
+        const from = move.slice(0, 2) as Square;
+        const to = move.slice(2, 4) as Square;
+        newArrows.push([from, to]);
+      });
+
+      setArrows(newArrows);
+    } else {
+      setArrows([]);
+    }
+  }, [bestMoves, startingFen]);
 
   const getMoveOptions = (square: Square) => {
-    if (game.get(square).color === 'b' && boardOrientation === 'white' || game.get(square).color === 'w' && boardOrientation === 'black') {
+    if (
+      (game.get(square).color === "b" && boardOrientation === "white") ||
+      (game.get(square).color === "w" && boardOrientation === "black")
+    ) {
       return;
     }
     const moves = game.moves({
       verbose: true,
-      square
+      square,
     });
 
     if (moves.length === 0) {
@@ -83,7 +117,7 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
     };
     setOptionSquares(newSquares);
     return true;
-  }
+  };
 
   const onSquareClick = (square: Square) => {
     if (isMovingBlocked) {
@@ -152,7 +186,7 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
       setOptionSquares({});
       return;
     }
-  }
+  };
 
   const onPromotionPieceSelect = (piece?: PromotionPieceOption) => {
     // if no piece passed then user has cancelled dialog, don't make move and reset
@@ -171,13 +205,78 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
     setShowPromotionDialog(false);
     setOptionSquares({});
     return true;
-  }
-  
+  };
+
+  // TODO: Implement this
+  const onPieceDragBegin = (piece: string, sourceSquare: Square) => {
+    if (isMovingBlocked) return false;
+
+    const pieceColor = piece[0] === "w" ? "w" : "b";
+    const isCorrectColor =
+      (pieceColor === "w" && boardOrientation === "white") ||
+      (pieceColor === "b" && boardOrientation === "black");
+
+    if (!isCorrectColor) return false;
+
+    const moves = game.moves({
+      verbose: true,
+      square: sourceSquare,
+    });
+
+    if (moves.length === 0) return false;
+
+    return true;
+  };
+
+  const onPieceDrop = (
+    sourceSquare: Square,
+    targetSquare: Square,
+    piece: string
+  ) => {
+    if (isMovingBlocked) return false;
+
+    const moves = game.moves({
+      verbose: true,
+      square: sourceSquare,
+    });
+
+    const move = moves.find(
+      (m) => m.from === sourceSquare && m.to === targetSquare
+    );
+
+    if (!move) return false;
+
+    // Handle promotion
+    if (
+      (move.color === "w" && move.piece === "p" && targetSquare[1] === "8") ||
+      (move.color === "b" && move.piece === "p" && targetSquare[1] === "1")
+    ) {
+      setMoveFrom(sourceSquare);
+      setMoveTo(targetSquare);
+      setShowPromotionDialog(true);
+      return false;
+    }
+
+    // Make normal move
+    const chessMove = game.move({
+      from: sourceSquare,
+      to: targetSquare,
+      promotion: "q",
+    });
+
+    if (chessMove === null) return false;
+
+    checkDangerSquares();
+    makeMove(chessMove.san);
+    setChessBoardPosition(game.fen());
+    return true;
+  };
+
   return (
     <div className={styles.board}>
       <Chessboard
         animationDuration={200}
-        arePiecesDraggable={false}
+        arePiecesDraggable={!isMovingBlocked}
         position={chessBoardPosition}
         boardOrientation={boardOrientation}
         onSquareClick={onSquareClick}
@@ -190,17 +289,26 @@ const ChessBoard = memo(function ChessBoard({startingFen, boardOrientation, make
         showPromotionDialog={showPromotionDialog}
         areArrowsAllowed={true}
         customSquare={CustomSquare}
+        customArrows={arrows}
       />
     </div>
   );
-})
+});
 
-const CustomSquare = React.forwardRef<HTMLDivElement, CustomSquareProps>(({squareColor, children, style}: CustomSquareProps, ref) => {
-  return (
-    <div ref={ref} style={style} className={`${squareColor === 'black' ? styles.darkSquare : styles.lightSquare}`}>
-      {children}
-    </div>
-  )
-})
+const CustomSquare = React.forwardRef<HTMLDivElement, CustomSquareProps>(
+  ({ squareColor, children, style }: CustomSquareProps, ref) => {
+    return (
+      <div
+        ref={ref}
+        style={style}
+        className={`${
+          squareColor === "black" ? styles.darkSquare : styles.lightSquare
+        }`}
+      >
+        {children}
+      </div>
+    );
+  }
+);
 
-export default ChessBoard
+export default ChessBoard;
