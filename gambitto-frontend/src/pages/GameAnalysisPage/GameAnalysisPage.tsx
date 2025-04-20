@@ -22,6 +22,7 @@ const GameAnalysisPage = () => {
     moveEvaluation,
     positionEvaluation,
     bestMoves,
+    isEvaluationLoading,
   } = useGameAnalysisPageController();
 
   useEffect(() => {
@@ -127,6 +128,7 @@ const GameAnalysisPage = () => {
                 <MoveEvaluation
                   quality={moveEvaluation?.quality}
                   bestMove={moveEvaluation?.bestMove}
+                  isLoading={isEvaluationLoading}
                 />
               </div>
               {history.length > 0 && (
