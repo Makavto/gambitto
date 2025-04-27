@@ -1,15 +1,18 @@
 import React from "react";
 import { MoveQualityEnum } from "../../models/enums/MoveQualityEnum";
 import styles from "./MoveEvaluation.module.scss";
+import { Loader } from "../Loader/Loader";
 
 interface IMoveEvaluationProps {
   quality?: MoveQualityEnum | null;
   bestMove?: string | null;
+  isLoading?: boolean;
 }
 
 const MoveEvaluationComponent: React.FC<IMoveEvaluationProps> = ({
   quality,
   bestMove,
+  isLoading,
 }) => {
   const getQualityClass = (quality?: MoveQualityEnum | null) => {
     switch (quality) {
@@ -29,11 +32,17 @@ const MoveEvaluationComponent: React.FC<IMoveEvaluationProps> = ({
 
   return (
     <div className={styles.evaluation}>
-      <div className={`${styles.quality} ${getQualityClass(quality)}`}>
-        {quality}
-      </div>
-      {quality !== MoveQualityEnum.Best && bestMove && (
-        <div className={styles.bestMove}>Лучший ход: {bestMove}</div>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <div className={`${styles.quality} ${getQualityClass(quality)}`}>
+            {quality}
+          </div>
+          {quality !== MoveQualityEnum.Best && bestMove && (
+            <div className={styles.bestMove}>Лучший ход: {bestMove}</div>
+          )}
+        </>
       )}
     </div>
   );

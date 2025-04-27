@@ -9,6 +9,8 @@ import { EvaluationBar } from "../../components/EvaluationBar/EvaluationBar";
 import { ChevronLeftIcon, ChevronRightIcon } from "../../components/icons";
 import SimpleBar from "simplebar-react";
 import variables from "../../styles/variables.module.scss";
+import Button from "../../components/Button/Button";
+import { ButtonTypesEnum } from "../../utils/ButtonTypesEnum";
 
 const GameAnalysisPage = () => {
   const {
@@ -22,6 +24,7 @@ const GameAnalysisPage = () => {
     moveEvaluation,
     positionEvaluation,
     bestMoves,
+    isEvaluationLoading,
   } = useGameAnalysisPageController();
 
   useEffect(() => {
@@ -127,6 +130,7 @@ const GameAnalysisPage = () => {
                 <MoveEvaluation
                   quality={moveEvaluation?.quality}
                   bestMove={moveEvaluation?.bestMove}
+                  isLoading={isEvaluationLoading}
                 />
               </div>
               {history.length > 0 && (
@@ -139,20 +143,19 @@ const GameAnalysisPage = () => {
                     />
                   </SimpleBar>
                   <div className={styles.navigationButtons}>
-                    <button
+                    <Button
                       onClick={handlePreviousMove}
-                      className={styles.navButton}
                       disabled={
                         findCurrentMoveIndex() === -1 ||
                         ((findCurrentMoveIndex() as any).movePairIndex === 0 &&
                           (findCurrentMoveIndex() as any).moveIndex === 0)
                       }
+                      type={ButtonTypesEnum.Icon}
                     >
-                      <ChevronLeftIcon />
-                    </button>
-                    <button
+                      <ChevronLeftIcon size={42} />
+                    </Button>
+                    <Button
                       onClick={handleNextMove}
-                      className={styles.navButton}
                       disabled={
                         findCurrentMoveIndex() === -1 ||
                         ((findCurrentMoveIndex() as any).movePairIndex ===
@@ -160,9 +163,10 @@ const GameAnalysisPage = () => {
                           (findCurrentMoveIndex() as any).moveIndex ===
                             history[history.length - 1].length - 1)
                       }
+                      type={ButtonTypesEnum.Icon}
                     >
-                      <ChevronRightIcon />
-                    </button>
+                      <ChevronRightIcon size={42} />
+                    </Button>
                   </div>
                 </div>
               )}

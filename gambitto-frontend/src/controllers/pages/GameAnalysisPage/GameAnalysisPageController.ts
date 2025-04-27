@@ -40,6 +40,7 @@ export const useGameAnalysisPageController = () => {
     mate: 0,
   });
   const [bestMoves, setBestMoves] = useState<string[]>();
+  const [isEvaluationLoading, setIsEvaluationLoading] = useState(false);
 
   const {
     endStockfish,
@@ -126,7 +127,9 @@ export const useGameAnalysisPageController = () => {
 
   const onMakeMoveActive = async (newActiveMove: IHistoryMove) => {
     setActiveMove(newActiveMove);
-    
+    setIsEvaluationLoading(true);
+    setBestMoves(undefined);
+
     const cacheKey = `${newActiveMove.positionBefore}-${newActiveMove.moveCode}`;
     const cachedEvaluation = evaluationsCache.current.get(cacheKey);
 
@@ -134,6 +137,7 @@ export const useGameAnalysisPageController = () => {
       setMoveEvaluation(cachedEvaluation.move);
       setPositionEvaluation(cachedEvaluation.evaluation);
       setBestMoves(cachedEvaluation.bestMoves);
+      setIsEvaluationLoading(false);
       return;
     }
 
@@ -152,6 +156,7 @@ export const useGameAnalysisPageController = () => {
       setMoveEvaluation(evaluation.move);
       setPositionEvaluation(evaluation.evaluation);
       setBestMoves(evaluation.bestMoves);
+      setIsEvaluationLoading(false);
       evaluationsCache.current.set(cacheKey, evaluation);
     }, 1000);
   };
@@ -181,5 +186,6 @@ export const useGameAnalysisPageController = () => {
     moveEvaluation,
     positionEvaluation,
     bestMoves,
+    isEvaluationLoading,
   };
 };
