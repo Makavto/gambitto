@@ -8,7 +8,9 @@
     "stop": "pm2 stop 'all'",
     "dev": "NODE_ENV=dev nodemon index.js",
     "dev:test": "NODE_ENV=test nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --forceExit --runInBand",
+    "test:watch": "jest --watch --forceExit --runInBand",
+    "test:coverage": "jest --coverage --forceExit --runInBand"
   },
   "keywords": [
     "chess"
@@ -29,9 +31,13 @@
     "pg-hstore": "^2.3.4",
     "pm2": "^5.3.0",
     "sequelize": "^6.33.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "ws": "^8.18.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "jest": "^29.7.0",
     "nodemon": "^3.0.1"
   }
 }
