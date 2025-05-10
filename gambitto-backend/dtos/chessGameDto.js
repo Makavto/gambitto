@@ -1,4 +1,4 @@
-const { GameStatus, User } = require("../models");
+const { GameStatus, User, GameType } = require("../models");
 const userService = require("../service/userService");
 const UserDto = require("./userDto");
 
@@ -13,12 +13,23 @@ module.exports = class ChessGameDto {
   whitePlayerName;
   gameStatus;
   gameStatusFormatted;
+  gameType;
+  gameTypeFormatted;
 
   constructor(chessGameModel) {
     return (async () => {
-      const blackPlayer = new UserDto(await User.findOne({ where: { id: chessGameModel.blackPlayerId } }));
-      const whitePlayer = new UserDto(await User.findOne({ where: { id: chessGameModel.whitePlayerId } }));
-      const gameStatus = await GameStatus.findOne({where: {id: chessGameModel.gameStatusId}})
+      const blackPlayer = new UserDto(
+        await User.findOne({ where: { id: chessGameModel.blackPlayerId } })
+      );
+      const whitePlayer = new UserDto(
+        await User.findOne({ where: { id: chessGameModel.whitePlayerId } })
+      );
+      const gameStatus = await GameStatus.findOne({
+        where: { id: chessGameModel.gameStatusId },
+      });
+      const gameType = await GameType.findOne({
+        where: { id: chessGameModel.gameTypeId },
+      });
       this.id = chessGameModel.id;
       this.createdAt = chessGameModel.createdAt;
       this.senderId = chessGameModel.senderId;
@@ -29,7 +40,9 @@ module.exports = class ChessGameDto {
       this.whitePlayerName = whitePlayer.username;
       this.gameStatusFormatted = gameStatus.statusFormatted;
       this.gameStatus = gameStatus.status;
-      return this
+      this.gameType = gameType.type;
+      this.gameTypeFormatted = gameType.typeFormatted;
+      return this;
     })();
   }
-}
+};

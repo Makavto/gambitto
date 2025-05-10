@@ -48,6 +48,17 @@ const GAME_STATUSES = [
   }
 ]
 
+const GAME_TYPES = [
+  {
+    type: 'rating',
+    typeFormatted: 'Рейтинговая'
+  },
+  {
+    type: 'friendly',
+    typeFormatted: 'Товарищеская'
+  }
+]
+
 const STARTING_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 const MAX_OPPONENTS_RATING_RANGE = 200;
@@ -56,5 +67,6 @@ module.exports = {
   FRIENDSHIP_STATUSES,
   GAME_STATUSES,
   STARTING_POSITION,
-  MAX_OPPONENTS_RATING_RANGE
+  MAX_OPPONENTS_RATING_RANGE,
+  GAME_TYPES
 }

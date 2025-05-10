@@ -8,6 +8,7 @@ const Message = require("./Message");
 const FriendshipStatus = require("./FriendshipStatus");
 const Token = require("./Token");
 const RatingsHistory = require("./RatingsHistory");
+const GameType = require("./GameType");
 
 module.exports = {
   User,
@@ -20,4 +21,5 @@ module.exports = {
   FriendshipStatus,
   Token,
   RatingsHistory,
+  GameType
 };
