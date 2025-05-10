@@ -22,14 +22,16 @@ FROM node:18-alpine
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
+# Установка serve
+RUN npm install -g serve
+
 # Копируем только необходимые файлы из этапа сборки
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/public ./dist/public
+COPY --from=builder /app/build ./build
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 
 # Открываем порт
-EXPOSE 8080
+EXPOSE 3000
 
 # Запускаем приложение
-CMD ["npm", "run", "build:start"]
+CMD ["serve", "-s", "build"]
