@@ -19,11 +19,11 @@ function UserSearchPage({ isForChessGame }: IUserSearchPageProps) {
     register,
     onViewUser,
     usersData,
-  } = useUserSearchPageController();
+  } = useUserSearchPageController({ isForChessGame });
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={`textBig ${styles.title} title`}>Поиск пользователей</div>
+      <div className={`textBig ${styles.title} title`}>Поиск {isForChessGame ? 'друзей' : 'пользователей'}</div>
       <div className={styles.searchWrapper}>
         <Input
           name="searchQuery"

@@ -95,8 +95,8 @@ class UserController {
 
   async getUsers(req, res, next) {
     try {
-      const { searchQuery } = req.query;
-      const users = await userService.getUsers(searchQuery, req.user.id);
+      const { searchQuery, onlyFriends } = req.query;
+      const users = await userService.getUsers(searchQuery, onlyFriends, req.user.id);
       return res.json(users);
     } catch (error) {
       return next(error);

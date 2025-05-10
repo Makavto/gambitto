@@ -6,7 +6,13 @@ import { ChessAPI } from "../../../services/ChessService";
 import { FriendshipAPI } from "../../../services/FriendshipService";
 import { UserAPI } from "../../../services/UserService";
 
-export const useUserSearchPageController = () => {
+interface IUseUserSearchPageProps {
+  isForChessGame?: boolean;
+}
+
+export const useUserSearchPageController = ({
+  isForChessGame = false,
+}: IUseUserSearchPageProps) => {
   const [getUsers, { data: usersData, isFetching: isUsersDataFetching }] =
     UserAPI.useLazyGetUsersQuery();
 
@@ -23,7 +29,10 @@ export const useUserSearchPageController = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getUsers({ searchQuery: searchParams.get("searchQuery") ?? "" });
+    getUsers({
+      searchQuery: searchParams.get("searchQuery") ?? "",
+      onlyFriends: isForChessGame,
+    });
   }, [searchParams.get("searchQuery")]);
 
   let inputDelay: NodeJS.Timeout;
