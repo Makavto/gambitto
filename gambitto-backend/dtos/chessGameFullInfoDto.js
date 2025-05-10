@@ -1,4 +1,10 @@
-const { GameStatus, ChessMove, User, RatingsHistory } = require("../models");
+const {
+  GameStatus,
+  ChessMove,
+  User,
+  RatingsHistory,
+  GameType,
+} = require("../models");
 
 module.exports = class ChessGameFullInfoDto {
   id;
@@ -15,6 +21,8 @@ module.exports = class ChessGameFullInfoDto {
   whitePlayerDelta;
   gameStatus;
   gameStatusFormatted;
+  gameType;
+  gameTypeFormatted;
   gameMoves;
 
   constructor(chessGameModel) {
@@ -27,6 +35,9 @@ module.exports = class ChessGameFullInfoDto {
       });
       const gameStatus = await GameStatus.findOne({
         where: { id: chessGameModel.gameStatusId },
+      });
+      const gameType = await GameType.findOne({
+        where: { id: chessGameModel.gameTypeId },
       });
       try {
         const whitePlayerRating = await RatingsHistory.findOne({
@@ -59,6 +70,8 @@ module.exports = class ChessGameFullInfoDto {
       this.gameMoves = await ChessMove.findAll({
         where: { chessGameId: chessGameModel.id },
       });
+      this.gameType = gameType.type;
+      this.gameTypeFormatted = gameType.typeFormatted;
       return this;
     })();
   }

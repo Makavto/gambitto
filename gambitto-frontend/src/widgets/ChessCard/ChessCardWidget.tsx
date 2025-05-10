@@ -21,7 +21,7 @@ const ChessCardWidgetComponent = ({ game }: IChessCard) => {
     <Card>
       <div className={styles.historyCardRow}>
         <div>
-          Партия с{" "}
+          {game.gameTypeFormatted} партия с{" "}
           {game.blackPlayerId === userId ? (
             <Button
               type={ButtonTypesEnum.Link}

@@ -276,7 +276,7 @@ const ChessBoard = memo(function ChessBoard({
     <div className={styles.board}>
       <Chessboard
         animationDuration={200}
-        arePiecesDraggable={!isMovingBlocked}
+        arePiecesDraggable={false}
         position={chessBoardPosition}
         boardOrientation={boardOrientation}
         onSquareClick={onSquareClick}

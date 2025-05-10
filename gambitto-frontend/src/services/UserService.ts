@@ -21,11 +21,14 @@ export const UserAPI = createApi({
       }),
     }),
 
-    getUsers: builder.query<IUserSearchDto[], { searchQuery: string }>({
-      query: ({ searchQuery }) => ({
+    getUsers: builder.query<IUserSearchDto[], { searchQuery: string, onlyFriends?: boolean }>({
+      query: ({ searchQuery, onlyFriends = false }) => ({
         url: "/user/users",
         params: {
           searchQuery,
+          ...(onlyFriends && {
+            onlyFriends
+          })
         },
       }),
     }),

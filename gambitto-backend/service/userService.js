@@ -7,7 +7,7 @@ const { Op } = require("sequelize");
 const UserTopDto = require("../dtos/userTopDto");
 const UserSearchDto = require("../dtos/userSearchDto");
 const UserStatsDto = require("../dtos/userStatsDto");
-const { RatingsHistory } = require("../models");
+const { RatingsHistory, Friendship, FriendshipStatus } = require("../models");
 
 class UserService {
   // Сервис регистрации пользователя
@@ -86,15 +86,40 @@ class UserService {
   }
 
   // Поиск по юзерам
-  async getUsers(searchQuery, userId) {
-    const users = await User.findAll({
-      where: {
-        username: {
-          [Op.iLike]: `%${searchQuery}%`,
-        },
-        id: { [Op.ne]: userId },
+  async getUsers(searchQuery, onlyFriends, userId) {
+    let whereClause = {
+      username: {
+        [Op.iLike]: `%${searchQuery}%`,
       },
+      id: { [Op.ne]: userId },
+    };
+
+    if (onlyFriends) {
+      const friendsStatus = await FriendshipStatus.findOne({
+        where: { status: "friends" },
+      });
+      const friendships = await Friendship.findAll({
+        where: {
+          friendshipStatusId: friendsStatus.id,
+          [Op.or]: [{ senderId: userId }, { inviteeId: userId }],
+        },
+      });
+
+      const friendIds = friendships.map((friendship) =>
+        friendship.senderId === userId
+          ? friendship.inviteeId
+          : friendship.senderId
+      );
+
+      whereClause.id = {
+        [Op.and]: [{ [Op.ne]: userId }, { [Op.in]: friendIds }],
+      };
+    }
+
+    const users = await User.findAll({
+      where: whereClause,
     });
+
     const userDtos = await Promise.all(
       users.map(async (user) => await new UserSearchDto(user, userId))
     );

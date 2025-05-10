@@ -8,6 +8,10 @@
     "stop": "pm2 stop 'all'",
     "dev": "NODE_ENV=dev nodemon index.js",
     "dev:test": "NODE_ENV=test nodemon index.js",
+    "migrate:dev": "NODE_ENV=dev npx sequelize-cli db:migrate",
+    "migrate:undo:dev": "NODE_ENV=dev npx sequelize-cli db:migrate:undo",
+    "migrate:prod": "NODE_ENV=prod npx sequelize-cli db:migrate",
+    "migrate:undo:prod": "NODE_ENV=prod npx sequelize-cli db:migrate:undo",
     "test": "jest --forceExit --runInBand",
     "test:watch": "jest --watch --forceExit --runInBand",
     "test:coverage": "jest --coverage --forceExit --runInBand"
@@ -31,6 +35,7 @@
     "pg-hstore": "^2.3.4",
     "pm2": "^5.3.0",
     "sequelize": "^6.33.0",
+    "sequelize-cli": "^6.6.3",
     "uuid": "^9.0.1",
     "ws": "^8.18.2"
   },

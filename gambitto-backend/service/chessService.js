@@ -6,6 +6,7 @@ const {
   GameStatus,
   ChessMove,
   RatingsHistory,
+  GameType,
 } = require("../models");
 const { Chess } = require("chess.js");
 const {
@@ -36,12 +37,16 @@ class ChessService {
     const invitationStatus = await GameStatus.findOne({
       where: { status: "invitation" },
     });
+    const gameType = await GameType.findOne({
+      where: { type: "friendly" },
+    });
     const newGame = await ChessGame.create({
       blackPlayerId,
       whitePlayerId,
       gameStatusId: invitationStatus.id,
       senderId,
       inviteeId,
+      gameTypeId: gameType.id
     });
     return await new ChessGameDto(newGame);
   }
@@ -61,6 +66,9 @@ class ChessService {
         const inProgressStatus = await GameStatus.findOne({
           where: { status: "inProgress" },
         });
+        const ratingGameType = await GameType.findOne({
+          where: { type: "rating" },
+        });
         let blackPlayerId;
         let whitePlayerId;
         const senderId = userId;
@@ -78,6 +86,7 @@ class ChessService {
           gameStatusId: inProgressStatus.id,
           senderId,
           inviteeId,
+          gameTypeId: ratingGameType.id
         });
         break;
       }
@@ -181,11 +190,14 @@ class ChessService {
         id: gameId,
         gameStatusId: inProgressStatus.id,
         [Op.or]: [{ senderId: userId }, { inviteeId: userId }],
-      },
+      }
     });
     if (!game) {
       throw ApiError.badRequest("no such game");
     }
+    const gameType = await GameType.findOne({
+      where: { id: game.gameTypeId }
+    });
     const lastMove = await ChessMove.findOne({
       where: { chessGameId: gameId },
       order: [["createdAt", "DESC"]],
@@ -222,12 +234,16 @@ class ChessService {
     let gameStatus;
     if (chess.isCheckmate()) {
       if (curTurn === "w") {
-        await ratingService.countNewRating(game, 1);
+        if (gameType.type === "rating") {
+          await ratingService.countNewRating(game, 1);
+        }
         gameStatus = await GameStatus.findOne({
           where: { status: "whiteWin" },
         });
       } else {
-        await ratingService.countNewRating(game, 0);
+        if (gameType.type === "rating") {
+          await ratingService.countNewRating(game, 0);
+        }
         gameStatus = await GameStatus.findOne({
           where: { status: "blackWin" },
         });
@@ -236,13 +252,17 @@ class ChessService {
       game.save();
     }
     if (chess.isThreefoldRepetition()) {
-      await ratingService.countNewRating(game, 0.5);
+      if (gameType.type === "rating") {
+        await ratingService.countNewRating(game, 0.5);
+      }
       gameStatus = await GameStatus.findOne({ where: { status: "threefold" } });
       game.gameStatusId = gameStatus.id;
       game.save();
     }
     if (chess.isInsufficientMaterial()) {
-      await ratingService.countNewRating(game, 0.5);
+      if (gameType.type === "rating") {
+        await ratingService.countNewRating(game, 0.5);
+      }
       gameStatus = await GameStatus.findOne({
         where: { status: "insufficient" },
       });
@@ -250,13 +270,17 @@ class ChessService {
       game.save();
     }
     if (chess.isDraw()) {
-      await ratingService.countNewRating(game, 0.5);
+      if (gameType.type === "rating") {
+        await ratingService.countNewRating(game, 0.5);
+      }
       gameStatus = await GameStatus.findOne({ where: { status: "draw" } });
       game.gameStatusId = gameStatus.id;
       game.save();
     }
     if (chess.isStalemate()) {
-      await ratingService.countNewRating(game, 0.5);
+      if (gameType.type === "rating") {
+        await ratingService.countNewRating(game, 0.5);
+      }
       gameStatus = await GameStatus.findOne({ where: { status: "stalemate" } });
       game.gameStatusId = gameStatus.id;
       game.save();
@@ -273,18 +297,25 @@ class ChessService {
         id: gameId,
         gameStatusId: inProgressStatus.id,
         [Op.or]: [{ senderId: userId }, { inviteeId: userId }],
-      },
+      }
     });
     if (!game) {
       throw ApiError.badRequest("no such game");
     }
+    const gameType = await GameType.findOne({
+      where: { id: game.gameTypeId }
+    });
     let gameStatus;
     if (userId === game.whitePlayerId) {
-      await ratingService.countNewRating(game, 0);
+      if (gameType.type === "rating") {
+        await ratingService.countNewRating(game, 0);
+      }
       gameStatus = await GameStatus.findOne({ where: { status: "blackWin" } });
     }
     if (userId === game.blackPlayerId) {
-      await ratingService.countNewRating(game, 1);
+      if (gameType.type === "rating") {
+        await ratingService.countNewRating(game, 1);
+      }
       gameStatus = await GameStatus.findOne({ where: { status: "whiteWin" } });
     }
     game.gameStatusId = gameStatus.id;

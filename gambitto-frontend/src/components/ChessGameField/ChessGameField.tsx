@@ -1,9 +1,9 @@
-import styles from './ChessGameField.module.scss';
+import styles from "./ChessGameField.module.scss";
 import React from "react";
 import { IUser } from "../../models/IUser";
 import { IGameFullInfoDto } from "../../dtos/IGameFullInfoDto";
 import ChessBoard from "../ChessBoard/ChessBoard";
-import { GetSignedNumber } from '../../utils/GetSignedNumber';
+import { GetSignedNumber } from "../../utils/GetSignedNumber";
 
 interface IChessGameFieldProps {
   chessGame: IGameFullInfoDto;
@@ -30,7 +30,8 @@ const ChessGameFieldComponent = ({
         {opponentData && (
           <span>
             {opponentData.username} (
-            {chessGame.gameStatus === "inProgress"
+            {chessGame.gameType === "friendly" ||
+            chessGame.gameStatus === "inProgress"
               ? opponentData.rating
               : chessGame.blackPlayerId === opponentData.id
               ? chessGame.blackPlayerRating
@@ -75,7 +76,8 @@ const ChessGameFieldComponent = ({
       <div className={`textBig ${styles.user}`}>
         <span>
           {user?.username} (
-          {chessGame.gameStatus === "inProgress"
+          {chessGame.gameType === "friendly" ||
+          chessGame.gameStatus === "inProgress"
             ? user?.rating
             : chessGame.blackPlayerId === user?.id
             ? chessGame.blackPlayerRating

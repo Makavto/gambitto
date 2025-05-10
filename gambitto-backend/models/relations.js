@@ -20,6 +20,7 @@ module.exports = () => {
     models.Message.belongsTo(models.User);
 
     models.ChessGame.belongsTo(models.GameStatus);
+    models.ChessGame.belongsTo(models.GameType);
     models.ChessGame.hasMany(models.ChessMove);
     models.ChessGame.hasMany(models.RatingsHistory);
     models.ChessGame.belongsTo(models.User, {as: 'blackPlayer', onDelete: 'CASCADE'});
@@ -32,6 +33,8 @@ module.exports = () => {
     models.ChessMove.belongsTo(models.User);
 
     models.GameStatus.hasMany(models.ChessGame);
+
+    models.GameType.hasMany(models.ChessGame);
 
     models.Friendship.belongsTo(models.FriendshipStatus);
     models.Friendship.belongsTo(models.User, {as: 'sender', onDelete: 'CASCADE'});

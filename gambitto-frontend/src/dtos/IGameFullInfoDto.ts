@@ -16,4 +16,6 @@ export interface IGameFullInfoDto {
   whitePlayerRating?: number;
   blackPlayerDelta?: number;
   whitePlayerDelta?: number;
+  gameType: string;
+  gameTypeFormatted: string;
 }
