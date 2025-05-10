@@ -150,11 +150,23 @@ export const useStockfishController = () => {
         };
       }
 
-      const delta =
-        (isBlackToMove && topEval?.cp ? -topEval?.cp : topEval?.cp ?? 0) -
-        (!isBlackToMove && afterMove[0]?.cp
-          ? -afterMove[0]?.cp
-          : afterMove[0]?.cp ?? 0);
+      // Calculate delta considering both cp and mate scores
+      let delta = 0;
+
+      if (topEval.cp && afterMove[0].cp) {
+        delta =
+          (isBlackToMove && topEval?.cp ? -topEval?.cp : topEval?.cp ?? 0) -
+          (!isBlackToMove && afterMove[0]?.cp
+            ? -afterMove[0]?.cp
+            : afterMove[0]?.cp ?? 0);
+      } else if (afterMove[0]?.mate) {
+        const afterMate = afterMove[0].mate;
+
+        if (afterMate > 0 && !topEval.mate) {
+          delta = -10000;
+        }
+      }
+
       const quality = classifyMoveQuality(delta);
       return {
         move: { quality, bestMove: bestMoveSan },

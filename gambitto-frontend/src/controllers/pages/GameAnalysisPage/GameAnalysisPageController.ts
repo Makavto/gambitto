@@ -152,7 +152,6 @@ export const useGameAnalysisPageController = () => {
         newActiveMove.positionBefore,
         sanToUciMove(newActiveMove.positionBefore, newActiveMove.moveCode)
       );
-      console.log("evaluation", evaluation);
       setMoveEvaluation(evaluation.move);
       setPositionEvaluation(evaluation.evaluation);
       setBestMoves(evaluation.bestMoves);
