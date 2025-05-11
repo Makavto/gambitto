@@ -85,7 +85,7 @@ class UserController {
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: Number(process.env.JWT_REFRESH_EXPIRES_IN_MILLISECONDS),
         httpOnly: true,
-        secure: true,
+        secure: false,
       });
       return res.json(userData);
     } catch (error) {
