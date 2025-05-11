@@ -1,0 +1,68 @@
+name: Deploy Gambitto Services
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Что делать?'
+        required: true
+        type: choice
+        options:
+          - frontend
+          - backend
+          - backend_with_migration
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set variables
+      id: vars
+      run: |
+        case "${{ github.event.inputs.action }}" in
+          frontend)
+            echo "FOLDER=gambitto-frontend" >> "$GITHUB_ENV"
+            echo "IMAGE=gambitto-frontend:latest" >> "$GITHUB_ENV"
+            echo "SCRIPT=/home/gambitto-frontend/rebuild-frontend.sh" >> "$GITHUB_ENV"
+            ;;
+          backend)
+            echo "FOLDER=gambitto-backend" >> "$GITHUB_ENV"
+            echo "IMAGE=gambitto-backend:latest" >> "$GITHUB_ENV"
+            echo "SCRIPT=/home/gambitto-frontend/rebuild-backend.sh" >> "$GITHUB_ENV"
+            ;;
+          backend_with_migration)
+            echo "FOLDER=gambitto-backend" >> "$GITHUB_ENV"
+            echo "IMAGE=gambitto-backend:latest" >> "$GITHUB_ENV"
+            echo "SCRIPT=/home/gambitto-frontend/migrate-and-rebuild-backend.sh" >> "$GITHUB_ENV"
+            ;;
+        esac
+
+    - name: Build Docker image
+      run: |
+        docker build -t $IMAGE $FOLDER
+
+    - name: Save Docker image as tar
+      run: |
+        docker save $IMAGE > image.tar
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Copy image to server
+      run: |
+        scp image.tar gamb@45.10.41.239:$HOME/${{ env.FOLDER }}/image.tar
+
+    - name: Run remote deploy script
+      run: |
+        ssh gamb@45.10.41.239 <<EOF
+          cd $HOME/${{ env.FOLDER }}
+          docker load < image.tar
+          chmod +x ${{ env.SCRIPT }}
+          ${{ env.SCRIPT }}
+EOF
