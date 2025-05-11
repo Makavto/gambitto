@@ -54,6 +54,10 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+    - name: Add host to known_hosts
+      run: |
+        ssh-keyscan 45.10.41.239 >> ~/.ssh/known_hosts
+
     - name: Copy image to server
       run: |
         scp image.tar root@45.10.41.239:$HOME/${{ env.FOLDER }}/image.tar
