@@ -1,6 +1,9 @@
 name: Deploy Gambitto Services
 
 on:
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       action:
@@ -58,7 +61,7 @@ jobs:
       run: |
         scp image.tar gamb@45.10.41.239:$HOME/${{ env.FOLDER }}/image.tar
 
-        - name: Run remote deploy script
+    - name: Run remote deploy script
       run: |
         ssh gamb@45.10.41.239 "
           cd \$HOME/${{ env.FOLDER }} &&
