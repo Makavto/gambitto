@@ -5,6 +5,8 @@ import { ButtonTypesEnum } from "../../utils/ButtonTypesEnum";
 import { useGamePageController } from "../../controllers/pages/GamePage/GamePageController";
 import { ChessGameField } from "../../components/ChessGameField/ChessGameField";
 import { MovesHistory } from "../../components/MovesHistory/MovesHistory";
+import SimpleBar from "simplebar-react";
+import variables from "../../styles/variables.module.scss";
 
 function GamePage() {
   const {
@@ -61,15 +63,6 @@ function GamePage() {
                 Статус партии:{" "}
                 <span className="textBig">{chessGame.gameStatusFormatted}</span>
               </div>
-              {history.length > 0 && (
-                <div className={styles.historyWrapper}>
-                  <MovesHistory
-                    history={history}
-                    onMakeMoveActive={onMakeMoveActive}
-                    activeMove={activeMove}
-                  />
-                </div>
-              )}
               {chessGame.gameStatus === "inProgress" && (
                 <div className={styles.giveUpBtn}>
                   <Button onClick={onResign} type={ButtonTypesEnum.Danger}>
@@ -82,6 +75,17 @@ function GamePage() {
                   <Button onClick={onAnalysis} type={ButtonTypesEnum.Primary}>
                     Анализ партии
                   </Button>
+                </div>
+              )}
+              {history.length > 0 && (
+                <div className={styles.historyWrapper}>
+                  <SimpleBar style={{ maxHeight: variables.boardWidth }}>
+                    <MovesHistory
+                      history={history}
+                      onMakeMoveActive={onMakeMoveActive}
+                      activeMove={activeMove}
+                    />
+                  </SimpleBar>
                 </div>
               )}
             </div>

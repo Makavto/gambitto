@@ -12,7 +12,7 @@ export class Ws {
   ws!: WebSocket;
   private url!: string;
   private reconnectAttempts: number = 0;
-  private maxReconnectAttempts: number = 5;
+  private maxReconnectAttempts: number = Infinity;
   private reconnectInterval: number = 1000; // 1 second
   private reconnectTimer: NodeJS.Timeout | null = null;
 

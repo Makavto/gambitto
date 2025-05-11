@@ -12,9 +12,6 @@ export const useAuthPageController = () => {
   const [registerUser, { data: registerData, error: registerError }] =
     AuthAPI.useRegisterUserMutation();
 
-  const [createChessWs] = ChessAPI.useLazyCreateWsQuery();
-  const [createFriendshipWs] = FriendshipAPI.useLazyCreateWsQuery();
-
   const { setUser } = userSlice.actions;
 
   const dispatch = useAppDispatch();
@@ -23,14 +20,10 @@ export const useAuthPageController = () => {
     if (!!userData) {
       dispatch(setUser(userData.user));
       localStorage.setItem("accessToken", userData.accessToken);
-      createChessWs();
-      createFriendshipWs();
     }
     if (!!registerData) {
       dispatch(setUser(registerData.user));
       localStorage.setItem("accessToken", registerData.accessToken);
-      createChessWs();
-      createFriendshipWs();
     }
   }, [userData, registerData]);
 
