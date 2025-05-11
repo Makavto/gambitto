@@ -47,7 +47,7 @@ jobs:
 
     - name: Save Docker image as tar
       run: |
-        docker save $IMAGE > image.tar
+        docker save -o $FOLDER $IMAGE
 
     - name: Setup SSH
       uses: webfactory/ssh-agent@v0.9.0
