@@ -60,12 +60,12 @@ jobs:
 
     - name: Copy image to server
       run: |
-        scp image.tar root@45.10.41.239:$HOME/${{ env.FOLDER }}/image.tar
+        scp image.tar root@45.10.41.239:/home/${{ env.FOLDER }}/image.tar
 
     - name: Run remote deploy script
       run: |
         ssh root@45.10.41.239 "
-          cd \$HOME/${{ env.FOLDER }} &&
+          cd /home/${{ env.FOLDER }} &&
           docker load < image.tar &&
           ${{ env.SCRIPT }}
         "
