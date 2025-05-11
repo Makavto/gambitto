@@ -28,6 +28,7 @@ export const useProfilePageController = () => {
     logoutUser().then(() => {
       localStorage.removeItem("accessToken");
       dispatch(setUser(null));
+      window.location.reload()
     });
   };
 
