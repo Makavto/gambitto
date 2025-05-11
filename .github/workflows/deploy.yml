@@ -58,11 +58,11 @@ jobs:
       run: |
         scp image.tar gamb@45.10.41.239:$HOME/${{ env.FOLDER }}/image.tar
 
-    - name: Run remote deploy script
+        - name: Run remote deploy script
       run: |
-        ssh gamb@45.10.41.239 <<EOF
-          cd $HOME/${{ env.FOLDER }}
-          docker load < image.tar
-          chmod +x ${{ env.SCRIPT }}
+        ssh gamb@45.10.41.239 "
+          cd \$HOME/${{ env.FOLDER }} &&
+          docker load < image.tar &&
+          chmod +x ${{ env.SCRIPT }} &&
           ${{ env.SCRIPT }}
-EOF
+        "
