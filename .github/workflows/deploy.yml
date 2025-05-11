@@ -27,17 +27,17 @@ jobs:
           frontend)
             echo "FOLDER=gambitto-frontend" >> "$GITHUB_ENV"
             echo "IMAGE=gambitto-frontend:latest" >> "$GITHUB_ENV"
-            echo "SCRIPT=/home/gambitto-frontend/rebuild-frontend.sh" >> "$GITHUB_ENV"
+            echo "SCRIPT=./rebuild-frontend.sh" >> "$GITHUB_ENV"
             ;;
           backend)
             echo "FOLDER=gambitto-backend" >> "$GITHUB_ENV"
             echo "IMAGE=gambitto-backend:latest" >> "$GITHUB_ENV"
-            echo "SCRIPT=/home/gambitto-frontend/rebuild-backend.sh" >> "$GITHUB_ENV"
+            echo "SCRIPT=./rebuild-backend.sh" >> "$GITHUB_ENV"
             ;;
           backend_with_migration)
             echo "FOLDER=gambitto-backend" >> "$GITHUB_ENV"
             echo "IMAGE=gambitto-backend:latest" >> "$GITHUB_ENV"
-            echo "SCRIPT=/home/gambitto-frontend/migrate-and-rebuild-backend.sh" >> "$GITHUB_ENV"
+            echo "SCRIPT=./migrate-and-rebuild-backend.sh" >> "$GITHUB_ENV"
             ;;
         esac
 
@@ -56,13 +56,12 @@ jobs:
 
     - name: Copy image to server
       run: |
-        scp image.tar gamb@45.10.41.239:$HOME/${{ env.FOLDER }}/image.tar
+        scp image.tar root@45.10.41.239:$HOME/${{ env.FOLDER }}/image.tar
 
     - name: Run remote deploy script
       run: |
-        ssh gamb@45.10.41.239 "
+        ssh root@45.10.41.239 "
           cd \$HOME/${{ env.FOLDER }} &&
           docker load < image.tar &&
-          chmod +x ${{ env.SCRIPT }} &&
           ${{ env.SCRIPT }}
         "
