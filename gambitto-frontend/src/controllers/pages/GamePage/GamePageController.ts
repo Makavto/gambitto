@@ -8,9 +8,12 @@ import { ChessAPI } from "../../../services/ChessService";
 import { UserAPI } from "../../../services/UserService";
 import { IHistoryMove } from "../../../models/IHistoryMove";
 
+// Контроллер страницы шахматной игры
+// Управляет состоянием игры, ходами и взаимодействием с WebSocket
 export const useGamePageController = () => {
   const { gameId, userId } = useParams();
 
+  // Хуки для взаимодействия с API
   const [getGameInfo, { data: gameInfoData }] =
     ChessAPI.useLazyGetGameInfoQuery();
   const [getChessNotification, { data: chessListenerData }] =
@@ -19,20 +22,20 @@ export const useGamePageController = () => {
   const [resign, { data: resignData }] = ChessAPI.useLazyResignQuery();
   const [getOpponent, { data: opponentData }] =
     UserAPI.useLazyGetUserByIdQuery();
-
   const [getUser, { data: userData }] = UserAPI.useLazyGetUserByIdQuery();
 
   const navigate = useNavigate();
 
+  // Состояние игры и история ходов
   const [chessGame, setChessGame] = useState<IGameFullInfoDto>();
+  const [history, setHistory] = useState<IHistoryMove[][]>([]);
+  const [activeMove, setActiveMove] = useState<IHistoryMove>();
 
   const { chessWsReady } = useAppSelector((state) => state.wsSlice);
 
   const { user } = useAppSelector((state) => state.userSlice);
 
-  const [history, setHistory] = useState<IHistoryMove[][]>([]);
-  const [activeMove, setActiveMove] = useState<IHistoryMove>();
-
+  // Инициализация игры при подключении к WebSocket
   useEffect(() => {
     if (!!chessWsReady && !!gameId) {
       getGameInfo({ gameId: Number(gameId) });
@@ -40,12 +43,14 @@ export const useGamePageController = () => {
     }
   }, [chessWsReady]);
 
+  // Получение данных пользователя
   useEffect(() => {
     if (userId) {
       getUser(Number(userId));
     }
   }, [userId]);
 
+  // Переход на страницу анализа игры
   const onAnalysis = () => {
     if (gameId) {
       userId
@@ -54,6 +59,7 @@ export const useGamePageController = () => {
     }
   };
 
+  // Сброс и обновление истории ходов
   const resetHistory = (gameFullInfo: IGameFullInfoDto) => {
     let newHistoryArray: IHistoryMove[][] = [];
     const gameMoves = gameFullInfo.gameMoves;
@@ -90,6 +96,7 @@ export const useGamePageController = () => {
     setHistory(newHistoryArray);
   };
 
+  // Обновление состояния игры при получении данных
   useEffect(() => {
     if (!!gameInfoData) {
       setChessGame(gameInfoData.gameFullInfo);
@@ -110,6 +117,7 @@ export const useGamePageController = () => {
     }
   }, [gameInfoData, userId]);
 
+  // Обработка сделанного хода
   useEffect(() => {
     if (!!makeMoveData) {
       setChessGame(makeMoveData.gameFullInfo);
@@ -117,14 +125,17 @@ export const useGamePageController = () => {
     }
   }, [makeMoveData]);
 
+  // Обработка сдачи игры
   useEffect(() => {
     if (!!resignData) {
       setChessGame(resignData.gameFullInfo);
     }
   }, [resignData]);
 
+  // Обработка WebSocket уведомлений
   useEffect(() => {
     if (!!chessListenerData) {
+      // Обработка принятия игры
       if (
         chessListenerData.method === ChessWsServerMethodsEnum.Accepted &&
         chessListenerData.data.game.id === Number(gameId)
@@ -135,6 +146,7 @@ export const useGamePageController = () => {
           gameStatusFormatted: chessListenerData.data.game.gameStatusFormatted,
         }));
       }
+      // Обработка отклонения игры
       if (
         chessListenerData.method === ChessWsServerMethodsEnum.Declined &&
         chessListenerData.data.game.id === Number(gameId)
@@ -145,6 +157,7 @@ export const useGamePageController = () => {
           gameStatusFormatted: chessListenerData.data.game.gameStatusFormatted,
         }));
       }
+      // Обработка сделанного хода
       if (
         chessListenerData.method === ChessWsServerMethodsEnum.MadeMove &&
         chessListenerData.data.gameFullInfo.id === Number(gameId)
@@ -152,6 +165,7 @@ export const useGamePageController = () => {
         setChessGame(chessListenerData.data.gameFullInfo);
         resetHistory(chessListenerData.data.gameFullInfo);
       }
+      // Обработка сдачи игры
       if (
         chessListenerData.method === ChessWsServerMethodsEnum.Resigned &&
         chessListenerData.data.gameFullInfo.id === Number(gameId)
@@ -161,6 +175,7 @@ export const useGamePageController = () => {
     }
   }, [chessListenerData]);
 
+  // Обработчики действий
   const onMakeMove = (moveCode: string) => {
     makeMove({ gameId: Number(gameId), moveCode });
   };
@@ -173,6 +188,7 @@ export const useGamePageController = () => {
     setActiveMove(newActiveMove);
   };
 
+  // Получение позиции после хода
   const getPositionAfterMove = (positionBefore: string, moveCode: string) => {
     const game = new Chess(positionBefore);
     game.move(moveCode);

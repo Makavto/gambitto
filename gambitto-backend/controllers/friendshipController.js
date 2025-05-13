@@ -4,6 +4,8 @@ const friendshipService = require("../service/friendshipService");
 const friendshipClients = require("../wss clients/friendshipClients");
 
 class FrienshipController {
+  // Подключение к WebSocket серверу для друзей
+  // При подключении отправляются все активные уведомления о запросах в друзья
   async connection(ws, req) {
     try {
       ws.user = req.user;
@@ -25,6 +27,7 @@ class FrienshipController {
     }
   }
 
+  // Получение списка всех друзей пользователя
   async getFriends(ws, req) {
     try {
       ws.user = req.user;
@@ -45,6 +48,7 @@ class FrienshipController {
     }
   }
 
+  // Закрытие WebSocket соединения
   close(ws) {
     try {
       friendshipClients.delete(ws);
@@ -53,6 +57,8 @@ class FrienshipController {
     }
   }
 
+  // Отправка запроса в друзья другому пользователю
+  // Отправляет уведомление приглашенному пользователю через WebSocket
   async addFriend(ws, msg, req) {
     try {
       if (!msg.inviteeId) {
@@ -86,6 +92,8 @@ class FrienshipController {
     }
   }
 
+  // Принятие запроса в друзья
+  // Уведомляет отправителя запроса о принятии
   async acceptInvitation(ws, msg, req) {
     try {
       if (!msg.invitationId) {
@@ -119,6 +127,8 @@ class FrienshipController {
     }
   }
 
+  // Отклонение запроса в друзья
+  // Уведомляет отправителя запроса об отклонении
   async declineInvitation(ws, msg, req) {
     try {
       if (!msg.invitationId) {
@@ -152,6 +162,8 @@ class FrienshipController {
     }
   }
 
+  // Удаление пользователя из списка друзей
+  // Уведомляет удаленного пользователя через WebSocket
   async deleteFriend(ws, msg, req) {
     try {
       if (!msg.invitationId) {
@@ -185,6 +197,7 @@ class FrienshipController {
     }
   }
 
+  // Получение уведомлений о запросах в друзья
   async getNotifications(ws, req) {
     try {
       ws.user = req.user;

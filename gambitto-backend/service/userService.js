@@ -10,7 +10,7 @@ const UserStatsDto = require("../dtos/userStatsDto");
 const { RatingsHistory, Friendship, FriendshipStatus } = require("../models");
 
 class UserService {
-  // Сервис регистрации пользователя
+  // Регистрация нового пользователя в системе
   async register(username, email, password) {
     if (await User.findOne({ where: { email } })) {
       throw ApiError.badRequest(
@@ -43,7 +43,7 @@ class UserService {
     return { ...tokens, user: userDto };
   }
 
-  // Сервис авторизации пользователя
+  // Авторизация пользователя в системе
   async login(email, password) {
     const user = await User.findOne({ where: { email } });
     if (!user) {
@@ -62,13 +62,13 @@ class UserService {
     return { ...tokens, user: userDto };
   }
 
-  // Сервис логаута
+  // Выход пользователя из системы
   async logout(refreshToken) {
     const token = await tokenService.removeToken(refreshToken);
     return token;
   }
 
-  // Сервис обновления access token
+  // Обновление токена доступа
   async refresh(refreshToken) {
     if (!refreshToken) {
       throw ApiError.unauthorized();
@@ -85,7 +85,7 @@ class UserService {
     return { ...tokens, user: userDto };
   }
 
-  // Поиск по юзерам
+  // Поиск пользователей по имени пользователя
   async getUsers(searchQuery, onlyFriends, userId) {
     let whereClause = {
       username: {
@@ -126,12 +126,13 @@ class UserService {
     return userDtos;
   }
 
-  // Данные пользователя по айди
+  // Получение информации о пользователе по его ID
   async getUserById(id) {
     const user = await User.findOne({ where: { id } });
     return new UserDto(user);
   }
 
+  // Получение списка топ-5 пользователей по рейтингу
   async getTopUsers() {
     const users = await User.findAll({
       order: [["rating", "DESC"]],
@@ -146,6 +147,7 @@ class UserService {
     return response;
   }
 
+  // Получение статистики пользователя
   async getUserStats(id) {
     const user = await User.findOne({ where: { id } });
     return new UserStatsDto(user);

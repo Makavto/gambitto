@@ -5,6 +5,9 @@ require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 const { validationResult } = require("express-validator");
 
 class UserController {
+  // Регистрация нового пользователя
+  // Проверяет валидность данных и создает нового пользователя
+  // Устанавливает начальный рейтинг 800 и рейтинговую девиацию 350
   async register(req, res, next) {
     try {
       const errors = validationResult(req);
@@ -35,6 +38,8 @@ class UserController {
     }
   }
 
+  // Авторизация пользователя
+  // Проверяет учетные данные и генерирует токены доступа
   async login(req, res, next) {
     try {
       const errors = validationResult(req);
@@ -64,6 +69,8 @@ class UserController {
     }
   }
 
+  // Выход пользователя из системы
+  // Удаляет refresh токен из базы данных и куки
   async logout(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
@@ -78,6 +85,8 @@ class UserController {
     }
   }
 
+  // Обновление токена доступа
+  // Проверяет refresh токен и генерирует новую пару токенов
   async refresh(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
@@ -93,6 +102,8 @@ class UserController {
     }
   }
 
+  // Поиск пользователей по имени
+  // Может фильтровать только друзей пользователя
   async getUsers(req, res, next) {
     try {
       const { searchQuery, onlyFriends } = req.query;
@@ -103,6 +114,7 @@ class UserController {
     }
   }
 
+  // Получение информации о пользователе по ID
   async getUserById(req, res, next) {
     try {
       const { userId } = req.params;
@@ -113,6 +125,7 @@ class UserController {
     }
   }
 
+  // Получение информации о текущем пользователе
   async getMe(req, res, next) {
     try {
       const { id } = req.user;
@@ -123,6 +136,7 @@ class UserController {
     }
   }
 
+  // Получение списка топ-5 пользователей по рейтингу
   async getTop(req, res, next) {
     try {
       const usersTop = await userService.getTopUsers();
@@ -132,6 +146,8 @@ class UserController {
     }
   }
 
+  // Получение статистики пользователя
+  // Если userId не указан, возвращает статистику текущего пользователя
   async getUserStats(req, res, next) {
     try {
       const { userId } = req.query;
