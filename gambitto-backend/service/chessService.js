@@ -19,6 +19,7 @@ const ratingService = require("./ratingService");
 const chessClients = require("../wss clients/chessClients");
 
 class ChessService {
+  // Отправка приглашения на игру другому пользователю
   async sendInvitation(senderId, inviteeId) {
     const sender = await User.findOne({ where: { id: senderId } });
     const invitee = await User.findOne({ where: { id: inviteeId } });
@@ -51,6 +52,7 @@ class ChessService {
     return await new ChessGameDto(newGame);
   }
 
+  // Поиск рейтинговой игры с подходящим соперником
   async startGameSearch(userId) {
     const user = await User.findByPk(userId);
     if (!user) {
@@ -104,6 +106,7 @@ class ChessService {
     }
   }
 
+  // Прекращение поиска рейтинговой игры
   async endGameSearch(userId) {
     for (let chessClient of chessClients) {
       if (chessClient.user.id === userId) {
@@ -114,6 +117,7 @@ class ChessService {
     return null;
   }
 
+  // Получение списка всех игр пользователя
   async getUserGames(userId) {
     const games = await ChessGame.findAll({
       where: { [Op.or]: [{ senderId: userId }, { inviteeId: userId }] },
@@ -127,6 +131,7 @@ class ChessService {
     );
   }
 
+  // Принятие приглашения на игру
   async acceptInvitation(gameId, userId) {
     const game = await ChessGame.findOne({
       where: { id: gameId, inviteeId: userId },
@@ -148,6 +153,7 @@ class ChessService {
     return await new ChessGameDto(game);
   }
 
+  // Отклонение приглашения на игру
   async declineInvitation(gameId, userId) {
     const game = await ChessGame.findOne({
       where: { id: gameId, inviteeId: userId },
@@ -169,6 +175,7 @@ class ChessService {
     return await new ChessGameDto(game);
   }
 
+  // Получение полной информации об игре по её ID
   async getGameById(gameId, userId) {
     const game = await ChessGame.findOne({
       where: {
@@ -181,6 +188,7 @@ class ChessService {
     return await new ChessGameFullInfoDto(game);
   }
 
+  // Выполнение хода в игре
   async makeMove(moveCode, userId, gameId) {
     const inProgressStatus = await GameStatus.findOne({
       where: { status: "inProgress" },
@@ -288,6 +296,7 @@ class ChessService {
     return await new ChessGameFullInfoDto(game);
   }
 
+  // Сдача игры
   async resign(gameId, userId) {
     const inProgressStatus = await GameStatus.findOne({
       where: { status: "inProgress" },
@@ -323,6 +332,7 @@ class ChessService {
     return await new ChessGameFullInfoDto(game);
   }
 
+  // Получение уведомлений пользователя
   async getNotifications(userId) {
     const invitationStatus = await GameStatus.findOne({
       where: { status: "invitation" },

@@ -4,6 +4,7 @@ const chessService = require("../service/chessService");
 const chessClients = require("../wss clients/chessClients");
 
 class ChessController {
+  // Получение всех игр пользователя через WebSocket
   async getAllGames(ws, msg, req) {
     try {
       const games = await chessService.getUserGames(msg.userId ?? req.user.id);
@@ -27,6 +28,7 @@ class ChessController {
     }
   }
 
+  // Получение уведомлений о приглашениях в игру
   async getNotifications(ws, req) {
     try {
       const games = await chessService.getNotifications(req.user.id);
@@ -50,6 +52,8 @@ class ChessController {
     }
   }
 
+  // Подключение к WebSocket серверу для шахмат
+  // При подключении отправляются все активные уведомления
   async connect(ws, req) {
     try {
       ws.user = req.user;
@@ -75,6 +79,7 @@ class ChessController {
     }
   }
 
+  // Закрытие WebSocket соединения
   close(ws) {
     try {
       chessClients.delete(ws);
@@ -83,6 +88,8 @@ class ChessController {
     }
   }
 
+  // Отправка приглашения на игру другому игроку
+  // Отправляет уведомление приглашенному игроку через WebSocket
   async sendInvitation(ws, msg, req) {
     try {
       if (!msg.inviteeId) {
@@ -126,6 +133,8 @@ class ChessController {
     }
   }
 
+  // Начало поиска рейтинговой игры
+  // Если найден подходящий соперник, создается новая игра
   async startGameSearch(ws, msg, req) {
     try {
       const game = await chessService.startGameSearch(req.user.id);
@@ -163,6 +172,7 @@ class ChessController {
     }
   }
 
+  // Прекращение поиска рейтинговой игры
   async endGameSearch(ws, req) {
     try {
       await chessService.endGameSearch(req.user.id);
@@ -183,6 +193,8 @@ class ChessController {
     }
   }
 
+  // Принятие приглашения на игру
+  // Уведомляет отправителя приглашения о принятии
   async acceptInvitation(ws, msg, req) {
     try {
       if (!msg.gameId) {
@@ -222,6 +234,8 @@ class ChessController {
     }
   }
 
+  // Отклонение приглашения на игру
+  // Уведомляет отправителя приглашения об отклонении
   async declineInvitation(ws, msg, req) {
     try {
       if (!msg.gameId) {
@@ -264,6 +278,7 @@ class ChessController {
     }
   }
 
+  // Получение полной информации об игре по её ID
   async getGameById(ws, msg, req) {
     try {
       if (!msg.gameId) {
@@ -293,6 +308,8 @@ class ChessController {
     }
   }
 
+  // Выполнение хода в игре
+  // Проверяет валидность хода и обновляет состояние игры
   async makeMove(ws, msg, req) {
     try {
       if (!msg.gameId || !msg.moveCode) {
@@ -339,6 +356,8 @@ class ChessController {
     }
   }
 
+  // Сдача игры
+  // Обновляет статус игры и рейтинги игроков
   async resign(ws, msg, req) {
     try {
       if (!msg.gameId) {

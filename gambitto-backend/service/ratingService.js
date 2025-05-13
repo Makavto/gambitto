@@ -3,6 +3,7 @@ const { User, ChessGame, RatingsHistory } = require("../models");
 const countPlayersRating = require("../utils/RatingFunction");
 
 class RatingService {
+  // Расчет нового рейтинга игроков после завершения игры
   async countNewRating(game, result) {
     const whitePlayer = await User.findOne({
       where: { id: game.whitePlayerId },
