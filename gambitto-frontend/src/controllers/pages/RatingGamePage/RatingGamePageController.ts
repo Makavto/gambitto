@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { ChessAPI } from "../../../services/ChessService";
 import { useNavigate } from "react-router";
-import { useAppSelector } from "../../../hooks/redux";
 
 export const useRatingGamePageController = () => {
   const [startGameSearch, { data: newGame }] =
@@ -9,7 +8,6 @@ export const useRatingGamePageController = () => {
   const [endGameSearch] = ChessAPI.useLazyEndRatingGameSearchQuery();
 
   const navigate = useNavigate();
-  const { chessWsReady } = useAppSelector((state) => state.wsSlice);
 
   useEffect(() => {
     if (newGame?.game) {
@@ -18,11 +16,9 @@ export const useRatingGamePageController = () => {
   }, [newGame]);
 
   useEffect(() => {
-    if (chessWsReady) {
-      startGameSearch();
-    }
+    startGameSearch();
     return () => {
       endGameSearch();
     };
-  }, [chessWsReady]);
+  }, []);
 };

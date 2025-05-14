@@ -45,7 +45,11 @@ const ChooseGamePageComponent = () => {
           (gamesInProgress.length === 0 ? (
             <div className="textSecondary">Нет активных партий</div>
           ) : (
-            gamesInProgress.map((game, i) => <ChessCardWidget game={game} />)
+            gamesInProgress.map((game, i) => (
+              <div key={i} className={styles.chessCardWrapper}>
+                <ChessCardWidget game={game} />
+              </div>
+            ))
           ))
         )}
       </div>

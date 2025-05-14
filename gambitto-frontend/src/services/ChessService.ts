@@ -8,28 +8,14 @@ import { IGameDto } from "../dtos/IGameDto";
 import { IGameFullInfoDto } from "../dtos/IGameFullInfoDto";
 import { IChessWsDto } from "../dtos/IChessWsDto";
 import { IChessWsFullInfoDto } from "../dtos/IChessWsFullInfoDto";
-import { Ws } from "./ws/Ws";
+import { addChessMessageListener, sendChessMessage, startChessWS } from "./ws/ChessWs";
 
-const chessWs = new Ws(`${process.env.REACT_APP_WS_URL}/chess`);
+startChessWS();
 
 export const ChessAPI = createApi({
   reducerPath: "ChessAPI",
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
-    createWs: builder.query<null, void>({
-      queryFn: async () => {
-        return { data: null };
-      },
-      async onCacheEntryAdded(arg, api) {
-        try {
-          await api.cacheDataLoaded;
-          chessWs.revalidateWs();
-        } catch (error) {
-          console.log(error);
-        }
-      },
-    }),
-
     chessNotificationsListener: builder.query<
       IChessWsDto | IChessWsFullInfoDto | null,
       void
@@ -52,7 +38,7 @@ export const ChessAPI = createApi({
               });
             }
           };
-          chessWs.ws.addEventListener("message", listener);
+          addChessMessageListener(listener);
         } catch (error) {
           console.log(error);
         }
@@ -61,7 +47,7 @@ export const ChessAPI = createApi({
 
     getAllGames: builder.query<{ games: IGameDto[] } | null, void | number>({
       queryFn: async (userId) => {
-        chessWs.ws.send(
+        sendChessMessage(
           JSON.stringify({ method: ChessWsMethodsEnum.GetAllGames, userId })
         );
         return { data: null };
@@ -77,7 +63,7 @@ export const ChessAPI = createApi({
               });
             }
           };
-          chessWs.ws.addEventListener("message", listener);
+          addChessMessageListener(listener);
         } catch (error) {
           console.log(error);
         }
@@ -86,7 +72,7 @@ export const ChessAPI = createApi({
 
     getChessNotifications: builder.query<{ games: IGameDto[] } | null, void>({
       queryFn: async (arg) => {
-        chessWs.ws.send(
+        sendChessMessage(
           JSON.stringify({ method: ChessWsMethodsEnum.GetNotifications })
         );
         return { data: null };
@@ -102,7 +88,7 @@ export const ChessAPI = createApi({
               });
             }
           };
-          chessWs.ws.addEventListener("message", listener);
+          addChessMessageListener(listener);
         } catch (error) {
           console.log(error);
         }
@@ -114,7 +100,7 @@ export const ChessAPI = createApi({
       { inviteeId: number }
     >({
       queryFn: async ({ inviteeId }) => {
-        chessWs.ws.send(
+        sendChessMessage(
           JSON.stringify({ method: ChessWsMethodsEnum.Invite, inviteeId })
         );
         return { data: null };
@@ -130,7 +116,7 @@ export const ChessAPI = createApi({
               });
             }
           };
-          chessWs.ws.addEventListener("message", listener);
+          addChessMessageListener(listener);
         } catch (error) {
           console.log(error);
         }
@@ -142,7 +128,7 @@ export const ChessAPI = createApi({
       void
     >({
       queryFn: async () => {
-        chessWs.ws.send(
+        sendChessMessage(
           JSON.stringify({ method: ChessWsMethodsEnum.StartSearch })
         );
         return { data: null };
@@ -158,7 +144,7 @@ export const ChessAPI = createApi({
               });
             }
           };
-          chessWs.ws.addEventListener("message", listener);
+          addChessMessageListener(listener);
         } catch (error) {
           console.log(error);
         }
@@ -167,7 +153,7 @@ export const ChessAPI = createApi({
 
     endRatingGameSearch: builder.query<null, void>({
       queryFn: async () => {
-        chessWs.ws.send(
+        sendChessMessage(
           JSON.stringify({ method: ChessWsMethodsEnum.EndSearch })
         );
         return { data: null };
@@ -179,7 +165,7 @@ export const ChessAPI = createApi({
       { gameId: number }
     >({
       queryFn: async ({ gameId }) => {
-        chessWs.ws.send(
+        sendChessMessage(
           JSON.stringify({
             method: ChessWsMethodsEnum.AcceptInvitation,
             gameId,
@@ -198,7 +184,7 @@ export const ChessAPI = createApi({
               });
             }
           };
-          chessWs.ws.addEventListener("message", listener);
+          addChessMessageListener(listener);
         } catch (error) {
           console.log(error);
         }
@@ -210,7 +196,7 @@ export const ChessAPI = createApi({
       { gameId: number }
     >({
       queryFn: async ({ gameId }) => {
-        chessWs.ws.send(
+        sendChessMessage(
           JSON.stringify({
             method: ChessWsMethodsEnum.DeclineInvitation,
             gameId,
@@ -229,7 +215,7 @@ export const ChessAPI = createApi({
               });
             }
           };
-          chessWs.ws.addEventListener("message", listener);
+          addChessMessageListener(listener);
         } catch (error) {
           console.log(error);
         }
@@ -241,7 +227,7 @@ export const ChessAPI = createApi({
       { gameId: number; moveCode: string }
     >({
       queryFn: async ({ gameId, moveCode }) => {
-        chessWs.ws.send(
+        sendChessMessage(
           JSON.stringify({
             method: ChessWsMethodsEnum.MakeMove,
             gameId,
@@ -261,7 +247,7 @@ export const ChessAPI = createApi({
               });
             }
           };
-          chessWs.ws.addEventListener("message", listener);
+          addChessMessageListener(listener);
         } catch (error) {
           console.log(error);
         }
@@ -273,7 +259,7 @@ export const ChessAPI = createApi({
       { gameId: number }
     >({
       queryFn: async ({ gameId }) => {
-        chessWs.ws.send(
+        sendChessMessage(
           JSON.stringify({ method: ChessWsMethodsEnum.GetGameInfo, gameId })
         );
         return { data: null };
@@ -289,16 +275,19 @@ export const ChessAPI = createApi({
               });
             }
           };
-          chessWs.ws.addEventListener("message", listener);
+          addChessMessageListener(listener);
         } catch (error) {
           console.log(error);
         }
       },
     }),
 
-    resign: builder.query<{ gameFullInfo: IGameFullInfoDto } | null, { gameId: number }>({
+    resign: builder.query<
+      { gameFullInfo: IGameFullInfoDto } | null,
+      { gameId: number }
+    >({
       queryFn: async ({ gameId }) => {
-        chessWs.ws.send(
+        sendChessMessage(
           JSON.stringify({ method: ChessWsMethodsEnum.Resign, gameId })
         );
         return { data: null };
@@ -314,7 +303,7 @@ export const ChessAPI = createApi({
               });
             }
           };
-          chessWs.ws.addEventListener("message", listener);
+          addChessMessageListener(listener);
         } catch (error) {
           console.log(error);
         }

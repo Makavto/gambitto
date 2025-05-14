@@ -20,8 +20,6 @@ function App() {
   const {user} = useAppSelector(state => state.userSlice);
   const {setUser} = userSlice.actions;
 
-  const {chessWsReady, friendshipWsReady} = useAppSelector(state => state.wsSlice);
-
   const {addChessNotification, addFriendshipNotification, deleteChessNotification, deleteFriendshipNotification} = notificationsSlice.actions;
 
   const {data: getMeData, isLoading: isGetMeLoading} = UserAPI.useGetMeQuery();
@@ -45,7 +43,6 @@ function App() {
       if (chessListenerData.method === ChessWsServerMethodsEnum.Invitation) {
         dispatch(addChessNotification(chessListenerData.data.game));
       }
-      // if (chessListenerData.method === ChessWsServerMethodsEnum.Accepted || ChessWsServerMethodsEnum.Declined)
     }
   }, [chessListenerData]);
 
@@ -60,9 +57,9 @@ function App() {
   }, [friendshipNotificationData])
 
   useEffect(() => {
-    if (chessWsReady) getChessNotification();
-    if (friendshipWsReady) getFriendshipNotification();
-  }, [chessWsReady, friendshipWsReady])
+    getChessNotification();
+    getFriendshipNotification();
+  }, [])
 
   useEffect(() => {
     if (!!getMeData) {

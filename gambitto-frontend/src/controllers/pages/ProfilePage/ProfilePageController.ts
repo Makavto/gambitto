@@ -10,8 +10,6 @@ export const useProfilePageController = () => {
   const { user } = useAppSelector((state) => state.userSlice);
   const { setUser } = userSlice.actions;
 
-  const { chessWsReady: wsReady } = useAppSelector((state) => state.wsSlice);
-
   const dispatch = useAppDispatch();
 
   const { userId } = useParams();
@@ -39,10 +37,8 @@ export const useProfilePageController = () => {
   };
 
   useEffect(() => {
-    if (wsReady) {
-      getAllGames(userId ? Number(userId) : undefined);
-    }
-  }, [wsReady, userId]);
+    getAllGames(userId ? Number(userId) : undefined);
+  }, [userId]);
 
   useEffect(() => {
     if (userId) {

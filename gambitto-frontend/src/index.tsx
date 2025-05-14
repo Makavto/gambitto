@@ -10,7 +10,8 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import { setupStore } from './store/store';
 import { Provider } from 'react-redux';
-import { injectStore } from './services/ws/Ws';
+import { injectStoreInChess } from './services/ws/ChessWs';
+import { injectStoreInFriendship } from './services/ws/FriendshipWs';
 
 
 const root = ReactDOM.createRoot(
@@ -19,7 +20,9 @@ const root = ReactDOM.createRoot(
 
 const store = setupStore();
 
-injectStore(store);
+injectStoreInChess(store);
+
+injectStoreInFriendship(store);
 
 root.render(
   <Provider store={store}>

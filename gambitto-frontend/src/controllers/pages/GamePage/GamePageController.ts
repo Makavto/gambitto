@@ -31,17 +31,15 @@ export const useGamePageController = () => {
   const [history, setHistory] = useState<IHistoryMove[][]>([]);
   const [activeMove, setActiveMove] = useState<IHistoryMove>();
 
-  const { chessWsReady } = useAppSelector((state) => state.wsSlice);
-
   const { user } = useAppSelector((state) => state.userSlice);
 
   // Инициализация игры при подключении к WebSocket
   useEffect(() => {
-    if (!!chessWsReady && !!gameId) {
+    if (!!gameId) {
       getGameInfo({ gameId: Number(gameId) });
       getChessNotification();
     }
-  }, [chessWsReady]);
+  }, []);
 
   // Получение данных пользователя
   useEffect(() => {
