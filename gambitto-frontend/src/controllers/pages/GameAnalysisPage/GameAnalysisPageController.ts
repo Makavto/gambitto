@@ -22,8 +22,6 @@ export const useGameAnalysisPageController = () => {
 
   const [chessGame, setChessGame] = useState<IGameFullInfoDto>();
 
-  const { chessWsReady } = useAppSelector((state) => state.wsSlice);
-
   const { user } = useAppSelector((state) => state.userSlice);
 
   const [history, setHistory] = useState<IHistoryMove[][]>([]);
@@ -54,14 +52,14 @@ export const useGameAnalysisPageController = () => {
   const evaluationsCache = useRef<Map<string, IMoveEvaluation>>(new Map());
 
   useEffect(() => {
-    if (!!chessWsReady && !!gameId) {
+    if (!!gameId) {
       getGameInfo({ gameId: Number(gameId) });
       startStockfish();
     }
     return () => {
       endStockfish();
     };
-  }, [chessWsReady]);
+  }, []);
 
   useEffect(() => {
     if (userId) {
