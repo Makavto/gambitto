@@ -94,7 +94,7 @@ export const startChessWS = () => {
 };
 
 export const sendChessMessage = (msg: string) => {
-  if (chessWS) {
+  if (chessWS && chessWS.readyState === chessWS.OPEN) {
     chessWS.send(msg);
   } else {
     msgQueue.push(msg);

@@ -96,7 +96,7 @@ export const startFriendshipWS = () => {
 };
 
 export const sendFriendshipMessage = (msg: string) => {
-  if (friendshipWS) {
+  if (friendshipWS && friendshipWS.readyState === friendshipWS.OPEN) {
     friendshipWS.send(msg);
   } else {
     msgQueue.push(msg);
