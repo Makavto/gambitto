@@ -5,6 +5,7 @@ import Card from "../../components/Card/Card";
 import Button from "../../components/Button/Button";
 import { ButtonTypesEnum } from "../../utils/ButtonTypesEnum";
 import { useUserSearchPageController } from "../../controllers/pages/UserSearchPage/UserSearchPageController";
+import { Loader } from "../../components/Loader/Loader";
 
 interface IUserSearchPageProps {
   isForChessGame?: boolean;
@@ -23,7 +24,9 @@ function UserSearchPage({ isForChessGame }: IUserSearchPageProps) {
 
   return (
     <div className={styles.pageWrapper}>
-      <div className={`textBig ${styles.title} title`}>Поиск {isForChessGame ? 'друзей' : 'пользователей'}</div>
+      <div className={`textBig ${styles.title} title`}>
+        Поиск {isForChessGame ? "друзей" : "пользователей"}
+      </div>
       <div className={styles.searchWrapper}>
         <Input
           name="searchQuery"
@@ -32,11 +35,14 @@ function UserSearchPage({ isForChessGame }: IUserSearchPageProps) {
           onChange={onSearch}
         />
       </div>
-      {isUsersDataFetching && <div>Загрузка...</div>}
-      {usersData?.length === 0 && (
+      {isUsersDataFetching ? (
+        <div>
+          <Loader size={150} displayCenter={true} margin={40} />
+        </div>
+      ) : usersData?.length === 0 ? (
         <div className="textSecondary">Пользователей не найдено</div>
-      )}
-      {usersData &&
+      ) : (
+        usersData &&
         usersData.map((user, i) => (
           <div className={styles.cardWrapper} key={i}>
             <Card>
@@ -73,7 +79,8 @@ function UserSearchPage({ isForChessGame }: IUserSearchPageProps) {
               </div>
             </Card>
           </div>
-        ))}
+        ))
+      )}
     </div>
   );
 }

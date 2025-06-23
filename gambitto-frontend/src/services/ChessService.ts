@@ -255,26 +255,18 @@ export const ChessAPI = createApi({
       { gameId: number }
     >({
       queryFn: async ({ gameId }) => {
-        sendChessMessage(
-          JSON.stringify({ method: ChessWsMethodsEnum.GetGameInfo, gameId })
-        );
-        return { data: null };
-      },
-      async onCacheEntryAdded(arg, api) {
-        try {
-          await api.cacheDataLoaded;
+        return new Promise((resolve) => {
           const listener = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
             if (data.method === ChessWsMethodsEnum.GetGameInfo) {
-              api.updateCachedData((draft) => {
-                return data.data;
-              });
+              resolve({data: data.data})
             }
           };
           addChessMessageListener(listener);
-        } catch (error) {
-          console.log(error);
-        }
+          sendChessMessage(
+            JSON.stringify({ method: ChessWsMethodsEnum.GetGameInfo, gameId })
+          );
+        })
       },
     }),
 

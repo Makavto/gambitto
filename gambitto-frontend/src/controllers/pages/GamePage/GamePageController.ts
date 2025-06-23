@@ -14,7 +14,7 @@ export const useGamePageController = () => {
   const { gameId, userId } = useParams();
 
   // Хуки для взаимодействия с API
-  const [getGameInfo, { data: gameInfoData }] =
+  const [getGameInfo, { data: gameInfoData, isFetching: isGameInfoLoading }] =
     ChessAPI.useLazyGetGameInfoQuery();
   const [getChessNotification, { data: chessListenerData }] =
     ChessAPI.useLazyChessNotificationsListenerQuery();
@@ -204,5 +204,6 @@ export const useGamePageController = () => {
     opponentData,
     history,
     activeMove,
+    isGameInfoLoading,
   };
 };

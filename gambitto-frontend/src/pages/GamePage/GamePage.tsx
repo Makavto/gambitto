@@ -7,6 +7,7 @@ import { ChessGameField } from "../../components/ChessGameField/ChessGameField";
 import { MovesHistory } from "../../components/MovesHistory/MovesHistory";
 import SimpleBar from "simplebar-react";
 import variables from "../../styles/variables.module.scss";
+import { Loader } from "../../components/Loader/Loader";
 
 function GamePage() {
   const {
@@ -20,19 +21,21 @@ function GamePage() {
     onAnalysis,
     user,
     opponentData,
+    isGameInfoLoading,
   } = useGamePageController();
 
   return (
     <div className={styles.pageWrapper}>
-      {!chessGame && <div>Загрузка...</div>}
-      {!!chessGame && chessGame.gameStatus === "invitation" && (
-        <div>Подождите, пока соперник войдёт в игру</div>
-      )}
-      {!!chessGame && chessGame.gameStatus === "declined" && (
-        <div>Соперник не захотел играть :(</div>
-      )}
-      {!!chessGame &&
-        !!user &&
+      {isGameInfoLoading ? (
+        <div>
+          <Loader size={150} displayCenter={true} margin={40} />
+        </div>
+      ) : !!chessGame && (
+        chessGame.gameStatus === "invitation" ? (
+          <div>Подождите, пока соперник войдёт в игру</div>
+        ) : chessGame.gameStatus === "declined" ? (
+          <div>Соперник не захотел играть :(</div>
+        ) : !!user &&
         !!opponentData &&
         chessGame.gameStatus !== "invitation" &&
         chessGame.gameStatus !== "declined" && (
@@ -90,7 +93,8 @@ function GamePage() {
               )}
             </div>
           </div>
-        )}
+        )
+      )}
     </div>
   );
 }
