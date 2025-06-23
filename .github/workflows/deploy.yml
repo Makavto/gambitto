@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: 'Что делать?'
+        description: "Что делать?"
         required: true
         type: choice
         options:
@@ -17,55 +17,60 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set variables
-      id: vars
-      run: |
-        case "${{ github.event.inputs.action }}" in
-          frontend)
-            echo "FOLDER=gambitto-frontend" >> "$GITHUB_ENV"
-            echo "IMAGE=gambitto-frontend:latest" >> "$GITHUB_ENV"
-            echo "SCRIPT=./rebuild-frontend.sh" >> "$GITHUB_ENV"
-            ;;
-          backend)
-            echo "FOLDER=gambitto-backend" >> "$GITHUB_ENV"
-            echo "IMAGE=gambitto-backend:latest" >> "$GITHUB_ENV"
-            echo "SCRIPT=./rebuild-backend.sh" >> "$GITHUB_ENV"
-            ;;
-          backend_with_migration)
-            echo "FOLDER=gambitto-backend" >> "$GITHUB_ENV"
-            echo "IMAGE=gambitto-backend:latest" >> "$GITHUB_ENV"
-            echo "SCRIPT=./migrate-and-rebuild-backend.sh" >> "$GITHUB_ENV"
-            ;;
-        esac
+      - name: Set variables
+        id: vars
+        run: |
+          case "${{ github.event.inputs.action }}" in
+            frontend)
+              echo "FOLDER=gambitto-frontend" >> "$GITHUB_ENV"
+              echo "IMAGE=gambitto-frontend:latest" >> "$GITHUB_ENV"
+              echo "SCRIPT=./rebuild-frontend.sh" >> "$GITHUB_ENV"
+              ;;
+            backend)
+              echo "FOLDER=gambitto-backend" >> "$GITHUB_ENV"
+              echo "IMAGE=gambitto-backend:latest" >> "$GITHUB_ENV"
+              echo "SCRIPT=./rebuild-backend.sh" >> "$GITHUB_ENV"
+              ;;
+            backend_with_migration)
+              echo "FOLDER=gambitto-backend" >> "$GITHUB_ENV"
+              echo "IMAGE=gambitto-backend:latest" >> "$GITHUB_ENV"
+              echo "SCRIPT=./migrate-and-rebuild-backend.sh" >> "$GITHUB_ENV"
+              ;;
+          esac
 
-    - name: Build Docker image
-      run: |
-        docker build -t $IMAGE $FOLDER
+      - name: Create .env.prod file
+        if: contains(fromJson('["backend", "backend_with_migration"]'), github.event.inputs.action)
+        run: |
+          echo "${{ secrets.ENV_FILE_CONTENT }}" > ${{ env.FOLDER }}/.env.prod
 
-    - name: Save Docker image as tar
-      run: |
-        docker save $IMAGE > image.tar
+      - name: Build Docker image
+        run: |
+          docker build -t $IMAGE $FOLDER
 
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.9.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Save Docker image as tar
+        run: |
+          docker save $IMAGE > image.tar
 
-    - name: Add host to known_hosts
-      run: |
-        ssh-keyscan 45.10.41.239 >> ~/.ssh/known_hosts
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Copy image to server
-      run: |
-        scp image.tar root@45.10.41.239:/home/${{ env.FOLDER }}/image.tar
+      - name: Add host to known_hosts
+        run: |
+          ssh-keyscan 45.10.41.239 >> ~/.ssh/known_hosts
 
-    - name: Run remote deploy script
-      run: |
-        ssh root@45.10.41.239 "
-          cd /home/${{ env.FOLDER }} &&
-          docker load < image.tar &&
-          ${{ env.SCRIPT }}
-        "
+      - name: Copy image to server
+        run: |
+          scp image.tar root@45.10.41.239:/home/${{ env.FOLDER }}/image.tar
+
+      - name: Run remote deploy script
+        run: |
+          ssh root@45.10.41.239 "
+            cd /home/${{ env.FOLDER }} &&
+            docker load < image.tar &&
+            ${{ env.SCRIPT }}
+          "
