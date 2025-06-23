@@ -5,7 +5,6 @@ const {
   ChessGame,
   GameStatus,
   ChessMove,
-  RatingsHistory,
   GameType,
 } = require("../models");
 const { Chess } = require("chess.js");
