@@ -1,18 +1,12 @@
-import { useEffect } from "react";
 import { FriendshipAPI } from "../../../services/FriendshipService";
 import { UserAPI } from "../../../services/UserService";
 import { useNavigate } from "react-router";
 
 export const useCommunityPageController = () => {
-  const [getAllFriends, { data: allFriendsData }] =
-    FriendshipAPI.useLazyGetAllFriendsQuery();
-  const [getTop, { data: topData, isLoading: isTopLoading }] =
-    UserAPI.useLazyGetTopQuery();
-
-  useEffect(() => {
-    getAllFriends();
-    getTop();
-  }, []);
+  const { data: allFriendsData, isLoading: isFriendsLoading } =
+    FriendshipAPI.useGetAllFriendsQuery(undefined, {refetchOnMountOrArgChange: true});
+  const { data: topData, isLoading: isTopLoading } =
+    UserAPI.useGetTopQuery(undefined, {pollingInterval: 5000});
 
   const navigate = useNavigate();
 
@@ -25,5 +19,6 @@ export const useCommunityPageController = () => {
     onAddFriend,
     topData,
     isTopLoading,
+    isFriendsLoading
   };
 };

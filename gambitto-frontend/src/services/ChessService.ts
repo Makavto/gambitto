@@ -8,7 +8,11 @@ import { IGameDto } from "../dtos/IGameDto";
 import { IGameFullInfoDto } from "../dtos/IGameFullInfoDto";
 import { IChessWsDto } from "../dtos/IChessWsDto";
 import { IChessWsFullInfoDto } from "../dtos/IChessWsFullInfoDto";
-import { addChessMessageListener, sendChessMessage, startChessWS } from "./ws/ChessWs";
+import {
+  addChessMessageListener,
+  sendChessMessage,
+  startChessWS,
+} from "./ws/ChessWs";
 
 startChessWS();
 
@@ -47,26 +51,18 @@ export const ChessAPI = createApi({
 
     getAllGames: builder.query<{ games: IGameDto[] } | null, void | number>({
       queryFn: async (userId) => {
-        sendChessMessage(
-          JSON.stringify({ method: ChessWsMethodsEnum.GetAllGames, userId })
-        );
-        return { data: null };
-      },
-      async onCacheEntryAdded(arg, api) {
-        try {
-          await api.cacheDataLoaded;
+        return new Promise((resolve) => {
           const listener = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
             if (data.method === ChessWsMethodsEnum.GetAllGames) {
-              api.updateCachedData((draft) => {
-                return data.data;
-              });
+              resolve({ data: data.data });
             }
           };
           addChessMessageListener(listener);
-        } catch (error) {
-          console.log(error);
-        }
+          sendChessMessage(
+            JSON.stringify({ method: ChessWsMethodsEnum.GetAllGames, userId })
+          );
+        });
       },
     }),
 
@@ -259,26 +255,18 @@ export const ChessAPI = createApi({
       { gameId: number }
     >({
       queryFn: async ({ gameId }) => {
-        sendChessMessage(
-          JSON.stringify({ method: ChessWsMethodsEnum.GetGameInfo, gameId })
-        );
-        return { data: null };
-      },
-      async onCacheEntryAdded(arg, api) {
-        try {
-          await api.cacheDataLoaded;
+        return new Promise((resolve) => {
           const listener = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
             if (data.method === ChessWsMethodsEnum.GetGameInfo) {
-              api.updateCachedData((draft) => {
-                return data.data;
-              });
+              resolve({data: data.data})
             }
           };
           addChessMessageListener(listener);
-        } catch (error) {
-          console.log(error);
-        }
+          sendChessMessage(
+            JSON.stringify({ method: ChessWsMethodsEnum.GetGameInfo, gameId })
+          );
+        })
       },
     }),
 

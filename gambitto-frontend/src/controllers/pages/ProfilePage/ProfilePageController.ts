@@ -17,16 +17,17 @@ export const useProfilePageController = () => {
 
   const [logoutUser] = AuthAPI.useLogoutUserMutation();
 
-  const [getAllGames, { data: allGames }] = ChessAPI.useLazyGetAllGamesQuery();
-  const [getMe] = UserAPI.useLazyGetMeQuery();
-  const [getUserById, { data: userByIdData }] =
+  const { data: allGames, isFetching: isGamesLoading } =
+    ChessAPI.useGetAllGamesQuery(userId ? Number(userId) : undefined, {refetchOnMountOrArgChange: true});
+  const [getMe, { isLoading: isMeLoading }] = UserAPI.useLazyGetMeQuery();
+  const [getUserById, { data: userByIdData, isFetching: isUserLoading }] =
     UserAPI.useLazyGetUserByIdQuery();
 
   const onLogout = () => {
     logoutUser().then(() => {
       localStorage.removeItem("accessToken");
       dispatch(setUser(null));
-      window.location.reload()
+      window.location.reload();
     });
   };
 
@@ -35,10 +36,6 @@ export const useProfilePageController = () => {
       navigate(`/community/${userId}/stats`);
     }
   };
-
-  useEffect(() => {
-    getAllGames(userId ? Number(userId) : undefined);
-  }, [userId]);
 
   useEffect(() => {
     if (userId) {
@@ -58,5 +55,7 @@ export const useProfilePageController = () => {
     allGames,
     onLogout,
     onViewUserStats,
+    isGamesLoading,
+    isUserLoading: isMeLoading || isUserLoading,
   };
 };

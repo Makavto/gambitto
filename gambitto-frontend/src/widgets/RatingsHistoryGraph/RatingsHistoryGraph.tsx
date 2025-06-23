@@ -24,6 +24,7 @@ import { parseISO, format, startOfDay, isSameDay } from "date-fns";
 import { useRatingsHistoryGraphController } from "../../controllers/widgets/RatingsHistoryGraph/useRatingsHistoryGraphController";
 import { _DeepPartialObject } from "chart.js/dist/types/utils";
 import variables from "../../styles/variables.module.scss";
+import { Loader } from "../../components/Loader/Loader";
 
 ChartJS.register(
   CategoryScale,
@@ -164,7 +165,9 @@ const RatingsHistoryGraphComponent = () => {
   }, [data]);
 
   return isStatsLoading ? (
-    <div>Загрузка...</div>
+    <div>
+      <Loader size={150} displayCenter={true} margin={40} />
+    </div>
   ) : chartData ? (
     <Line data={chartData} options={options} />
   ) : (

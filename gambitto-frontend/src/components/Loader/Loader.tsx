@@ -1,9 +1,25 @@
 import styles from "./Loader.module.scss";
 import React from "react";
 
-const LoaderComponent = () => {
+interface ILoaderProps {
+  size?: number;
+  margin?: number;
+  displayCenter?: boolean;
+}
+
+const LoaderComponent = ({ size, displayCenter, margin }: ILoaderProps) => {
   return (
-    <div className={styles.spinner}>
+    <div
+      className={styles.spinner}
+      style={{
+        width: size ? size : "100%",
+        height: size ? size : "100%",
+        marginTop: margin ? margin : 0,
+        marginBottom: margin ? margin : 0,
+        marginLeft: displayCenter ? 'auto' : 0,
+        marginRight: displayCenter ? 'auto' : 0,
+      }}
+    >
       {/* <svg className={styles.icon} viewBox="0 0 100 100">
         <path
           className={styles.chessOne}
